@@ -331,7 +331,7 @@ export default function HomePage() {
 
           {/* Center - Mobile tabs */}
           <div className="flex md:hidden">
-            <div className="flex border rounded-lg overflow-hidden bg-muted/50">
+            <div className="flex border border-gray-700 rounded-lg overflow-hidden bg-gray-800">
               {[
                 { id: 'edit' as const, icon: PenLine, label: 'Edit' },
                 { id: 'preview' as const, icon: Eye, label: 'Preview' },
@@ -342,8 +342,8 @@ export default function HomePage() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`px-2 py-1.5 text-[11px] flex items-center gap-1 transition-all ${
-                    activeTab === tab.id ? 'bg-primary text-primary-foreground' : 'hover:bg-muted text-muted-foreground'
+                  className={`px-2.5 py-1.5 text-xs flex items-center gap-1 transition-all font-medium ${
+                    activeTab === tab.id ? 'bg-blue-500 text-white' : 'hover:bg-gray-700 text-gray-300'
                   }`}
                 >
                   <tab.icon className="h-3 w-3" />
