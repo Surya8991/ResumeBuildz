@@ -66,7 +66,22 @@ export default function TemplatesPage() {
       {/* Filter Bar */}
       <section className="bg-white border-b border-gray-100 sticky top-14 z-40 animate-fade-in delay-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center gap-3 overflow-x-auto">
+          {/* Mobile: dropdown */}
+          <div className="flex items-center gap-3 sm:hidden">
+            <Filter className="h-4 w-4 text-gray-400 shrink-0" />
+            <select
+              value={activeFilter}
+              onChange={(e) => setActiveFilter(e.target.value)}
+              className="flex-1 h-10 rounded-lg border border-gray-200 bg-white px-3 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {FILTER_OPTIONS.map((f) => (
+                <option key={f} value={f}>{f}</option>
+              ))}
+            </select>
+            <span className="text-xs text-gray-400">{filtered.length} templates</span>
+          </div>
+          {/* Desktop: buttons */}
+          <div className="hidden sm:flex items-center gap-3">
             <Filter className="h-4 w-4 text-gray-400 shrink-0" />
             {FILTER_OPTIONS.map((f) => (
               <button
