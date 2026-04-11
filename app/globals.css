@@ -128,3 +128,61 @@
     @apply font-sans;
   }
 }
+
+/* Print styles for resume PDF */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .resume-print,
+  .resume-print * {
+    visibility: visible;
+  }
+  .resume-print {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 210mm;
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+    zoom: 1 !important;
+  }
+  .resume-print style {
+    display: none;
+  }
+  @page {
+    size: A4;
+    margin: 0;
+  }
+}
+
+/* Page break support for multi-page resumes */
+.resume-print {
+  /* Allow content to flow naturally beyond A4 height */
+}
+
+.resume-print > div > div:first-child {
+  /* Template wrapper - allow page breaks inside */
+  page-break-inside: auto;
+}
+
+/* Avoid breaking inside experience entries, education entries, etc. */
+.resume-print [class*="mb-"] > div {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+/* Hide scrollbar for nav pills */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* Preview scaling */
+.resume-preview-container {
+  overflow: auto;
+}
+
+.resume-preview-scaled {
+  transform-origin: top left;
+}
