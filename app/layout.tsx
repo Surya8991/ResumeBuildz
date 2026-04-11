@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     description: "Build professional resumes in minutes. 20 ATS-optimized templates, AI writing assistant, cover letter builder, JD keyword matcher. No sign-up, 100% free.",
     images: [
       {
-        url: `${siteUrl}/og-image.png`,
+        url: `${siteUrl}/og-image.svg`,
         width: 1200,
         height: 630,
         alt: "ResumeForge - Free ATS-Friendly Resume Generator",
@@ -50,16 +50,16 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "ResumeForge - Free ATS Resume Builder",
     description: "20 templates, AI writing assistant, cover letter builder. No sign-up required.",
-    images: [`${siteUrl}/og-image.png`],
+    images: [`${siteUrl}/og-image.svg`],
     creator: "@surya_l",
   },
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
-      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/icon-192.svg", sizes: "192x192", type: "image/svg+xml" },
+      { url: "/icon-512.svg", sizes: "512x512", type: "image/svg+xml" },
     ],
-    apple: { url: "/apple-touch-icon.png", sizes: "180x180" },
+    apple: { url: "/icon-192.svg", sizes: "192x192" },
   },
   manifest: "/manifest.json",
 };
