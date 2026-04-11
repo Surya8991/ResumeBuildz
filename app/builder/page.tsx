@@ -349,33 +349,9 @@ export default function HomePage() {
                 <h1 className="text-lg font-bold tracking-tight leading-none text-white">
                   Resume<span className="text-blue-400">Forge</span>
                 </h1>
-                <span className="text-[10px] text-gray-400 leading-none">Resume Builder</span>
+                <span className="text-[11px] text-gray-400 leading-none">Resume Builder</span>
               </div>
             </a>
-          </div>
-
-          {/* Center - Mobile tabs */}
-          <div className="flex md:hidden flex-1 justify-center mx-2 overflow-x-auto scrollbar-none">
-            <div className="flex border border-gray-700 rounded-lg overflow-hidden bg-gray-800 shrink-0">
-              {[
-                { id: 'edit' as const, icon: PenLine, label: 'Edit' },
-                { id: 'preview' as const, icon: Eye, label: 'View' },
-                { id: 'templates' as const, icon: Settings2, label: 'Style' },
-                { id: 'ats' as const, icon: BarChart3, label: 'ATS' },
-                { id: 'ai' as const, icon: Sparkles, label: 'AI' },
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`px-2 py-1.5 text-[11px] flex items-center gap-1 transition-all font-medium whitespace-nowrap ${
-                    activeTab === tab.id ? 'bg-blue-500 text-white' : 'hover:bg-gray-700 text-gray-300'
-                  }`}
-                >
-                  <tab.icon className="h-3 w-3 shrink-0" />
-                  {tab.label}
-                </button>
-              ))}
-            </div>
           </div>
 
           {/* Right - Actions */}
@@ -424,8 +400,32 @@ export default function HomePage() {
         </div>
       </header>
 
+      {/* Mobile tab bar - separate row */}
+      <div className="md:hidden flex border-b border-gray-800 bg-gray-900 shrink-0">
+        {[
+          { id: 'edit' as const, icon: PenLine, label: 'Edit' },
+          { id: 'preview' as const, icon: Eye, label: 'Preview' },
+          { id: 'templates' as const, icon: Settings2, label: 'Style' },
+          { id: 'ats' as const, icon: BarChart3, label: 'ATS' },
+          { id: 'ai' as const, icon: Sparkles, label: 'AI' },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex-1 flex flex-col items-center gap-0.5 py-2 text-[11px] font-medium transition-all ${
+              activeTab === tab.id
+                ? 'text-blue-400 border-b-2 border-blue-400'
+                : 'text-gray-400 hover:text-gray-200'
+            }`}
+          >
+            <tab.icon className="h-4 w-4" />
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
       {/* Completion progress bar */}
-      <div className="h-1 bg-gray-800 shrink-0">
+      <div className="h-1.5 md:h-1 bg-gray-800 shrink-0">
         <div
           className={`h-full transition-all duration-500 ${completionScore >= 80 ? 'bg-green-500' : completionScore >= 50 ? 'bg-yellow-500' : 'bg-red-500'}`}
           style={{ width: `${completionScore}%` }}
@@ -685,28 +685,26 @@ export default function HomePage() {
                 <div className="mt-6 pt-4 border-t flex items-center justify-between">
                   <Button
                     variant="outline"
-                    size="sm"
                     onClick={() => {
                       const idx = FORM_SECTIONS.findIndex(s => s.id === activeSection);
                       if (idx > 0) setActiveSection(FORM_SECTIONS[idx - 1].id);
                     }}
                     disabled={FORM_SECTIONS.findIndex(s => s.id === activeSection) === 0}
-                    className="gap-1"
+                    className="gap-1 h-10 px-4"
                   >
                     <ChevronLeft className="h-4 w-4" /> Prev
                   </Button>
-                  <span className="text-[10px] text-muted-foreground">
+                  <span className="text-xs text-muted-foreground font-medium">
                     {FORM_SECTIONS.findIndex(s => s.id === activeSection) + 1} / {FORM_SECTIONS.length}
                   </span>
                   <Button
                     variant="default"
-                    size="sm"
                     onClick={() => {
                       const idx = FORM_SECTIONS.findIndex(s => s.id === activeSection);
                       if (idx < FORM_SECTIONS.length - 1) setActiveSection(FORM_SECTIONS[idx + 1].id);
                     }}
                     disabled={FORM_SECTIONS.findIndex(s => s.id === activeSection) === FORM_SECTIONS.length - 1}
-                    className="gap-1"
+                    className="gap-1 h-10 px-4"
                   >
                     Next <ChevronRight className="h-4 w-4" />
                   </Button>
@@ -714,15 +712,22 @@ export default function HomePage() {
               </div>
             </ScrollArea>
           )}
-          {activeTab === 'preview' && (
-            <div className="h-full overflow-auto bg-gray-100 dark:bg-gray-900 p-4">
-              <div className="flex justify-center">
-                <div style={{ transform: `scale(${previewScale})`, transformOrigin: 'top center' }}>
-                  <ResumePreview ref={resumeRef} />
+          {activeTab === 'preview' && (() => {
+            const mobileScale = typeof window !== 'undefined' ? Math.min(previewScale, (window.innerWidth - 16) / 793) : 0.45;
+            return (
+              <div className="h-full overflow-auto bg-gray-100 dark:bg-gray-900 p-2">
+                <div className="mx-auto" style={{ width: `${793 * mobileScale}px` }}>
+                  <div style={{
+                    transform: `scale(${mobileScale})`,
+                    transformOrigin: 'top left',
+                    width: '210mm',
+                  }}>
+                    <ResumePreview ref={resumeRef} />
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
           {activeTab === 'templates' && (
             <ScrollArea className="h-full">
               <div className="p-4"><TemplateSelector /></div>
@@ -814,21 +819,21 @@ export default function HomePage() {
 
       {/* Mobile bottom bar */}
       <div className="md:hidden border-t bg-background/95 backdrop-blur-sm px-3 py-2 flex justify-around items-center gap-1 shrink-0">
-        <button onClick={() => !isExporting && handleExportPdf()} disabled={isExporting} className="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg hover:bg-muted transition-colors">
+        <button onClick={() => !isExporting && handleExportPdf()} disabled={isExporting} className="flex flex-col items-center gap-1 px-4 py-2 rounded-lg hover:bg-muted transition-colors min-h-[48px]">
           <Download className="h-5 w-5" />
-          <span className="text-[10px]">{isExporting && exportingType === 'pdf' ? 'Saving...' : 'PDF'}</span>
+          <span className="text-xs">{isExporting && exportingType === 'pdf' ? 'Saving...' : 'PDF'}</span>
         </button>
-        <button onClick={() => !isExporting && handleExportDocx()} disabled={isExporting} className="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg hover:bg-muted transition-colors">
+        <button onClick={() => !isExporting && handleExportDocx()} disabled={isExporting} className="flex flex-col items-center gap-1 px-4 py-2 rounded-lg hover:bg-muted transition-colors min-h-[48px]">
           <FileType className="h-5 w-5" />
-          <span className="text-[10px]">{isExporting && exportingType === 'docx' ? 'Saving...' : 'DOCX'}</span>
+          <span className="text-xs">{isExporting && exportingType === 'docx' ? 'Saving...' : 'DOCX'}</span>
         </button>
-        <button onClick={handleImportFile} className="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg hover:bg-muted transition-colors">
+        <button onClick={handleImportFile} className="flex flex-col items-center gap-1 px-4 py-2 rounded-lg hover:bg-muted transition-colors min-h-[48px]">
           <Upload className="h-5 w-5" />
-          <span className="text-[10px]">Import</span>
+          <span className="text-xs">Import</span>
         </button>
-        <button onClick={handleReset} className="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg hover:bg-muted transition-colors">
+        <button onClick={handleReset} className="flex flex-col items-center gap-1 px-4 py-2 rounded-lg hover:bg-muted transition-colors min-h-[48px]">
           <RotateCcw className="h-5 w-5" />
-          <span className="text-[10px]">Reset</span>
+          <span className="text-xs">Reset</span>
         </button>
       </div>
 

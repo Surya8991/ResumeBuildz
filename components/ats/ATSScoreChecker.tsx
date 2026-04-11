@@ -302,8 +302,8 @@ export default function ATSScoreChecker() {
 
       <Separator />
 
-      {/* ---- Smart Matching (Accordion) ---- */}
-      <Accordion>
+      {/* ---- Smart Matching (Accordion - open by default) ---- */}
+      <Accordion defaultValue={['smart-matching']}>
         <AccordionItem value="smart-matching">
           <AccordionTrigger className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
             <span className="flex items-center gap-2">
