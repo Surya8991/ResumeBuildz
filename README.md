@@ -40,7 +40,7 @@ A fully client-side, professional resume builder with 20 ATS-optimized templates
 - **10+ Accent Colors** - Plus custom color picker with hex input
 
 ### Import & Export
-- **Import from DOCX, TXT, MD, JSON** - Upload an existing resume and auto-fill the form
+- **Import from DOCX, TXT, HTML, MD** - Upload an existing resume and auto-fill the form
 - **AI-Powered Parsing** - Uses Groq AI (Llama 3.3 70B) for accurate resume parsing with heuristic fallback
 - **Export as PDF** - Browser print for pixel-perfect output (best for ATS)
 - **Export as DOCX** - Microsoft Word format
@@ -112,7 +112,7 @@ This generates a static export in the `out/` folder, ready for deployment.
 5. **Customize appearance** - Adjust font, colors, spacing, and margins
 6. **Add custom sections** - Click "Add Section" for Volunteer Work, Publications, etc.
 7. **Reorder sections** - Click "Reorder Sections" at the bottom of any form
-8. **Import existing resume** - Click "Import Resume" to upload DOCX, TXT, MD, or JSON
+8. **Import existing resume** - Click "Import Resume" to upload DOCX, TXT, HTML, or MD
 9. **Write a cover letter** - Use the Cover Letter tab with optional AI generation
 10. **Check ATS score** - Click "ATS" to analyze compatibility and match job descriptions
 11. **Use AI suggestions** - Click "AI" to get AI-powered content improvements
@@ -172,7 +172,7 @@ resumeforge/
 ├── store/useResumeStore.ts         # Zustand store with persistence
 ├── types/resume.ts                 # TypeScript types, 20 template configs, sample data
 └── lib/
-    ├── importResume.ts             # DOCX/TXT/MD/JSON import + AI parsing
+    ├── importResume.ts             # DOCX/TXT/HTML/MD import + AI parsing
     ├── exportDocx.ts               # DOCX generation
     └── exportHtml.ts               # HTML generation with XSS sanitization
 ```
@@ -190,20 +190,40 @@ resumeforge/
 
 ## Contributing
 
-Contributions are welcome! Here's how:
+Contributions are welcome and appreciated! Whether it's fixing a bug, adding a feature, improving documentation, or suggesting ideas — all contributions help make ResumeForge better for everyone.
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+### How to Contribute
+
+1. **Fork** the repository
+2. **Clone** your fork locally (`git clone https://github.com/your-username/resumeforge.git`)
+3. **Create a feature branch** (`git checkout -b feature/amazing-feature`)
+4. **Make your changes** and test them locally with `npm run dev`
+5. **Commit** your changes (`git commit -m 'Add amazing feature'`)
+6. **Push** to your branch (`git push origin feature/amazing-feature`)
+7. **Open a Pull Request** with a clear description of what you changed and why
+
+### Contribution Guidelines
+
+- Keep PRs focused — one feature or fix per pull request
+- Follow the existing code style (TypeScript, Tailwind CSS)
+- Test your changes locally before submitting
+- Update the README if your change adds new features or modifies behavior
+- Be respectful and constructive in discussions
 
 ### Ideas for Contributions
-- Additional resume templates
-- New export formats
-- Accessibility improvements
-- Translation/i18n support
+
+- New resume templates
+- Additional export formats
+- Accessibility (a11y) improvements
+- Translation / i18n support
 - Performance optimizations
+- Bug fixes and UI polish
+- Mobile responsiveness improvements
+- New AI-powered features
+
+### Reporting Issues
+
+Found a bug or have a suggestion? [Open an issue](https://github.com/Surya8991/resumeforge/issues) with details about the problem or your idea. Include steps to reproduce for bugs.
 
 ## Changelog
 
@@ -216,7 +236,7 @@ Contributions are welcome! Here's how:
 - Custom sections with drag-and-drop reordering
 - Rich text toolbar (bold, italic, bullets, dividers)
 - Step-by-step wizard navigation (Previous/Next with progress dots)
-- Multi-format import (DOCX, TXT, MD, JSON) with AI parsing
+- Multi-format import (DOCX, TXT, HTML, MD) with AI parsing
 - Multi-format export (PDF, DOCX, HTML, JSON)
 - 12 Google Fonts with lazy loading
 - Typography, spacing, and color customization

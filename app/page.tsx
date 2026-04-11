@@ -306,7 +306,7 @@ export default function HomePage() {
                 )}
               </div>
               <div className="w-px h-6 bg-border mx-1" />
-              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleImportFile} title="Import Resume (PDF, DOCX, TXT, JSON)">
+              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleImportFile} title="Import Resume (DOCX, TXT, HTML, MD)">
                 <Upload className="h-4 w-4" />
               </Button>
               <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleReset} title="Reset">
@@ -327,9 +327,9 @@ export default function HomePage() {
       {/* Main content */}
       <div className="flex flex-1 overflow-hidden">
         {/* Desktop Left Panel */}
-        <div className={`hidden md:flex flex-col border-r bg-background transition-all duration-200 ${sidebarCollapsed ? 'w-[52px]' : 'w-[460px]'}`}>
-          {/* Section navigation - sticky */}
-          <div className="flex border-b bg-muted/30 sticky top-0 z-10 shrink-0">
+        <div className={`hidden md:flex flex-col border-r bg-background transition-all duration-200 shrink-0 overflow-hidden ${sidebarCollapsed ? 'w-[52px]' : 'w-[460px]'}`}>
+          {/* Section header - sticky */}
+          <div className="flex items-center border-b bg-muted/30 sticky top-0 z-10 shrink-0">
             {sidebarCollapsed ? (
               <div className="flex flex-col gap-0.5 p-1.5 flex-1">
                 {FORM_SECTIONS.map((section) => (
@@ -348,43 +348,47 @@ export default function HomePage() {
                 ))}
               </div>
             ) : (
-              <div className="flex-1 overflow-x-auto p-2 scrollbar-none" style={{ scrollbarWidth: 'none' }}>
-                <div className="flex gap-1 min-w-max">
-                  {FORM_SECTIONS.map((section) => (
-                    <button
-                      key={section.id}
-                      onClick={() => setActiveSection(section.id)}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
-                        activeSection === section.id
-                          ? 'bg-primary text-primary-foreground shadow-sm'
-                          : 'bg-background hover:bg-muted text-muted-foreground hover:text-foreground border'
-                      }`}
-                    >
-                      <section.icon className="h-3 w-3 shrink-0" />
-                      {section.label}
-                    </button>
-                  ))}
-                  <button
-                    onClick={handleAddCustomSection}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap border border-dashed border-primary/40 text-primary hover:bg-primary/5 transition-all"
-                  >
-                    <Plus className="h-3 w-3" />
-                    Add Section
-                  </button>
-                </div>
+              <div className="flex-1 flex items-center gap-3 px-4 py-2.5">
+                {(() => {
+                  const idx = FORM_SECTIONS.findIndex(s => s.id === activeSection);
+                  const current = FORM_SECTIONS[idx];
+                  return (
+                    <>
+                      <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        {current && <current.icon className="h-4 w-4 text-primary" />}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold truncate">{current?.label}</p>
+                        <p className="text-[10px] text-muted-foreground">Step {idx + 1} of {FORM_SECTIONS.length}</p>
+                      </div>
+                      <div className="flex gap-1 shrink-0">
+                        {FORM_SECTIONS.map((s, i) => (
+                          <button
+                            key={s.id}
+                            onClick={() => setActiveSection(s.id)}
+                            className={`h-1.5 rounded-full transition-all ${
+                              i === idx ? 'w-4 bg-primary' : i < idx ? 'w-1.5 bg-primary/40' : 'w-1.5 bg-muted-foreground/20'
+                            }`}
+                            title={s.label}
+                          />
+                        ))}
+                      </div>
+                    </>
+                  );
+                })()}
               </div>
             )}
             <button
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-              className="px-1.5 hover:bg-muted border-l transition-colors shrink-0"
+              className="px-1.5 hover:bg-muted border-l transition-colors shrink-0 self-stretch"
             >
               {sidebarCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
             </button>
           </div>
 
           {!sidebarCollapsed && (
-            <ScrollArea className="flex-1">
-              <div className="p-4">
+            <ScrollArea className="flex-1 min-h-0">
+              <div className="p-4 pb-8">
                 {showReorder ? (
                   <div>
                     <SectionReorder />
@@ -428,12 +432,20 @@ export default function HomePage() {
                     </div>
 
                     <Separator className="my-3" />
-                    <button
-                      onClick={() => setShowReorder(true)}
-                      className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1.5 transition-colors"
-                    >
-                      <Layers className="h-3.5 w-3.5" /> Reorder Sections
-                    </button>
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => setShowReorder(true)}
+                        className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1.5 transition-colors"
+                      >
+                        <Layers className="h-3.5 w-3.5" /> Reorder Sections
+                      </button>
+                      <button
+                        onClick={handleAddCustomSection}
+                        className="text-xs text-primary hover:text-primary/80 flex items-center gap-1.5 transition-colors"
+                      >
+                        <Plus className="h-3.5 w-3.5" /> Add Section
+                      </button>
+                    </div>
                   </>
                 )}
               </div>
@@ -536,7 +548,7 @@ export default function HomePage() {
         </div>
 
         {/* Desktop Right Panel - Preview */}
-        <div className={`hidden md:flex flex-col flex-1 ${isFullPreview ? 'absolute inset-0 z-50 bg-background' : ''}`}>
+        <div className={`hidden md:flex flex-col flex-1 min-w-0 ${isFullPreview ? 'absolute inset-0 z-50 bg-background' : ''}`}>
           {/* Preview toolbar */}
           <div className="h-10 border-b flex items-center justify-between px-3 shrink-0 bg-muted/30">
             <div className="flex items-center gap-2">
@@ -576,7 +588,7 @@ export default function HomePage() {
           </div>
 
           <div className="flex flex-1 overflow-hidden">
-            <div className="flex-1 overflow-auto bg-gray-100 dark:bg-gray-900 resume-preview-container">
+            <div className="flex-1 min-w-0 overflow-auto bg-gray-100 dark:bg-gray-900 resume-preview-container">
               <div className="flex justify-center p-4 pb-16">
                 <div
                   className="resume-preview-scaled shadow-xl rounded-sm origin-top"

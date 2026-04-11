@@ -11,6 +11,15 @@ async function extractTextFromDocx(file: File): Promise<string> {
   return result.value;
 }
 
+async function extractTextFromHtml(file: File): Promise<string> {
+  const html = await file.text();
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+  // Remove script and style elements
+  doc.querySelectorAll('script, style, noscript').forEach(el => el.remove());
+  return doc.body?.textContent?.trim() || '';
+}
+
 async function extractTextFromPlain(file: File): Promise<string> {
   return file.text();
 }
@@ -312,21 +321,13 @@ export async function importResumeFromFile(file: File): Promise<ImportResult> {
   if (file.size > MAX_SIZE) return { success: false, error: 'File exceeds 10MB limit.' };
 
   const ext = file.name.split('.').pop()?.toLowerCase() || '';
-  const supported = ['docx', 'doc', 'txt', 'md', 'json'];
-  if (!supported.includes(ext)) return { success: false, error: `Unsupported: .${ext}. Use DOCX, TXT, MD, or JSON.` };
+  const supported = ['docx', 'doc', 'txt', 'html', 'htm', 'md'];
+  if (!supported.includes(ext)) return { success: false, error: `Unsupported: .${ext}. Use DOCX, TXT, HTML, or MD.` };
 
   try {
-    if (ext === 'json') {
-      const text = await file.text();
-      const parsed = JSON.parse(text);
-      if (!parsed?.personalInfo) return { success: false, error: 'Invalid resume JSON.' };
-      if (!parsed.coverLetter) parsed.coverLetter = '';
-      if (!parsed.personalInfo.photo) parsed.personalInfo.photo = '';
-      return { success: true, data: parsed as ResumeData };
-    }
-
     let rawText: string;
     if (ext === 'docx' || ext === 'doc') rawText = await extractTextFromDocx(file);
+    else if (ext === 'html' || ext === 'htm') rawText = await extractTextFromHtml(file);
     else rawText = await extractTextFromPlain(file); // txt and md
 
     if (!rawText.trim()) return { success: false, error: 'No text extracted. File may be empty.' };
@@ -343,4 +344,4 @@ export async function importResumeFromFile(file: File): Promise<ImportResult> {
   }
 }
 
-export const SUPPORTED_IMPORT_FORMATS = '.docx,.doc,.txt,.md,.json';
+export const SUPPORTED_IMPORT_FORMATS = '.docx,.doc,.txt,.html,.htm,.md';

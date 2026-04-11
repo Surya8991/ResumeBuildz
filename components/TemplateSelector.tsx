@@ -40,6 +40,9 @@ export default function TemplateSelector() {
                       width: '210mm',
                       minHeight: '297mm',
                       pointerEvents: 'none',
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
                     }}
                   >
                     <TemplateComponent

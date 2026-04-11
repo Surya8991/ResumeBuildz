@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ResumeForge - ATS-Friendly Resume Generator</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-light: #eff6ff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --bg: #ffffff;
+      --bg-code: #f1f5f9;
+      --bg-section: #f8fafc;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.7;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+    h1 { font-size: 2.2rem; margin-bottom: 0.75rem; }
+    h2 {
+      font-size: 1.5rem;
+      margin: 2.5rem 0 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--primary);
+      color: var(--primary);
+    }
+    h3 { font-size: 1.15rem; margin: 1.5rem 0 0.5rem; color: var(--text); }
+    p { margin-bottom: 0.75rem; }
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .badges { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #fff;
+    }
+    .badge-black { background: #1e293b; }
+    .badge-blue { background: #3178c6; }
+    .badge-cyan { background: #38bdf8; }
+    .badge-red { background: #ef4444; }
+    .badge-purple { background: #8b5cf6; }
+    .tagline {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+    .highlight {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--primary);
+      margin-bottom: 1.5rem;
+      display: block;
+    }
+    ul { padding-left: 1.5rem; margin-bottom: 1rem; }
+    li { margin-bottom: 0.35rem; }
+    li strong { color: var(--text); }
+    code {
+      background: var(--bg-code);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.9em;
+      font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+    }
+    pre {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 1rem 1.25rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 0.75rem 0 1.25rem;
+      font-size: 0.875rem;
+      line-height: 1.6;
+    }
+    pre code { background: none; padding: 0; color: inherit; }
+    .comment { color: #94a3b8; }
+    .tree {
+      background: var(--bg-code);
+      padding: 1rem 1.25rem;
+      border-radius: 8px;
+      font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+      font-size: 0.825rem;
+      line-height: 1.8;
+      overflow-x: auto;
+      margin: 0.75rem 0 1.25rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.75rem 0 1.25rem;
+      font-size: 0.9rem;
+    }
+    th, td {
+      text-align: left;
+      padding: 0.6rem 0.75rem;
+      border: 1px solid var(--border);
+    }
+    th { background: var(--bg-section); font-weight: 600; }
+    tr:nth-child(even) { background: var(--bg-section); }
+    blockquote {
+      border-left: 4px solid var(--primary);
+      padding: 0.75rem 1rem;
+      background: var(--primary-light);
+      border-radius: 0 8px 8px 0;
+      margin: 0.75rem 0 1.25rem;
+      color: var(--text-muted);
+    }
+    blockquote strong { color: var(--text); }
+    .section-card {
+      background: var(--bg-section);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin: 0.75rem 0;
+    }
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+    @media (max-width: 600px) {
+      .two-col { grid-template-columns: 1fr; }
+      body { padding: 1rem; }
+      h1 { font-size: 1.6rem; }
+    }
+    .footer {
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    ol li { margin-bottom: 0.35rem; }
+  </style>
+</head>
+<body>
+
+  <h1>ResumeForge</h1>
+  <div class="badges">
+    <span class="badge badge-black">Next.js 16</span>
+    <span class="badge badge-blue">TypeScript 5</span>
+    <span class="badge badge-cyan">Tailwind 4</span>
+    <span class="badge badge-red">Non-Commercial</span>
+    <span class="badge badge-purple">20 Templates</span>
+  </div>
+
+  <p class="tagline">A fully client-side, professional resume builder with 20 ATS-optimized templates, AI-powered writing assistant, cover letter builder, guided onboarding, and multi-format import/export. Built with Next.js 16, Tailwind CSS, and shadcn/ui.</p>
+  <span class="highlight">No sign-up. No server. No limits. 100% free.</span>
+
+  <h2>Features</h2>
+
+  <h3>Resume Building</h3>
+  <ul>
+    <li><strong>20 ATS-Friendly Templates</strong> &mdash; Classic, Modern, Minimalist, Professional, Executive, Creative, Compact, Tech, Elegant, Bold, Academic, Corporate, Nordic, Gradient, Timeline, Sidebar, Infographic, Federal, Startup, Monochrome</li>
+    <li><strong>Live Preview</strong> &mdash; Real-time rendering as you type with zoom controls (default 80%)</li>
+    <li><strong>9+ Resume Sections</strong> &mdash; Personal Info, Summary, Experience, Education, Skills, Projects, Certifications, Languages + unlimited Custom Sections</li>
+    <li><strong>Photo/Avatar Upload</strong> &mdash; Optional profile photo with circular display on templates (max 2MB)</li>
+    <li><strong>Cover Letter Builder</strong> &mdash; Write or AI-generate cover letters with job title and company context</li>
+    <li><strong>Custom Sections</strong> &mdash; Add unlimited sections (Volunteer Work, Publications, Awards, etc.)</li>
+    <li><strong>Drag-and-Drop Section Reordering</strong> &mdash; Reorder how sections appear on your resume</li>
+    <li><strong>Rich Text Toolbar</strong> &mdash; Bold, italic, bullet points, and dividers in text fields (Ctrl+B/I)</li>
+    <li><strong>Guided Onboarding Tour</strong> &mdash; 11-step interactive popup guide for new users</li>
+    <li><strong>Form Validation</strong> &mdash; Required field indicators, email/phone/URL validation with error messages</li>
+    <li><strong>Sample Resume</strong> &mdash; Pre-loaded sample data so new users see a working example immediately</li>
+    <li><strong>Step-by-Step Wizard</strong> &mdash; Previous/Next navigation between sections with progress dots</li>
+    <li><strong>Keyboard Shortcuts</strong> &mdash; Ctrl+P for PDF export, Ctrl+S for JSON save</li>
+    <li><strong>Auto-Save</strong> &mdash; Data persists in localStorage automatically</li>
+    <li><strong>Dark/Light Mode</strong> &mdash; Theme toggle for comfortable editing</li>
+  </ul>
+
+  <h3>Customization</h3>
+  <ul>
+    <li><strong>Typography</strong> &mdash; 12 Google Fonts (Inter, Roboto, Open Sans, Lato, Merriweather, Playfair Display, etc.)</li>
+    <li><strong>Font Size &amp; Line Height</strong> &mdash; Adjustable with sliders</li>
+    <li><strong>Section Spacing &amp; Page Margins</strong> &mdash; Fine-tune layout density</li>
+    <li><strong>Quick Presets</strong> &mdash; Compact, Default, Comfortable, Roomy</li>
+    <li><strong>10+ Accent Colors</strong> &mdash; Plus custom color picker with hex input</li>
+  </ul>
+
+  <h3>Import &amp; Export</h3>
+  <ul>
+    <li><strong>Import from DOCX, TXT, HTML, MD</strong> &mdash; Upload an existing resume and auto-fill the form</li>
+    <li><strong>AI-Powered Parsing</strong> &mdash; Uses Groq AI (Llama 3.3 70B) for accurate resume parsing with heuristic fallback</li>
+    <li><strong>Export as PDF</strong> &mdash; Browser print for pixel-perfect output (best for ATS)</li>
+    <li><strong>Export as DOCX</strong> &mdash; Microsoft Word format</li>
+    <li><strong>Export as HTML</strong> &mdash; Web-ready format for online hosting</li>
+    <li><strong>JSON Import/Export</strong> &mdash; Backup and transfer resume data across devices</li>
+  </ul>
+
+  <h3>ATS Optimization</h3>
+  <ul>
+    <li><strong>ATS Compatibility Score</strong> &mdash; Analyzes resume with 7 checks and actionable feedback</li>
+    <li><strong>Job Description Matcher</strong> &mdash; Paste a job listing to see keyword match percentage</li>
+    <li><strong>Missing/Matched Keywords</strong> &mdash; Color-coded breakdown (red = missing, green = matched)</li>
+    <li><strong>AI Writing Assistant</strong> &mdash; Generate professional summaries, bullet points, skills, and custom prompts</li>
+  </ul>
+
+  <h2>Tech Stack</h2>
+  <div class="section-card">
+    <div class="two-col">
+      <div><strong>Framework:</strong> Next.js 16 (App Router, Turbopack)</div>
+      <div><strong>Styling:</strong> Tailwind CSS + shadcn/ui</div>
+      <div><strong>State:</strong> Zustand with localStorage persistence</div>
+      <div><strong>DOCX Import:</strong> mammoth (client-side)</div>
+      <div><strong>Drag &amp; Drop:</strong> @dnd-kit/core + sortable</div>
+      <div><strong>PDF Export:</strong> react-to-print</div>
+      <div><strong>DOCX Export:</strong> docx + file-saver</div>
+      <div><strong>AI:</strong> Groq API (Llama 3.3 70B) &mdash; optional, free</div>
+      <div><strong>Icons:</strong> Lucide React</div>
+    </div>
+  </div>
+
+  <h2>Getting Started</h2>
+
+  <h3>Prerequisites</h3>
+  <ul>
+    <li>Node.js 18+</li>
+    <li>npm</li>
+  </ul>
+
+  <h3>Installation</h3>
+  <pre><code><span class="comment"># Clone the repository</span>
+git clone https://github.com/Surya8991/resumeforge.git
+cd resumeforge
+
+<span class="comment"># Install dependencies</span>
+npm install
+
+<span class="comment"># Start the development server</span>
+npm run dev</code></pre>
+  <p>Open <a href="http://localhost:3000">http://localhost:3000</a> in your browser.</p>
+
+  <h3>Build for Production</h3>
+  <pre><code>npm run build</code></pre>
+  <p>This generates a static export in the <code>out/</code> folder, ready for deployment.</p>
+
+  <h2>How to Use</h2>
+  <ol>
+    <li><strong>Follow the onboarding tour</strong> &mdash; First-time users see an 11-step guided popup (restart from Help menu)</li>
+    <li><strong>Edit the sample resume</strong> &mdash; Replace the pre-loaded sample data with your own details</li>
+    <li><strong>Upload a photo</strong> &mdash; Add an optional profile photo in Personal Info</li>
+    <li><strong>Choose a template</strong> &mdash; Click "Style" to browse 20 designs with live previews</li>
+    <li><strong>Customize appearance</strong> &mdash; Adjust font, colors, spacing, and margins</li>
+    <li><strong>Add custom sections</strong> &mdash; Click "Add Section" for Volunteer Work, Publications, etc.</li>
+    <li><strong>Reorder sections</strong> &mdash; Click "Reorder Sections" at the bottom of any form</li>
+    <li><strong>Import existing resume</strong> &mdash; Click "Import Resume" to upload DOCX, TXT, HTML, or MD</li>
+    <li><strong>Write a cover letter</strong> &mdash; Use the Cover Letter tab with optional AI generation</li>
+    <li><strong>Check ATS score</strong> &mdash; Click "ATS" to analyze compatibility and match job descriptions</li>
+    <li><strong>Use AI suggestions</strong> &mdash; Click "AI" to get AI-powered content improvements</li>
+    <li><strong>Download</strong> &mdash; Export as PDF, DOCX, HTML, or JSON</li>
+  </ol>
+
+  <h3>AI Features (Bring Your Own Key)</h3>
+  <p><strong>No API key is included with this app.</strong> AI features require your own free Groq API key:</p>
+  <ol>
+    <li>Visit <a href="https://console.groq.com/keys">console.groq.com/keys</a> and sign up (free)</li>
+    <li>Click "Create API Key" and copy it</li>
+    <li>In the app, go to AI tab &gt; paste your key</li>
+    <li>Your key is stored <strong>only in your browser localStorage</strong> &mdash; it is never sent to any server except Groq's API</li>
+  </ol>
+  <blockquote>
+    <strong>Note:</strong> The app works fully without an API key. AI features (writing assistant, cover letter generator, smart import parsing) are optional enhancements. All core resume building, templates, ATS scoring, and export features work without any API key.
+  </blockquote>
+
+  <h2>Deployment</h2>
+
+  <h3>GitHub Pages</h3>
+  <ol>
+    <li>Push to GitHub</li>
+    <li>Go to Settings &gt; Pages &gt; Source: GitHub Actions</li>
+    <li>Deploy the <code>out/</code> folder</li>
+  </ol>
+
+  <h3>Vercel</h3>
+  <pre><code>npx vercel</code></pre>
+
+  <h3>Any Static Host</h3>
+  <p>Upload the <code>out/</code> folder to Netlify, Cloudflare Pages, or any static hosting provider.</p>
+
+  <h2>Project Structure</h2>
+  <div class="tree">
+resumeforge/<br>
+&#9500;&#9472;&#9472; app/<br>
+&#9474;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; layout.tsx&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Root layout with Google Fonts preconnect</span><br>
+&#9474;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; page.tsx&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Main application (tabs, sidebar, preview)</span><br>
+&#9474;&nbsp;&nbsp;&nbsp;&#9492;&#9472;&#9472; globals.css&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Global + print + page-break styles</span><br>
+&#9500;&#9472;&#9472; components/<br>
+&#9474;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; ui/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># shadcn/ui components + RichTextarea</span><br>
+&#9474;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; forms/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># 9 form components + CustomSectionForm</span><br>
+&#9474;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; templates/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># 20 resume templates + TemplateWrapper</span><br>
+&#9474;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; preview/ResumePreview.tsx&nbsp;&nbsp;<span class="comment"># Live preview with style overrides</span><br>
+&#9474;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; ats/<br>
+&#9474;&nbsp;&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; ATSScoreChecker.tsx&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># ATS score + JD keyword matcher</span><br>
+&#9474;&nbsp;&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&nbsp;&#9492;&#9472;&#9472; AISuggestions.tsx&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Groq AI writing assistant</span><br>
+&#9474;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; TemplateSelector.tsx&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Style panel (templates, fonts, colors)</span><br>
+&#9474;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; SectionReorder.tsx&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Drag-and-drop section reordering</span><br>
+&#9474;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; OnboardingGuide.tsx&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># 11-step popup onboarding tour</span><br>
+&#9474;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; FontLoader.tsx&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Dynamic Google Font loader</span><br>
+&#9474;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; ErrorBoundary.tsx&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Error recovery wrapper</span><br>
+&#9474;&nbsp;&nbsp;&nbsp;&#9492;&#9472;&#9472; HelpDialog.tsx&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Help guide with "Restart Tour" button</span><br>
+&#9500;&#9472;&#9472; store/useResumeStore.ts&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Zustand store with persistence</span><br>
+&#9500;&#9472;&#9472; types/resume.ts&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># TypeScript types, 20 template configs</span><br>
+&#9492;&#9472;&#9472; lib/<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; importResume.ts&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># DOCX/TXT/HTML/MD import + AI parsing</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; exportDocx.ts&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># DOCX generation</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&#9492;&#9472;&#9472; exportHtml.ts&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># HTML generation with XSS sanitization</span>
+  </div>
+
+  <h2>Security</h2>
+  <ul>
+    <li>No API keys stored in source code</li>
+    <li>Groq API key stored only in browser localStorage (user's own key)</li>
+    <li>HTML export sanitizes all user data and validates colors</li>
+    <li>File imports limited to 10MB with type validation</li>
+    <li>CSS injection prevented via font family whitelist</li>
+    <li>All numeric style values clamped to safe ranges</li>
+    <li>JSON import validates structure before loading</li>
+    <li>Photo uploads limited to 2MB with image type validation</li>
+  </ul>
+
+  <h2>Contributing</h2>
+  <p>Contributions are welcome and appreciated! Whether it's fixing a bug, adding a feature, improving documentation, or suggesting ideas &mdash; all contributions help make ResumeForge better for everyone.</p>
+
+  <h3>How to Contribute</h3>
+  <ol>
+    <li><strong>Fork</strong> the repository</li>
+    <li><strong>Clone</strong> your fork locally (<code>git clone https://github.com/your-username/resumeforge.git</code>)</li>
+    <li><strong>Create a feature branch</strong> (<code>git checkout -b feature/amazing-feature</code>)</li>
+    <li><strong>Make your changes</strong> and test them locally with <code>npm run dev</code></li>
+    <li><strong>Commit</strong> your changes (<code>git commit -m 'Add amazing feature'</code>)</li>
+    <li><strong>Push</strong> to your branch (<code>git push origin feature/amazing-feature</code>)</li>
+    <li><strong>Open a Pull Request</strong> with a clear description of what you changed and why</li>
+  </ol>
+
+  <h3>Contribution Guidelines</h3>
+  <ul>
+    <li>Keep PRs focused &mdash; one feature or fix per pull request</li>
+    <li>Follow the existing code style (TypeScript, Tailwind CSS)</li>
+    <li>Test your changes locally before submitting</li>
+    <li>Update the README if your change adds new features or modifies behavior</li>
+    <li>Be respectful and constructive in discussions</li>
+  </ul>
+
+  <h3>Ideas for Contributions</h3>
+  <ul>
+    <li>New resume templates</li>
+    <li>Additional export formats</li>
+    <li>Accessibility (a11y) improvements</li>
+    <li>Translation / i18n support</li>
+    <li>Performance optimizations</li>
+    <li>Bug fixes and UI polish</li>
+    <li>Mobile responsiveness improvements</li>
+    <li>New AI-powered features</li>
+  </ul>
+
+  <h3>Reporting Issues</h3>
+  <p>Found a bug or have a suggestion? <a href="https://github.com/Surya8991/resumeforge/issues">Open an issue</a> with details about the problem or your idea. Include steps to reproduce for bugs.</p>
+
+  <h2>Troubleshooting</h2>
+
+  <h3>Common Issues &amp; Fixes</h3>
+  <table>
+    <thead>
+      <tr><th>Issue</th><th>Cause</th><th>Fix</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Preview is blank</strong></td><td>Old cached data</td><td>DevTools (F12) &rarr; Console &rarr; <code>localStorage.clear(); location.reload()</code></td></tr>
+      <tr><td><strong>Old data after update</strong></td><td>localStorage persists</td><td>Clear site data in browser settings</td></tr>
+      <tr><td><strong>Fonts not loading</strong></td><td>CDN blocked or slow</td><td>Check internet connection; lazy loading fetches only selected font</td></tr>
+      <tr><td><strong>PDF looks different</strong></td><td>Browser print styles</td><td>Use Chrome; set margins to "None" and enable "Background graphics"</td></tr>
+      <tr><td><strong>AI not working</strong></td><td>No Groq API key</td><td>Go to AI tab &rarr; enter key from <a href="https://console.groq.com/keys">console.groq.com/keys</a></td></tr>
+      <tr><td><strong>Import not parsing</strong></td><td>Complex formatting</td><td>Use DOCX or TXT; enable AI parsing with a Groq key</td></tr>
+      <tr><td><strong>Dark mode on templates</strong></td><td>Templates use white bg</td><td>Templates are always white for printing; dark mode affects app UI only</td></tr>
+      <tr><td><strong>App crashes</strong></td><td>JavaScript error</td><td>Click "Try Again" or "Reset &amp; Reload" to clear data</td></tr>
+      <tr><td><strong><code>npm run dev</code> fails</strong></td><td>Missing deps</td><td>Run <code>npm install</code>; requires Node.js 18+</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Reset Everything</h3>
+  <pre><code><span class="comment"># In browser console (F12 &rarr; Console)</span>
+localStorage.clear(); location.reload();</code></pre>
+  <p>Or click the <strong>Reset</strong> button in the app header to clear resume data only.</p>
+
+  <h2>Changelog</h2>
+  <h3>v1.0.0</h3>
+  <ul>
+    <li>20 ATS-friendly resume templates</li>
+    <li>AI Writing Assistant (Groq-powered, BYOK)</li>
+    <li>Cover Letter Builder with AI generation</li>
+    <li>ATS Score Checker with Job Description keyword matcher</li>
+    <li>Photo/avatar upload support</li>
+    <li>Custom sections with drag-and-drop reordering</li>
+    <li>Rich text toolbar (bold, italic, bullets, dividers)</li>
+    <li>Step-by-step wizard navigation with progress dots</li>
+    <li>Multi-format import (DOCX, TXT, HTML, MD) with AI parsing</li>
+    <li>Multi-format export (PDF, DOCX, HTML, JSON)</li>
+    <li>12 Google Fonts with lazy loading</li>
+    <li>Typography, spacing, and color customization</li>
+    <li>11-step interactive onboarding guide</li>
+    <li>Keyboard shortcuts (Ctrl+P, Ctrl+S, Ctrl+B, Ctrl+I)</li>
+    <li>SEO: Open Graph, Twitter Cards, JSON-LD structured data</li>
+    <li>PWA manifest for installable web app</li>
+    <li>Dark/light mode</li>
+    <li>Static export for GitHub Pages / Vercel / Netlify deployment</li>
+  </ul>
+
+  <div class="footer">
+    <p><strong>Designed by Surya L</strong> &mdash; <a href="https://github.com/Surya8991">GitHub</a></p>
+    <p style="margin-top: 0.5rem;"><strong>Non-Commercial Use Only</strong> &mdash; See <a href="LICENSE">LICENSE</a> for full terms.</p>
+    <p style="margin-top: 0.25rem; font-size: 0.8rem;">For commercial licensing: <a href="mailto:Suryaraj8147@gmail.com">Suryaraj8147@gmail.com</a></p>
+  </div>
+
+</body>
+</html>

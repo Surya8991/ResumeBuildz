@@ -12,7 +12,7 @@ function sanitizeColor(color: string): string {
   return /^#[0-9A-Fa-f]{3,8}$/.test(color) ? color : '#2563eb';
 }
 
-export function generateResumeHtml(data: ResumeData, primaryColor: string): string {
+function generateResumeHtml(data: ResumeData, primaryColor: string): string {
   primaryColor = sanitizeColor(primaryColor);
   const { personalInfo, summary, experience, education, skills, projects, certifications, languages } = data;
 
