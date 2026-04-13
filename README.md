@@ -3,13 +3,13 @@
 ![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38bdf8?logo=tailwindcss)
-![License](https://img.shields.io/badge/License-Non--Commercial-red)
+![License](https://img.shields.io/badge/License-Source--Available-orange)
 ![Templates](https://img.shields.io/badge/Templates-20-purple)
 
 
 A fully client-side, professional resume builder with 20 ATS-optimized templates, AI-powered writing assistant, cover letter builder, guided onboarding, and multi-format import/export. Built with Next.js 16, Tailwind CSS, and shadcn/ui.
 
-**No sign-up. No server. No limits. 100% free.**
+**Free to start. No sign-up required. Your data stays in your browser.**
 
 ## Features
 

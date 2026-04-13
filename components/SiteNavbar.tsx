@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { FileText, Menu, X, ArrowRight, LogOut, User } from 'lucide-react';
+import { FileText, Menu, X, ArrowRight, LogOut, User, ChevronDown, Settings, KeyRound, Crown } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 
 const NAV_LINKS = [
@@ -18,7 +18,19 @@ const NAV_LINKS = [
 
 export default function SiteNavbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { user, profile, signOut, loading } = useAuth();
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
+  const { user, profile, signOut, loading, isPro } = useAuth();
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
+        setProfileOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <nav className="bg-gray-900 border-b border-gray-800 sticky top-0 z-50">
@@ -52,22 +64,73 @@ export default function SiteNavbar() {
             {!loading && (
               user ? (
                 <>
-                  <span className="hidden lg:inline text-sm text-gray-400 truncate max-w-[140px]">
-                    {profile?.full_name || user.email}
-                  </span>
                   <Link
                     href="/builder"
                     className="hidden sm:flex items-center gap-1.5 px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 transition-colors"
                   >
                     Build Resume <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
-                  <button
-                    onClick={() => signOut()}
-                    className="hidden sm:flex items-center gap-1.5 px-3 py-2 text-gray-400 hover:text-white text-sm rounded-lg hover:bg-gray-800 transition-colors"
-                    title="Sign out"
-                  >
-                    <LogOut className="h-3.5 w-3.5" />
-                  </button>
+                  {/* Profile dropdown */}
+                  <div className="relative hidden sm:block" ref={profileRef}>
+                    <button
+                      onClick={() => setProfileOpen(!profileOpen)}
+                      className="flex items-center gap-1.5 px-2.5 py-1.5 text-gray-300 hover:text-white text-sm rounded-lg hover:bg-gray-800 transition-colors"
+                    >
+                      <div className="h-7 w-7 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold">
+                        {(profile?.full_name?.[0] || user.email?.[0] || 'U').toUpperCase()}
+                      </div>
+                      <ChevronDown className={`h-3 w-3 transition-transform ${profileOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                    {profileOpen && (
+                      <>
+                        <div className="fixed inset-0 z-40" onClick={() => setProfileOpen(false)} />
+                        <div className="absolute right-0 top-full mt-2 z-50 bg-gray-800 border border-gray-700 rounded-xl shadow-xl py-2 w-56 animate-in fade-in slide-in-from-top-1 duration-150">
+                          <div className="px-4 py-2 border-b border-gray-700">
+                            <p className="text-sm font-medium text-white truncate">{profile?.full_name || 'User'}</p>
+                            <p className="text-xs text-gray-400 truncate">{user.email}</p>
+                            {isPro() && (
+                              <span className="inline-flex items-center gap-1 mt-1 text-[10px] font-bold text-amber-400">
+                                <Crown className="h-3 w-3" /> PRO
+                              </span>
+                            )}
+                          </div>
+                          <div className="py-1">
+                            <Link
+                              href="/builder"
+                              onClick={() => setProfileOpen(false)}
+                              className="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
+                            >
+                              <Settings className="h-3.5 w-3.5" /> Account Settings
+                            </Link>
+                            <Link
+                              href="/forgot-password"
+                              onClick={() => setProfileOpen(false)}
+                              className="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
+                            >
+                              <KeyRound className="h-3.5 w-3.5" /> Reset Password
+                            </Link>
+                            {!isPro() && (
+                              <Link
+                                href="/pricing"
+                                onClick={() => setProfileOpen(false)}
+                                className="flex items-center gap-2.5 px-4 py-2 text-sm text-amber-400 hover:text-amber-300 hover:bg-gray-700 transition-colors"
+                              >
+                                <Crown className="h-3.5 w-3.5" /> Upgrade to Pro
+                              </Link>
+                            )}
+                          </div>
+                          <div className="border-t border-gray-700 pt-1">
+                            <button
+                              onClick={() => { signOut(); setProfileOpen(false); }}
+                              className="flex items-center gap-2.5 px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-gray-700 transition-colors w-full"
+                            >
+                              <LogOut className="h-3.5 w-3.5" /> Sign Out
+                            </button>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
                 </>
               ) : (
                 <>
@@ -89,6 +152,8 @@ export default function SiteNavbar() {
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
               className="md:hidden p-2 text-gray-300 hover:text-white"
+              aria-expanded={mobileOpen}
+              aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
             >
               {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>

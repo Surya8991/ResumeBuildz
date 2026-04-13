@@ -16,7 +16,7 @@ const siteUrl = "https://resume-forge-orcin.vercel.app";
 
 export const metadata: Metadata = {
   title: "ResumeForge by Surya L - Free ATS-Friendly Resume Generator",
-  description: "Create professional, ATS-optimized resumes with 20 templates, AI writing assistant, cover letter builder, and JD keyword matcher. 100% free, no sign-up required. Built by Surya L.",
+  description: "Create professional, ATS-optimized resumes with 20 templates, AI writing assistant, cover letter builder, and JD keyword matcher. Free to start, no sign-up required. Built by Surya L.",
   keywords: [
     "resume builder", "resume generator", "ATS resume", "ATS-friendly resume",
     "free resume builder", "resume maker", "CV builder", "cover letter generator",
@@ -36,10 +36,10 @@ export const metadata: Metadata = {
     url: siteUrl,
     siteName: "ResumeForge",
     title: "ResumeForge - Free ATS Resume Builder with 20 Templates & AI",
-    description: "Build professional resumes in minutes. 20 ATS-optimized templates, AI writing assistant, cover letter builder, JD keyword matcher. No sign-up, 100% free.",
+    description: "Build professional resumes in minutes. 20 ATS-optimized templates, AI writing assistant, cover letter builder, JD keyword matcher. Free to start, no sign-up required.",
     images: [
       {
-        url: `${siteUrl}/og-image.svg`,
+        url: `${siteUrl}/og-image.png`,
         width: 1200,
         height: 630,
         alt: "ResumeForge - Free ATS-Friendly Resume Generator",
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "ResumeForge - Free ATS Resume Builder",
     description: "20 templates, AI writing assistant, cover letter builder. No sign-up required.",
-    images: [`${siteUrl}/og-image.svg`],
+    images: [`${siteUrl}/og-image.png`],
     creator: "@surya_l",
   },
   icons: {

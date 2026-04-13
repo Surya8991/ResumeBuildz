@@ -2,10 +2,14 @@ import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
+const ALLOWED_REDIRECTS = ['/builder', '/pricing', '/'];
+
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
-  const next = searchParams.get('next') ?? '/builder';
+  const rawNext = searchParams.get('next') ?? '/builder';
+  // Only allow internal paths — prevent open redirect
+  const next = ALLOWED_REDIRECTS.includes(rawNext) ? rawNext : '/builder';
 
   if (code) {
     const cookieStore = await cookies();

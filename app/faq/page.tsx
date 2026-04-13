@@ -8,11 +8,11 @@ import SiteFooter from '@/components/SiteFooter';
 const faqItems = [
   {
     question: 'Is ResumeForge free?',
-    answer: 'Yes, 100% free. There are no hidden fees, no "premium" tier, and no paywalls. All 20 templates, the ATS scoring tool, AI writing help, and every export format (PDF, DOCX, HTML) are available to everyone at zero cost.',
+    answer: 'The free tier includes all 20 templates, 12 ATS tools, DOCX and HTML export, and job description matching -- no sign-up required. AI rewrites and PDF exports have daily limits on the free plan. Upgrade to Pro for unlimited access.',
   },
   {
     question: 'Do I need to create an account?',
-    answer: 'No. Just open the app and start typing. No email, no password, no account needed. Your data stays in your browser\'s local storage.',
+    answer: 'No account is needed to start building. Just open the builder and go. Creating a free account is optional and lets you access Pro features when available.',
   },
   {
     question: 'Where is my data stored?',
@@ -161,10 +161,10 @@ export default function FAQPage() {
             mainEntity: [
               {
                 "@type": "Question",
-                name: "Is ResumeForge completely free?",
+                name: "Is ResumeForge free?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "Yes. ResumeForge is 100% free with no sign-up, no credit card, and no hidden fees. All 20 templates, ATS checker, and export features are free forever.",
+                  text: "The free tier includes all 20 templates, 12 ATS tools, DOCX/HTML export, and job description matching. AI rewrites and PDF exports have daily limits. Upgrade to Pro for unlimited access.",
                 },
               },
               {
@@ -180,7 +180,7 @@ export default function FAQPage() {
                 name: "Do I need to create an account?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "No account is needed. Open the builder and start immediately. No email, no password, no credit card required.",
+                  text: "No account is needed to start building. Creating an account is optional and lets you access Pro features when available.",
                 },
               },
               {

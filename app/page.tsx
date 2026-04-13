@@ -21,7 +21,7 @@ const FEATURES = [
   { icon: Sparkles, title: 'AI Writing Help', desc: 'Stuck on bullet points? Our Groq-powered AI rewrites weak descriptions into results-driven statements in seconds.' },
   { icon: BarChart3, title: 'ATS Score Checker', desc: '12 analysis tools scan your resume for keyword gaps, formatting issues, and readability -- just like a real ATS would.' },
   { icon: Shield, title: 'Privacy First', desc: 'Your resume data never leaves your browser. No servers, no tracking, no analytics. You own your data completely.' },
-  { icon: UserX, title: 'No Sign-up Needed', desc: 'Open the app and start building. No account, no email, no credit card. Just your resume, ready in minutes.' },
+  { icon: UserX, title: 'No Sign-up Needed', desc: 'Start building immediately -- no account required. Sign in optionally to unlock Pro features.' },
   { icon: ExternalLink, title: 'Open Source', desc: 'Every line of code is on GitHub. Inspect it, fork it, self-host it, or contribute new templates.' },
 ];
 
@@ -71,7 +71,7 @@ export default function HomePage() {
                 Build ATS-Friendly Resumes in Minutes
               </h1>
               <p className="text-lg text-gray-300 mb-8 max-w-lg animate-fade-in-up delay-100">
-                75% of resumes get rejected by ATS before a human sees them. ResumeForge gives you 20 templates, AI writing help, and 12 ATS checks -- all free, no sign-up needed.
+                75% of resumes get rejected by ATS before a human sees them. ResumeForge gives you 20 templates, AI writing help, and 12 ATS checks -- free to start, no sign-up needed.
               </p>
               <div className="flex items-center justify-center gap-6 mb-6 animate-fade-in-up delay-200">
                 <div className="flex items-center gap-2">
@@ -113,10 +113,10 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center text-white">
             {[
-              { num: '20+', label: 'Templates' },
+              { num: '20', label: 'Templates' },
               { num: '201', label: 'Roles' },
               { num: '12', label: 'ATS Tools' },
-              { num: '100%', label: 'Free' },
+              { num: 'Free', label: 'To Start' },
             ].map((s, i) => (
               <div key={s.label} className={`animate-fade-in-up delay-${(i + 1) * 100}`}>
                 <div className="text-2xl md:text-3xl font-bold">{s.num}</div>
