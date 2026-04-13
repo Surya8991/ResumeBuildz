@@ -28,8 +28,8 @@ export async function proxy(request: NextRequest) {
 
     // Refresh auth session (keeps cookies alive)
     await supabase.auth.getUser();
-  } catch {
-    // If Supabase fails, allow the request through
+  } catch (error) {
+    console.error('[proxy] Auth refresh failed:', error);
   }
 
   return supabaseResponse;

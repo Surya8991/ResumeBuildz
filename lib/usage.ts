@@ -25,7 +25,6 @@ function readRecord(feature: GatedFeature): UsageRecord {
     const raw = localStorage.getItem(STORAGE_KEYS[feature]);
     if (!raw) return { count: 0, date: today() };
     const parsed: UsageRecord = JSON.parse(raw);
-    // Reset if it's a new day
     if (parsed.date !== today()) return { count: 0, date: today() };
     return parsed;
   } catch {
@@ -58,7 +57,8 @@ export function incrementUsage(feature: GatedFeature): boolean {
   return true;
 }
 
-/** Check if the feature can be used without incrementing. */
-export function canUse(feature: GatedFeature): boolean {
+/** Check if the feature can be used. Pro users always bypass limits. */
+export function canUse(feature: GatedFeature, isPro = false): boolean {
+  if (isPro) return true;
   return getUsage(feature).remaining > 0;
 }

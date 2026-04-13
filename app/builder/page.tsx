@@ -29,7 +29,7 @@ import AISuggestions from '@/components/ats/AISuggestions';
 import UpgradeModal from '@/components/UpgradeModal';
 import { getUsage, incrementUsage, canUse } from '@/lib/usage';
 import { useToast } from '@/components/Toast';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuthContext as useAuth } from '@/components/Providers';
 import CustomSectionForm from '@/components/forms/CustomSectionForm';
 import CoverLetterForm from '@/components/forms/CoverLetterForm';
 import { Button } from '@/components/ui/button';
@@ -189,11 +189,14 @@ export default function HomePage() {
       const lastVisit = localStorage.getItem('resumeforge-last-visit');
       const hasData = localStorage.getItem('resumeforge-storage');
       if (lastVisit && hasData) {
-        const elapsed = Date.now() - parseInt(lastVisit, 10);
-        if (elapsed > 60 * 60 * 1000) { // more than 1 hour
-          const date = new Date(parseInt(lastVisit, 10));
-          setLastEditTime(date.toLocaleString());
-          setShowWelcomeBack(true);
+        const timestamp = parseInt(lastVisit, 10);
+        if (!isNaN(timestamp)) {
+          const elapsed = Date.now() - timestamp;
+          if (elapsed > 60 * 60 * 1000) { // more than 1 hour
+            const date = new Date(timestamp);
+            setLastEditTime(date.toLocaleString());
+            setShowWelcomeBack(true);
+          }
         }
       } else if (!lastVisit) {
         // First-time visitor
@@ -294,7 +297,7 @@ export default function HomePage() {
   };
 
   const handleExportPdf = () => {
-    if (!canUse('pdf')) {
+    if (!canUse('pdf', isPro())) {
       setShowUpgradeModal(true);
       return;
     }

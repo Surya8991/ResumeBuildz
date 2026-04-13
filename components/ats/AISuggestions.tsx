@@ -11,6 +11,7 @@ import { HelpTip } from '@/components/ui/help-tip';
 import { getUsage, incrementUsage, canUse } from '@/lib/usage';
 import UpgradeModal from '@/components/UpgradeModal';
 import { useToast } from '@/components/Toast';
+import { useAuthContext } from '@/components/Providers';
 
 const GROQ_MODEL = 'llama-3.3-70b-versatile';
 
@@ -48,6 +49,7 @@ const PROMPTS: Record<SuggestionType, string> = {
 export default function AISuggestions() {
   const { resumeData } = useResumeStore();
   const { showToast } = useToast();
+  const { isPro } = useAuthContext();
   const [apiKey, setApiKey] = useState(() => {
     if (typeof window !== 'undefined') return localStorage.getItem('groq-api-key') || '';
     return '';
@@ -68,7 +70,7 @@ export default function AISuggestions() {
   };
 
   const generate = async (type: SuggestionType) => {
-    if (!canUse('ai')) {
+    if (!canUse('ai', isPro())) {
       setShowUpgrade(true);
       return;
     }

@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { FileText, Menu, X, ArrowRight, LogOut, User, ChevronDown, Settings, KeyRound, Crown } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuthContext as useAuth } from '@/components/Providers';
 
 const NAV_LINKS = [
   { href: '/builder', label: 'Resume Builder' },
@@ -96,11 +96,11 @@ export default function SiteNavbar() {
                           </div>
                           <div className="py-1">
                             <Link
-                              href="/builder"
+                              href="/pricing"
                               onClick={() => setProfileOpen(false)}
                               className="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
                             >
-                              <Settings className="h-3.5 w-3.5" /> Account Settings
+                              <Settings className="h-3.5 w-3.5" /> Manage Plan
                             </Link>
                             <Link
                               href="/forgot-password"

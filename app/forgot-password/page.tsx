@@ -8,6 +8,7 @@ export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const supabase = createClient();
 
   useEffect(() => {
@@ -17,10 +18,17 @@ export default function ForgotPasswordPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    await supabase.auth.resetPasswordForEmail(email, {
+    setError('');
+
+    const { error: err } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/auth/callback?next=/builder`,
     });
-    setSent(true);
+
+    if (err) {
+      setError(err.message);
+    } else {
+      setSent(true);
+    }
     setLoading(false);
   }
 
@@ -57,6 +65,11 @@ export default function ForgotPasswordPage() {
             required
             className="w-full border border-gray-200 bg-white text-gray-900 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+              <p className="text-red-600 text-xs">{error}</p>
+            </div>
+          )}
           <button
             type="submit"
             disabled={loading}

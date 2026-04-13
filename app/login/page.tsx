@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuthContext as useAuth } from '@/components/Providers';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { FileText } from 'lucide-react';
@@ -30,6 +30,12 @@ export default function LoginPage() {
 
   useEffect(() => {
     document.title = mode === 'login' ? 'Log In - ResumeForge' : 'Sign Up - ResumeForge';
+    // Show auth errors from callback redirect
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const urlError = params.get('error');
+      if (urlError) setError(urlError);
+    }
   }, [mode]);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -88,6 +94,7 @@ export default function LoginPage() {
             onClick={() => {
               setMode(mode === 'login' ? 'signup' : 'login');
               setError('');
+              setPassword('');
             }}
           >
             {mode === 'login' ? 'Sign up free' : 'Log in'}
