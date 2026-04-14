@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { FileText, Menu, X, ArrowRight, LogOut, User, ChevronDown, Settings, KeyRound, Crown } from 'lucide-react';
+import { FileText, Menu, X, ArrowRight, LogOut, User, ChevronDown, Settings, KeyRound, Crown, Download, Trash2 } from 'lucide-react';
 import { useAuthContext as useAuth } from '@/components/Providers';
 
 const NAV_LINKS = [
@@ -20,7 +20,15 @@ export default function SiteNavbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
-  const { user, profile, signOut, loading, isPro } = useAuth();
+  const { user, profile, signOut, loading, isPro, exportUserData, deleteAccount } = useAuth();
+
+  const handleDeleteAccount = async () => {
+    if (!confirm('Are you sure you want to delete your account? This cannot be undone. All your data will be permanently erased.')) return;
+    if (!confirm('Last warning: This will permanently delete your account, profile, and all resume data. Continue?')) return;
+    const { error } = await deleteAccount();
+    if (error) alert('Failed to delete account: ' + error.message);
+    else alert('Your account has been deleted.');
+  };
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -128,10 +136,22 @@ export default function SiteNavbar() {
                           </div>
                           <div className="border-t border-gray-700 pt-1">
                             <button
+                              onClick={() => { exportUserData(); setProfileOpen(false); }}
+                              className="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-700 transition-colors w-full"
+                            >
+                              <Download className="h-3.5 w-3.5" /> Export My Data
+                            </button>
+                            <button
                               onClick={() => { signOut(); setProfileOpen(false); }}
-                              className="flex items-center gap-2.5 px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-gray-700 transition-colors w-full"
+                              className="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-700 transition-colors w-full"
                             >
                               <LogOut className="h-3.5 w-3.5" /> Sign Out
+                            </button>
+                            <button
+                              onClick={() => { handleDeleteAccount(); setProfileOpen(false); }}
+                              className="flex items-center gap-2.5 px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-gray-700 transition-colors w-full"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" /> Delete Account
                             </button>
                           </div>
                         </div>

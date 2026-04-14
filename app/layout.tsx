@@ -121,6 +121,19 @@ export default function RootLayout({
                     url: "https://github.com/Surya8991",
                   },
                 },
+                {
+                  "@type": "Organization",
+                  name: "ResumeForge",
+                  url: siteUrl,
+                  logo: `${siteUrl}/icon-512.svg`,
+                  founder: {
+                    "@type": "Person",
+                    name: "Surya L",
+                  },
+                  sameAs: [
+                    "https://github.com/Surya8991/resumeforge",
+                  ],
+                },
               ],
             }),
           }}

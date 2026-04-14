@@ -402,17 +402,24 @@ export default function HomePage() {
             </Link>
           </div>
 
-          {/* Center - User info */}
-          {user && (
-            <div className="flex items-center gap-2 px-3 py-1 rounded-lg bg-gray-800/50">
-              <div className="h-6 w-6 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold shrink-0">
-                {(profile?.full_name?.[0] || user.email?.[0] || 'U').toUpperCase()}
+          {/* Center - User info + last edited */}
+          <div className="flex items-center gap-2">
+            {user && (
+              <div className="flex items-center gap-2 px-3 py-1 rounded-lg bg-gray-800/50">
+                <div className="h-6 w-6 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold shrink-0">
+                  {(profile?.full_name?.[0] || user.email?.[0] || 'U').toUpperCase()}
+                </div>
+                <span className="text-sm text-gray-300 truncate max-w-[120px] hidden sm:inline">
+                  {profile?.full_name || user.email?.split('@')[0]}
+                </span>
               </div>
-              <span className="text-sm text-gray-300 truncate max-w-[120px] hidden sm:inline">
-                {profile?.full_name || user.email?.split('@')[0]}
+            )}
+            {lastEditTime && (
+              <span className="hidden lg:inline text-xs text-gray-500" title={`Last edited: ${lastEditTime}`}>
+                Saved
               </span>
-            </div>
-          )}
+            )}
+          </div>
 
           {/* Right - Actions */}
           <div className="flex items-center gap-1.5">

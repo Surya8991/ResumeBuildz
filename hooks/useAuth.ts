@@ -68,13 +68,23 @@ export function useAuth() {
     };
   }, [supabase, fetchProfile]);
 
+  const isEmailVerified = useCallback(
+    () => !!user?.email_confirmed_at,
+    [user]
+  );
+
   const isPro = useCallback(
-    () =>
-      profile?.plan === 'starter' ||
-      profile?.plan === 'pro' ||
-      profile?.plan === 'team' ||
-      profile?.plan === 'lifetime',
-    [profile]
+    () => {
+      // Pro features require verified email
+      if (!isEmailVerified()) return false;
+      return (
+        profile?.plan === 'starter' ||
+        profile?.plan === 'pro' ||
+        profile?.plan === 'team' ||
+        profile?.plan === 'lifetime'
+      );
+    },
+    [profile, isEmailVerified]
   );
 
   const canUseAI = useCallback(() => {
@@ -118,15 +128,62 @@ export function useAuth() {
     setProfile(null);
   }, [supabase]);
 
+  const exportUserData = useCallback(() => {
+    if (!user || !profile) return;
+    const data = {
+      account: {
+        id: user.id,
+        email: user.email,
+        created_at: user.created_at,
+      },
+      profile,
+      localStorage: {
+        resume: typeof window !== 'undefined' ? localStorage.getItem('resumeforge-storage') : null,
+        usage_ai: typeof window !== 'undefined' ? localStorage.getItem('resumeforge-usage-ai') : null,
+        usage_pdf: typeof window !== 'undefined' ? localStorage.getItem('resumeforge-usage-pdf') : null,
+      },
+      exported_at: new Date().toISOString(),
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `resumeforge-data-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [user, profile]);
+
+  const deleteAccount = useCallback(async () => {
+    if (!user) return { error: new Error('Not signed in') };
+    // Delete profile row (cascades from auth.users via FK)
+    const { error: profileError } = await supabase.from('profiles').delete().eq('id', user.id);
+    if (profileError) return { error: profileError };
+    // Sign out the user
+    await supabase.auth.signOut();
+    // Clear localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('resumeforge-storage');
+      localStorage.removeItem('resumeforge-usage-ai');
+      localStorage.removeItem('resumeforge-usage-pdf');
+      localStorage.removeItem('resumeforge-last-visit');
+    }
+    setUser(null);
+    setProfile(null);
+    return { error: null };
+  }, [supabase, user]);
+
   return {
     user,
     profile,
     loading,
     isPro,
+    isEmailVerified,
     canUseAI,
     signInWithGoogle,
     signInWithEmail,
     signUpWithEmail,
     signOut,
+    exportUserData,
+    deleteAccount,
   };
 }

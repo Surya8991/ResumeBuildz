@@ -30,6 +30,15 @@ export default function LoginPage() {
 
   useEffect(() => {
     document.title = mode === 'login' ? 'Log In - ResumeForge' : 'Sign Up - ResumeForge';
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) {
+      metaDesc.setAttribute(
+        'content',
+        mode === 'login'
+          ? 'Sign in to ResumeForge to access your resume profiles, Pro features, and unlimited AI rewrites.'
+          : 'Create a free ResumeForge account to save your resumes, sync across devices, and unlock Pro features.'
+      );
+    }
     // Show auth errors from callback redirect
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
