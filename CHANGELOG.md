@@ -59,8 +59,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ### Added
 
-- PDF import support via `pdfjs-dist` -- upload existing PDF resumes and extract content automatically.
-- Multiple resume profiles -- save up to 10 separate resume versions, each with its own data and template selection.
+- PDF import support via `pdfjs-dist`. Upload existing PDF resumes and extract content automatically.
+- Multiple resume profiles. Save up to 10 separate resume versions, each with its own data and template selection.
 - Template preview modal with full-size preview before applying a template.
 - Drag-and-drop entry reordering within Experience, Education, and Projects sections.
 
@@ -86,7 +86,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 - 12 ATS analysis tools: readability score, formatting checker, active voice detector, industry keywords matcher, section completeness, bullet point analyzer, quantification checker, verb strength analyzer, length optimizer, consistency checker, contact info validator, and file format advisor.
 - 20 industries with 201 roles and 25-30 keywords each for targeted keyword analysis.
-- AI Gap Analysis powered by Groq -- identify missing skills and experience relative to job descriptions.
+- AI Gap Analysis powered by Groq. Identifies missing skills and experience relative to job descriptions.
 - HelpTip tooltips on all major sections to guide users through the resume building process.
 - Custom section dropdown navigator for quick access to resume sections.
 - Smart Matching suggestion triggered on job title input to recommend relevant keywords.
@@ -114,6 +114,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 - Dark mode and light mode with system preference detection.
 - Progressive Web App (PWA) support for offline use.
 - SEO optimization with meta tags and Open Graph support.
-- Fully client-side -- no data ever leaves the browser.
+- Fully client-side. No data ever leaves the browser.
 - localStorage-based data persistence.
 - Responsive design for desktop, tablet, and mobile.

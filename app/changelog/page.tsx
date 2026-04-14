@@ -44,7 +44,7 @@ const CHANGELOG: ChangelogEntry[] = [
     date: 'April 11, 2026',
     title: 'Skill Suggestions, Auth & Pricing',
     added: [
-      'Skill suggestions based on your job title -- pulls from data covering 201 roles across 20 industries.',
+      'Skill suggestions based on your job title. Pulls from data covering 201 roles across 20 industries.',
       'Smooth page animations throughout the app for a more polished feel.',
       'Section completion dots so you can see which parts of your resume are done at a glance.',
       'Cover letter now auto-fills your job title from your personal info.',
@@ -62,13 +62,13 @@ const CHANGELOG: ChangelogEntry[] = [
     date: 'March 28, 2026',
     title: 'PDF Import & Multi-Profile Support',
     added: [
-      'PDF import -- upload an existing PDF resume and ResumeForge extracts the content automatically.',
-      'Multiple resume profiles -- save up to 10 different resume versions, each with its own data and template.',
-      'Template preview -- see a full-size preview of any template before applying it.',
+      'PDF import. Upload an existing PDF resume and ResumeForge extracts the content automatically.',
+      'Multiple resume profiles. Save up to 10 different resume versions, each with its own data and template.',
+      'Template preview. See a full-size preview of any template before applying it.',
       'Drag-and-drop reordering for Experience, Education, and Projects entries.',
     ],
     improved: [
-      'Better print quality -- colors, page breaks, and spacing now look consistent across all 20 templates when printing.',
+      'Better print quality. Colors, page breaks, and spacing now look consistent across all 20 templates when printing.',
     ],
   },
   {
@@ -77,7 +77,7 @@ const CHANGELOG: ChangelogEntry[] = [
     title: 'UI Modernization',
     added: [],
     improved: [
-      'Redesigned help dialog -- now uses icons and cards for easier navigation.',
+      'Redesigned help dialog. Now uses icons and cards for easier navigation.',
       'Improved onboarding flow with a progress bar and clearer action buttons.',
       'Updated documentation with expanded Getting Started instructions.',
     ],
@@ -87,9 +87,9 @@ const CHANGELOG: ChangelogEntry[] = [
     date: 'February 22, 2026',
     title: 'ATS Tools & AI Gap Analysis',
     added: [
-      '12 ATS analysis tools -- checks readability, formatting, active voice, keywords, section completeness, bullet points, metrics, verb strength, length, consistency, contact info, and file format.',
+      '12 ATS analysis tools that check readability, formatting, active voice, keywords, section completeness, bullet points, metrics, verb strength, length, consistency, contact info, and file format.',
       'Industry keyword database covering 20 industries and 201 roles with 25-30 targeted keywords each.',
-      'AI Gap Analysis -- paste a job description and see what skills and experience you\'re missing.',
+      'AI Gap Analysis. Paste a job description and see what skills and experience you\'re missing.',
       'Helpful tooltips throughout the app explaining what each section is for.',
       'Section dropdown navigator so you can jump to any resume section quickly.',
       'Smart keyword suggestions that appear when you enter your job title.',
@@ -116,7 +116,7 @@ const CHANGELOG: ChangelogEntry[] = [
       'Dark mode and light mode with system preference detection.',
       'Progressive Web App (PWA) support for offline use.',
       'SEO optimization with meta tags and Open Graph support.',
-      'Fully client-side -- no data ever leaves the browser.',
+      'Fully client-side. No data ever leaves the browser.',
       'localStorage-based data persistence.',
       'Responsive design for desktop, tablet, and mobile.',
     ],

@@ -31,7 +31,7 @@ export default function AcademicTemplate({ data, primaryColor }: TemplateProps) 
               <div key={exp.id} className="mb-3">
                 <div className="flex justify-between items-baseline">
                   <h3 className="text-[12px] font-bold text-gray-900" style={{ fontFamily: 'Georgia, serif' }}>{exp.position}</h3>
-                  <span className="text-[10px] text-gray-500 italic" style={{ fontFamily: 'Georgia, serif' }}>{exp.startDate} &ndash; {exp.current ? 'Present' : exp.endDate}</span>
+                  <span className="text-[10px] text-gray-500 italic" style={{ fontFamily: 'Georgia, serif' }}>{exp.startDate} to {exp.current ? 'Present' : exp.endDate}</span>
                 </div>
                 <p className="text-[11px] text-gray-600 italic" style={{ fontFamily: 'Georgia, serif' }}>{exp.company}{exp.location ? `, ${exp.location}` : ''}</p>
                 {exp.highlights.length > 0 && (
@@ -60,7 +60,7 @@ export default function AcademicTemplate({ data, primaryColor }: TemplateProps) 
               <div key={edu.id} className="mb-2">
                 <div className="flex justify-between items-baseline">
                   <h3 className="text-[12px] font-bold text-gray-900" style={{ fontFamily: 'Georgia, serif' }}>{edu.degree}{edu.field ? ` in ${edu.field}` : ''}</h3>
-                  <span className="text-[10px] text-gray-500 italic" style={{ fontFamily: 'Georgia, serif' }}>{edu.startDate} &ndash; {edu.endDate}</span>
+                  <span className="text-[10px] text-gray-500 italic" style={{ fontFamily: 'Georgia, serif' }}>{edu.startDate} to {edu.endDate}</span>
                 </div>
                 <p className="text-[11px] text-gray-600 italic" style={{ fontFamily: 'Georgia, serif' }}>{edu.institution}{edu.location ? `, ${edu.location}` : ''}</p>
                 {edu.gpa && <p className="text-[10px] text-gray-600" style={{ fontFamily: 'Georgia, serif' }}>GPA: {edu.gpa}</p>}

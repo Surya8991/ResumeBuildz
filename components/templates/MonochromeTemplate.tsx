@@ -43,7 +43,7 @@ export default function MonochromeTemplate({ data, primaryColor }: TemplateProps
                   <ul className="mt-2 space-y-1">
                     {exp.highlights.map((h, i) => (
                       <li key={i} className="text-[10px] text-black leading-[1.6] pl-4 relative" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-                        <span className="absolute left-0 text-gray-400">--</span>
+                        <span className="absolute left-0 text-gray-400">·</span>
                         {formatBullet(h)}
                       </li>
                     ))}
@@ -131,7 +131,7 @@ export default function MonochromeTemplate({ data, primaryColor }: TemplateProps
                   <ul className="mt-1 space-y-0.5">
                     {proj.highlights.map((h, i) => (
                       <li key={i} className="text-[10px] text-black leading-[1.6] pl-4 relative" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-                        <span className="absolute left-0 text-gray-400">--</span>
+                        <span className="absolute left-0 text-gray-400">·</span>
                         {formatBullet(h)}
                       </li>
                     ))}
@@ -152,7 +152,7 @@ export default function MonochromeTemplate({ data, primaryColor }: TemplateProps
               <div key={cert.id} className="mb-2">
                 <p className="text-[10px] text-black" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
                   <span className="font-bold">{cert.name}</span>
-                  <span className="text-gray-500"> -- {cert.issuer}, {cert.date}</span>
+                  <span className="text-gray-500"> · {cert.issuer}, {cert.date}</span>
                 </p>
               </div>
             ))}

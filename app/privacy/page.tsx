@@ -7,7 +7,7 @@ import SiteFooter from '@/components/SiteFooter';
 const sections = [
   {
     title: 'Data Collection',
-    content: "We don't collect any data. Not some data -- zero data. ResumeForge runs entirely in your browser. There are no servers storing your information, no databases with your resume, and no analytics tracking what you do. This isn't a marketing claim; it's how the app is built.",
+    content: "We don't collect any data. Not some data, zero data. ResumeForge runs entirely in your browser. There are no servers storing your information, no databases with your resume, and no analytics tracking what you do. This isn't a marketing claim; it's how the app is built.",
   },
   {
     title: 'Local Storage',

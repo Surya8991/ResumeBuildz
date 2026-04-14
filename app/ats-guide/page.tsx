@@ -50,7 +50,7 @@ export default function ATSGuidePage() {
                   An Applicant Tracking System (ATS) is software that companies use to sort through job applications. According to Jobscan, 98% of Fortune 500 companies use one. When you submit your resume online, it almost always goes through an ATS before any human reads it.
                 </p>
                 <p className="text-gray-600 leading-relaxed mb-4">
-                  Here&apos;s what happens: the ATS scans your resume, pulls out your contact info, job titles, skills, and education, then compares everything against the job description. If your resume doesn&apos;t match enough keywords and criteria, it gets filtered out -- and no recruiter ever sees it.
+                  Here&apos;s what happens: the ATS scans your resume, pulls out your contact info, job titles, skills, and education, then compares everything against the job description. If your resume doesn&apos;t match enough keywords and criteria, it gets filtered out, and no recruiter ever sees it.
                 </p>
                 <p className="text-gray-600 leading-relaxed">
                   The good news? Once you understand how ATS works, it&apos;s not hard to beat. You can check your resume right now with our <Link href="/builder" className="text-blue-500 hover:underline">free ATS score checker</Link>.
@@ -209,7 +209,7 @@ export default function ATSGuidePage() {
               Check Your Resume&apos;s ATS Score
             </h2>
             <p className="text-gray-400 mb-8 max-w-xl mx-auto">
-              Upload your resume or build one from scratch. Our 12-point ATS checker shows you exactly what to fix -- keyword gaps, formatting issues, and weak verbs. You can also browse our <Link href="/templates" className="text-blue-400 hover:underline">ATS-friendly templates</Link> or read our <Link href="/resume-tips" className="text-blue-400 hover:underline">resume writing tips</Link>.
+              Upload your resume or build one from scratch. Our 12-point ATS checker shows you exactly what to fix: keyword gaps, formatting issues, and weak verbs. You can also browse our <Link href="/templates" className="text-blue-400 hover:underline">ATS-friendly templates</Link> or read our <Link href="/resume-tips" className="text-blue-400 hover:underline">resume writing tips</Link>.
             </p>
             <Link
               href="/builder"
@@ -249,7 +249,7 @@ export default function ATSGuidePage() {
                 name: "What file format is best for ATS?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "DOCX has the highest ATS compatibility, followed closely by PDF. Never submit resumes as JPG, PNG, or image files — ATS systems cannot read text from images.",
+                  text: "DOCX has the highest ATS compatibility, followed closely by PDF. Never submit resumes as JPG, PNG, or image files. ATS systems cannot read text from images.",
                 },
               },
               {
@@ -265,7 +265,7 @@ export default function ATSGuidePage() {
                 name: "How can I check my resume's ATS score?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "ResumeForge has a free built-in ATS checker with 12 analysis tools including keyword matching, formatting checks, readability scoring, and active voice detection — no sign-up required.",
+                  text: "ResumeForge has a free built-in ATS checker with 12 analysis tools including keyword matching, formatting checks, readability scoring, and active voice detection. No sign-up required.",
                 },
               },
             ],

@@ -27,7 +27,7 @@ ResumeForge does not collect, store, or transmit any user data. There are:
 If users choose to use the AI writing assistant, they provide their own Groq API key.
 
 - API keys are stored **only** in the browser's `localStorage`.
-- API keys are sent **directly** from the browser to the Groq API -- they never pass through any ResumeForge server.
+- API keys are sent **directly** from the browser to the Groq API. They never pass through any ResumeForge server.
 - API keys are never logged, transmitted, or stored anywhere other than the user's own browser.
 - Users can delete their API key at any time by clearing their browser data or using the in-app settings.
 

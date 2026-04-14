@@ -2,6 +2,7 @@
 
 import { createContext, useContext } from 'react';
 import { ToastProvider } from '@/components/Toast';
+import { LoginGatewayProvider } from '@/components/LoginGateway';
 import { useAuth as useAuthHook } from '@/hooks/useAuth';
 
 type AuthContextType = ReturnType<typeof useAuthHook>;
@@ -19,7 +20,9 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider value={auth}>
-      <ToastProvider>{children}</ToastProvider>
+      <ToastProvider>
+        <LoginGatewayProvider>{children}</LoginGatewayProvider>
+      </ToastProvider>
     </AuthContext.Provider>
   );
 }

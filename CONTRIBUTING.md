@@ -1,6 +1,6 @@
 # Contributing to ResumeForge
 
-Welcome, and thank you for your interest in contributing to ResumeForge! This is an open-source, client-side ATS resume builder, and we appreciate contributions of all kinds -- bug fixes, new features, documentation improvements, and more.
+Welcome, and thank you for your interest in contributing to ResumeForge! This is an open-source, client-side ATS resume builder, and we appreciate contributions of all kinds: bug fixes, new features, documentation improvements, and more.
 
 ## Getting Started
 

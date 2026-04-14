@@ -113,7 +113,7 @@ const PLANS = [
 const FAQS = [
   {
     q: 'Is ResumeForge really free?',
-    a: 'Yes. The free plan gives you access to all 20 templates, 12 ATS tools, DOCX/HTML export, and more — with no account required. AI rewrites and PDF exports have daily limits on the free plan.',
+    a: 'Yes. The free plan gives you access to all 20 templates, 12 ATS tools, DOCX/HTML export, and more, with no account required. AI rewrites and PDF exports have daily limits on the free plan.',
   },
   {
     q: 'What counts as an AI rewrite?',
@@ -133,7 +133,7 @@ const FAQS = [
   },
   {
     q: 'Is my data safe?',
-    a: 'Absolutely. ResumeForge is 100% client-side. Your resume data never leaves your browser — it\'s stored in localStorage, not on any server.',
+    a: 'Absolutely. ResumeForge is 100% client-side. Your resume data never leaves your browser. It is stored in localStorage, not on any server.',
   },
 ];
 
@@ -170,7 +170,7 @@ export default function PricingPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto mb-10 bg-blue-50 border border-blue-200 rounded-xl p-4 text-center">
             <p className="text-sm text-blue-900">
-              <strong>The Free plan is genuinely usable.</strong> All 20 templates, all 12 ATS tools, DOCX/HTML export &mdash; no credit card, no sign-up. Paid plans unlock unlimited AI rewrites and PDF exports.
+              <strong>The Free plan is genuinely usable.</strong> All 20 templates, all 12 ATS tools, DOCX/HTML export. No credit card, no sign-up. Paid plans unlock unlimited AI rewrites and PDF exports.
             </p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -322,7 +322,7 @@ function WaitlistSection() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
-    // Store in localStorage for now — replace with Supabase/email service later
+    // Store in localStorage for now. Replace with Supabase/email service later
     try {
       const existing = JSON.parse(localStorage.getItem('resumeforge-waitlist') || '[]');
       if (!existing.includes(email)) {

@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { FileText, Menu, X, ArrowRight, LogOut, User, ChevronDown, Settings, KeyRound, Crown, Download, Trash2 } from 'lucide-react';
 import { useAuthContext as useAuth } from '@/components/Providers';
+import { useLoginGateway } from '@/components/LoginGateway';
 
 const NAV_LINKS = [
   { href: '/builder', label: 'Resume Builder' },
@@ -21,6 +22,7 @@ export default function SiteNavbar() {
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
   const { user, profile, signOut, loading, isPro, exportUserData, deleteAccount } = useAuth();
+  const { openGateway } = useLoginGateway();
 
   const handleDeleteAccount = async () => {
     if (!confirm('Are you sure you want to delete your account? This cannot be undone. All your data will be permanently erased.')) return;
@@ -72,13 +74,13 @@ export default function SiteNavbar() {
             {!loading && (
               user ? (
                 <>
-                  <Link
-                    href="/builder"
+                  <button
+                    onClick={() => openGateway('/builder')}
                     className="hidden sm:flex items-center gap-1.5 px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 transition-colors"
                   >
                     Build Resume <ArrowRight className="h-3.5 w-3.5" />
-                  </Link>
-                  {/* Profile dropdown — visible on all screens */}
+                  </button>
+                  {/* Profile dropdown - visible on all screens */}
                   <div className="relative" ref={profileRef}>
                     <button
                       onClick={() => setProfileOpen(!profileOpen)}
@@ -167,12 +169,12 @@ export default function SiteNavbar() {
                   >
                     <User className="h-3.5 w-3.5" /> <span className="hidden sm:inline">Sign in</span>
                   </Link>
-                  <Link
-                    href="/builder"
+                  <button
+                    onClick={() => openGateway('/builder')}
                     className="hidden sm:flex items-center gap-1.5 px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 transition-colors"
                   >
                     Build Resume <ArrowRight className="h-3.5 w-3.5" />
-                  </Link>
+                  </button>
                 </>
               )
             )}
@@ -200,13 +202,12 @@ export default function SiteNavbar() {
                 {link.label}
               </Link>
             ))}
-            <Link
-              href="/builder"
-              onClick={() => setMobileOpen(false)}
-              className="block text-center mt-2 px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600"
+            <button
+              onClick={() => { setMobileOpen(false); openGateway('/builder'); }}
+              className="block w-full text-center mt-2 px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600"
             >
               Build Resume
-            </Link>
+            </button>
             {!loading && (
               user ? (
                 <button

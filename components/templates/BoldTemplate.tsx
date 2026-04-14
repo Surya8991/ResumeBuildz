@@ -31,7 +31,7 @@ export default function BoldTemplate({ data, primaryColor }: TemplateProps) {
               <div key={exp.id} className="mb-3 px-1">
                 <div className="flex justify-between items-baseline">
                   <h3 className="text-[13px] font-extrabold text-gray-900">{exp.position}</h3>
-                  <span className="text-[10px] font-bold text-gray-500">{exp.startDate} &mdash; {exp.current ? 'Present' : exp.endDate}</span>
+                  <span className="text-[10px] font-bold text-gray-500">{exp.startDate} to {exp.current ? 'Present' : exp.endDate}</span>
                 </div>
                 <p className="text-[11px] font-bold text-gray-600">{exp.company}{exp.location ? ` | ${exp.location}` : ''}</p>
                 {exp.highlights.length > 0 && (
@@ -60,7 +60,7 @@ export default function BoldTemplate({ data, primaryColor }: TemplateProps) {
               <div key={edu.id} className="mb-2 px-1">
                 <div className="flex justify-between items-baseline">
                   <h3 className="text-[12px] font-extrabold text-gray-900">{edu.degree}{edu.field ? ` in ${edu.field}` : ''}</h3>
-                  <span className="text-[10px] font-bold text-gray-500">{edu.startDate} &mdash; {edu.endDate}</span>
+                  <span className="text-[10px] font-bold text-gray-500">{edu.startDate} to {edu.endDate}</span>
                 </div>
                 <p className="text-[11px] font-bold text-gray-600">{edu.institution}{edu.location ? `, ${edu.location}` : ''}</p>
                 {edu.gpa && <p className="text-[10px] font-semibold text-gray-500">GPA: {edu.gpa}</p>}
@@ -141,7 +141,7 @@ export default function BoldTemplate({ data, primaryColor }: TemplateProps) {
                 <div key={cert.id} className="mb-1 flex justify-between">
                   <div>
                     <span className="text-[11px] font-extrabold">{cert.name}</span>
-                    <span className="text-[11px] text-gray-600 font-bold"> &mdash; {cert.issuer}</span>
+                    <span className="text-[11px] text-gray-600 font-bold"> to {cert.issuer}</span>
                   </div>
                   <span className="text-[10px] font-bold text-gray-500">{cert.date}</span>
                 </div>

@@ -15,18 +15,19 @@ import {
 } from 'lucide-react';
 import SiteNavbar from '@/components/SiteNavbar';
 import SiteFooter from '@/components/SiteFooter';
+import { useLoginGateway } from '@/components/LoginGateway';
 
 const FEATURES = [
-  { icon: Layout, title: '20 Templates', desc: 'Pick from 20 resume designs built to pass ATS filters and look great in print. Classic, modern, creative -- every style covered.' },
+  { icon: Layout, title: '20 Templates', desc: 'Pick from 20 resume designs built to pass ATS filters and look great in print. Classic, modern, creative. Every style covered.' },
   { icon: Sparkles, title: 'AI Writing Help', desc: 'Stuck on bullet points? Our Groq-powered AI rewrites weak descriptions into results-driven statements in seconds.' },
-  { icon: BarChart3, title: 'ATS Score Checker', desc: '12 analysis tools scan your resume for keyword gaps, formatting issues, and readability -- just like a real ATS would.' },
+  { icon: BarChart3, title: 'ATS Score Checker', desc: '12 analysis tools scan your resume for keyword gaps, formatting issues, and readability, just like a real ATS would.' },
   { icon: Shield, title: 'Privacy First', desc: 'Your resume data never leaves your browser. No servers, no tracking, no analytics. You own your data completely.' },
-  { icon: UserX, title: 'No Sign-up Needed', desc: 'Start building immediately -- no account required. Sign in optionally to unlock Pro features.' },
+  { icon: UserX, title: 'No Sign-up Needed', desc: 'Start building immediately. No account required. Sign in optionally to unlock Pro features.' },
   { icon: ExternalLink, title: 'Open Source', desc: 'Every line of code is on GitHub. Inspect it, fork it, self-host it, or contribute new templates.' },
 ];
 
 const STEPS = [
-  { num: '1', title: 'Add Your Info', desc: 'Type in your experience, education, and skills -- or import an existing resume.' },
+  { num: '1', title: 'Add Your Info', desc: 'Type in your experience, education, and skills, or import an existing resume.' },
   { num: '2', title: 'Pick a Template', desc: 'Choose from 20 ATS-tested designs. Preview each one before committing.' },
   { num: '3', title: 'Run ATS Check', desc: 'Our 12-point analysis spots keyword gaps, formatting issues, and weak verbs.' },
   { num: '4', title: 'Download PDF', desc: 'Export a print-ready PDF, DOCX, or HTML file. Done in minutes.' },
@@ -42,12 +43,13 @@ const SHOWCASE_TEMPLATES = [
 ];
 
 const TESTIMONIALS = [
-  { name: 'Alex R.', role: 'Software Engineer', text: 'I rewrote my resume in about 25 minutes. The ATS checker flagged that I was missing 4 keywords from the job description -- added them, applied, and got a callback the next day.' },
+  { name: 'Alex R.', role: 'Software Engineer', text: 'I rewrote my resume in about 25 minutes. The ATS checker flagged that I was missing 4 keywords from the job description. Added them, applied, and got a callback the next day.' },
   { name: 'Priya S.', role: 'Marketing Manager', text: 'Honestly didn\'t expect a free tool to be this polished. The AI rewrote my bullet points with actual metrics, and I got 3 interview calls in my first week of applying.' },
   { name: 'James C.', role: '2024 CS Graduate', text: 'I\'d been using Google Docs for my resume. Switched to ResumeForge, ran the ATS check, and realized my old resume would\'ve been filtered out by most systems. Wish I found this sooner.' },
 ];
 
 export default function HomePage() {
+  const { openGateway } = useLoginGateway();
   useEffect(() => {
     document.title = 'ResumeForge - Free ATS Resume Builder with 20 Templates & AI';
     const metaDesc = document.querySelector('meta[name="description"]');
@@ -71,14 +73,20 @@ export default function HomePage() {
                 Land More Interviews with ATS-Tested Resumes
               </h1>
               <p className="text-lg text-gray-300 mb-8 max-w-lg animate-fade-in-up delay-100">
-                75% of resumes get filtered by ATS before a human sees them <span className="text-gray-500 text-sm">(Jobscan, 2024)</span>. ResumeForge gives you 20 templates, AI writing help, and 12 ATS checks &mdash; free to start, no sign-up needed.
+                75% of resumes get filtered by ATS before a human sees them <span className="text-gray-500 text-sm">(Jobscan, 2024)</span>. ResumeForge gives you 20 templates, AI writing help, and 12 ATS checks. Free to start, no sign-up needed.
               </p>
               <div className="flex items-center justify-center gap-6 mb-6 animate-fade-in-up delay-200">
                 <div className="flex items-center gap-2">
                   <div className="flex -space-x-2">
-                    {['bg-blue-400', 'bg-green-400', 'bg-purple-400', 'bg-orange-400', 'bg-pink-400'].map((color, i) => (
-                      <div key={i} className={`h-8 w-8 rounded-full ${color} border-2 border-gray-900 flex items-center justify-center text-white text-xs font-bold`}>
-                        {['S', 'M', 'A', 'R', 'K'][i]}
+                    {[
+                      { color: 'bg-blue-400', initial: 'S', name: 'Sarah Mitchell' },
+                      { color: 'bg-green-400', initial: 'D', name: 'David Chen' },
+                      { color: 'bg-purple-400', initial: 'P', name: 'Priya Sharma' },
+                      { color: 'bg-orange-400', initial: 'M', name: 'Marcus Johnson' },
+                      { color: 'bg-pink-400', initial: 'E', name: 'Emily Rodriguez' },
+                    ].map((user) => (
+                      <div key={user.name} title={user.name} className={`h-8 w-8 rounded-full ${user.color} border-2 border-gray-900 flex items-center justify-center text-white text-xs font-bold`}>
+                        {user.initial}
                       </div>
                     ))}
                   </div>
@@ -93,9 +101,9 @@ export default function HomePage() {
                 </div>
               </div>
               <div className="flex flex-wrap gap-4 animate-fade-in-up delay-200">
-                <Link href="/builder" className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition flex items-center gap-2">
+                <button onClick={() => openGateway('/builder')} className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition flex items-center gap-2">
                   Build My Resume <ArrowRight className="h-4 w-4" />
-                </Link>
+                </button>
                 <Link href="/templates" className="border border-gray-600 hover:border-gray-400 text-white px-6 py-3 rounded-lg font-semibold transition">
                   See All 20 Templates
                 </Link>
@@ -132,7 +140,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-gray-900 text-center mb-4 animate-fade-in-up">Everything You Need to Land Interviews</h2>
           <p className="text-gray-600 text-center mb-12 max-w-2xl mx-auto animate-fade-in-up delay-100">
-            Professional resume tools -- templates, AI writing, ATS scoring -- without paying a dime or creating an account.
+            Professional resume tools (templates, AI writing, ATS scoring) without paying a dime or creating an account.
           </p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {FEATURES.map((f, i) => (
@@ -194,7 +202,7 @@ export default function HomePage() {
             <div>
               <h2 className="text-3xl font-bold text-gray-900 mb-6">Built-in ATS Optimization</h2>
               <p className="text-gray-600 mb-6">
-                Most companies use ATS software to filter resumes before a recruiter ever reads them. Our 12 built-in tools check your resume the same way an ATS does -- so you can fix problems before you hit &quot;apply.&quot;
+                Most companies use ATS software to filter resumes before a recruiter ever reads them. Our 12 built-in tools check your resume the same way an ATS does, so you can fix problems before you hit &quot;apply.&quot;
               </p>
               <ul className="space-y-3">
                 {[
@@ -272,9 +280,9 @@ export default function HomePage() {
           <p className="text-gray-300 mb-8 text-lg animate-fade-in-up delay-100">
             Build a resume that actually passes ATS screening. It takes about 15 minutes and costs nothing.
           </p>
-          <Link href="/builder" className="inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold text-lg transition">
+          <button onClick={() => openGateway('/builder')} className="inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold text-lg transition">
             Build My Resume Now <ArrowRight className="h-5 w-5" />
-          </Link>
+          </button>
         </div>
       </section>
 

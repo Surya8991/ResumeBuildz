@@ -8,7 +8,7 @@ import SiteFooter from '@/components/SiteFooter';
 const faqItems = [
   {
     question: 'Is ResumeForge free?',
-    answer: 'The free tier includes all 20 templates, 12 ATS tools, DOCX and HTML export, and job description matching -- no sign-up required. AI rewrites and PDF exports have daily limits on the free plan. Upgrade to Pro for unlimited access.',
+    answer: 'The free tier includes all 20 templates, 12 ATS tools, DOCX and HTML export, and job description matching. No sign-up required. AI rewrites and PDF exports have daily limits on the free plan. Upgrade to Pro for unlimited access.',
   },
   {
     question: 'Do I need to create an account?',
@@ -16,7 +16,7 @@ const faqItems = [
   },
   {
     question: 'Where is my data stored?',
-    answer: "All your data is stored in your browser's localStorage -- that's storage on your device, not on any server. We don't have servers that store user data. Your resume stays entirely on your machine. See our privacy policy for full details.",
+    answer: "All your data is stored in your browser's localStorage. That's storage on your device, not on any server. We don't have servers that store user data. Your resume stays entirely on your machine. See our privacy policy for full details.",
   },
   {
     question: 'How do I transfer my resume to another device?',
@@ -204,7 +204,7 @@ export default function FAQPage() {
                 name: "How do the AI features work?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "AI features use the Groq API (Llama 3.3 70B model). You bring your own free Groq API key from console.groq.com — it is stored only in your browser and never sent to any ResumeForge server.",
+                  text: "AI features use the Groq API (Llama 3.3 70B model). You bring your own free Groq API key from console.groq.com. It is stored only in your browser and never sent to any ResumeForge server.",
                 },
               },
               {
