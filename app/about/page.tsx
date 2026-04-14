@@ -120,7 +120,10 @@ export default function AboutPage() {
       {/* Tech Stack */}
       <section className="bg-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">Tech Stack</h2>
+          <h2 className="text-3xl font-bold text-gray-900 text-center mb-4">Built with Modern, Fast Tech</h2>
+          <p className="text-gray-600 text-center mb-12 max-w-2xl mx-auto">
+            Every choice was made for one reason: to give you a faster, more private resume builder than anything else out there.
+          </p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {TECH_STACK.map((tech, i) => (
               <div key={tech.name} className={`bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition animate-fade-in-up delay-${Math.min((i + 1) * 100, 500)}`}>

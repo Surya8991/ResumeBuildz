@@ -68,10 +68,10 @@ export default function HomePage() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 animate-fade-in-up">
-                Build ATS-Friendly Resumes in Minutes
+                Land More Interviews with ATS-Tested Resumes
               </h1>
               <p className="text-lg text-gray-300 mb-8 max-w-lg animate-fade-in-up delay-100">
-                75% of resumes get rejected by ATS before a human sees them. ResumeForge gives you 20 templates, AI writing help, and 12 ATS checks -- free to start, no sign-up needed.
+                75% of resumes get filtered by ATS before a human sees them <span className="text-gray-500 text-sm">(Jobscan, 2024)</span>. ResumeForge gives you 20 templates, AI writing help, and 12 ATS checks &mdash; free to start, no sign-up needed.
               </p>
               <div className="flex items-center justify-center gap-6 mb-6 animate-fade-in-up delay-200">
                 <div className="flex items-center gap-2">
@@ -97,7 +97,7 @@ export default function HomePage() {
                   Build My Resume <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link href="/templates" className="border border-gray-600 hover:border-gray-400 text-white px-6 py-3 rounded-lg font-semibold transition">
-                  View Templates
+                  See All 20 Templates
                 </Link>
               </div>
             </div>

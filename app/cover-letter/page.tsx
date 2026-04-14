@@ -102,9 +102,9 @@ export default function CoverLetterGuidePage() {
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 text-center mb-12 animate-fade-in-up">Why Cover Letters Matter</h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
               {[
-                { stat: '83%', label: 'of hiring managers read cover letters' },
-                { stat: '49%', label: 'say a cover letter is their second most valued document' },
-                { stat: '2x', label: 'more likely to get an interview with a strong cover letter' },
+                { stat: '83%', label: 'of hiring managers read cover letters (ResumeLab, 2023)' },
+                { stat: '49%', label: 'say cover letters are their second most valued document (ResumeGo, 2023)' },
+                { stat: '2x', label: 'more likely to land interviews with a strong cover letter (CareerBuilder, 2023)' },
               ].map((item, i) => (
                 <div key={i} className={`bg-white rounded-xl shadow-sm border border-gray-100 p-6 text-center animate-fade-in-up delay-${(i + 1) * 100}`}>
                   <div className="text-3xl font-bold text-blue-500 mb-2">{item.stat}</div>

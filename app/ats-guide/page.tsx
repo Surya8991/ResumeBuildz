@@ -95,8 +95,8 @@ export default function ATSGuidePage() {
               {[
                 { stat: '75%', desc: 'of resumes are filtered out by ATS before a recruiter ever reads them (Jobscan, 2024)' },
                 { stat: '98%', desc: 'of Fortune 500 companies use an ATS to screen applicants (Jobscan)' },
-                { stat: '250+', desc: 'applications per corporate job posting on average (Glassdoor)' },
-                { stat: '6 sec', desc: 'is the average time a recruiter spends on an initial resume scan (Ladders eye-tracking study)' },
+                { stat: '250+', desc: 'applications per corporate job posting on average (Glassdoor, 2024)' },
+                { stat: '6 sec', desc: 'is the average time a recruiter spends on an initial resume scan (Ladders, 2024)' },
               ].map((item, i) => (
                 <div key={i} className={`bg-white rounded-xl shadow-sm border border-gray-100 p-6 text-center animate-fade-in-up delay-${(i + 1) * 100}`}>
                   <div className="text-4xl font-bold text-blue-500 mb-2">{item.stat}</div>

@@ -35,8 +35,8 @@ export default function ContactPage() {
       {/* Hero */}
       <section className="bg-gradient-to-br from-gray-900 via-slate-900 to-black py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 animate-fade-in-up">Get in Touch</h1>
-          <p className="text-xl text-gray-300 animate-fade-in-up delay-100">Bug report, feature idea, or just want to say hi? We&apos;re all ears.</p>
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 animate-fade-in-up">Have a Bug? Feature Idea? Let&apos;s Chat.</h1>
+          <p className="text-xl text-gray-300 animate-fade-in-up delay-100">We typically respond within 24&ndash;48 hours.</p>
         </div>
       </section>
 

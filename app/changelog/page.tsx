@@ -15,9 +15,34 @@ interface ChangelogEntry {
 
 const CHANGELOG: ChangelogEntry[] = [
   {
+    version: 'v1.5.0',
+    date: 'April 14, 2026',
+    title: 'Auth, Pricing & Pro Plans',
+    added: [
+      'Supabase authentication with Google OAuth and email/password sign-in.',
+      'Profile dropdown with avatar, Manage Plan, Reset Password, and Sign Out.',
+      'Pricing page with 5 tiers: Free, Starter ($5), Pro ($9), Team ($19), Lifetime ($49).',
+      'Freemium gates: 1 AI rewrite/day and 3 PDF exports/day on free tier.',
+      'Toast notification system for actions, warnings, and Pro upgrades.',
+      'Waitlist email capture on pricing page for Pro launch notifications.',
+      'GDPR controls: Export My Data and Delete Account in profile dropdown.',
+      'Terms of Use page with detailed legal sections.',
+      '404 page with helpful navigation to popular pages.',
+      'Month picker for date fields (Experience, Education, Projects, Certifications).',
+    ],
+    improved: [
+      'Security headers: HSTS, X-Frame-Options, Permissions-Policy.',
+      'Email verification now required for Pro features.',
+      'Builder toolbar: text labels for Import, Reset, and Dark mode buttons.',
+      'Builder header: user avatar, name, and last-edited indicator.',
+      'Navbar: profile dropdown visible on all screen sizes.',
+      'SEO: dynamic robots.ts, sitemap.ts, OG image, and Organization schema.',
+    ],
+  },
+  {
     version: 'v1.4.0',
     date: 'April 11, 2026',
-    title: 'Skill Suggestions & Page Animations',
+    title: 'Skill Suggestions, Auth & Pricing',
     added: [
       'Skill suggestions based on your job title -- pulls from data covering 201 roles across 20 industries.',
       'Smooth page animations throughout the app for a more polished feel.',
@@ -34,7 +59,7 @@ const CHANGELOG: ChangelogEntry[] = [
   },
   {
     version: 'v1.3.0',
-    date: 'April 11, 2026',
+    date: 'March 28, 2026',
     title: 'PDF Import & Multi-Profile Support',
     added: [
       'PDF import -- upload an existing PDF resume and ResumeForge extracts the content automatically.',
@@ -48,7 +73,7 @@ const CHANGELOG: ChangelogEntry[] = [
   },
   {
     version: 'v1.2.0',
-    date: 'April 11, 2026',
+    date: 'March 14, 2026',
     title: 'UI Modernization',
     added: [],
     improved: [
@@ -59,7 +84,7 @@ const CHANGELOG: ChangelogEntry[] = [
   },
   {
     version: 'v1.1.0',
-    date: 'April 11, 2026',
+    date: 'February 22, 2026',
     title: 'ATS Tools & AI Gap Analysis',
     added: [
       '12 ATS analysis tools -- checks readability, formatting, active voice, keywords, section completeness, bullet points, metrics, verb strength, length, consistency, contact info, and file format.',
@@ -78,7 +103,7 @@ const CHANGELOG: ChangelogEntry[] = [
   },
   {
     version: 'v1.0.0',
-    date: 'April 10, 2026',
+    date: 'February 1, 2026',
     title: 'Initial Release',
     added: [
       'Initial release of ResumeForge.',

@@ -100,7 +100,10 @@ export default function ResumeTipsPage() {
               Resume Writing Tips That Actually Work
             </h1>
             <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto animate-fade-in-up delay-200">
-              Recruiters spend about 6 seconds scanning your resume. Here&apos;s how to make every word count and land more interviews.
+              Recruiters spend about 6 seconds scanning your resume <span className="text-gray-500 text-sm">(Ladders, 2024)</span>. Here&apos;s how to make every word count and land more interviews.
+            </p>
+            <p className="text-sm text-blue-400 max-w-2xl mx-auto animate-fade-in-up delay-300 mt-4">
+              Tip: Implement just 3&ndash;4 of these for immediate impact &mdash; you don&apos;t need them all at once.
             </p>
           </div>
         </section>

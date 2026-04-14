@@ -66,6 +66,14 @@ const faqItems = [
     question: 'Is it mobile-friendly?',
     answer: 'Yes, ResumeForge is built with a fully responsive design that works on smartphones, tablets, and desktop computers. While you can view and make quick edits on mobile devices, we recommend using a desktop or laptop for the full resume-building experience.',
   },
+  {
+    question: 'Can multiple people edit the same resume?',
+    answer: 'Not yet. ResumeForge is currently a single-user tool. To share a resume with someone, export it as PDF, DOCX, or JSON and send the file. Real-time collaboration is on our roadmap for the Pro plan.',
+  },
+  {
+    question: 'How do I share my resume?',
+    answer: 'Export your resume in your preferred format: PDF for ATS systems and recruiters, DOCX for Word users, or HTML for online portfolios. You can also export the raw JSON file as a backup or to import on another device.',
+  },
 ];
 
 function FAQItem({ question, answer }: { question: string; answer: string }) {

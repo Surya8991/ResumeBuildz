@@ -125,7 +125,7 @@ const FAQS = [
   },
   {
     q: 'When will Pro be available?',
-    a: 'We\'re actively building the Pro plan. Join the waitlist to be notified as soon as it launches.',
+    a: 'Pro is launching in Q2 2026. Join the waitlist below to get an early-bird discount and be the first to know when paid plans go live.',
   },
   {
     q: 'Can I cancel anytime?',
@@ -168,6 +168,11 @@ export default function PricingPage() {
       {/* Pricing Cards */}
       <section className="py-16 md:py-20 bg-gray-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl mx-auto mb-10 bg-blue-50 border border-blue-200 rounded-xl p-4 text-center">
+            <p className="text-sm text-blue-900">
+              <strong>The Free plan is genuinely usable.</strong> All 20 templates, all 12 ATS tools, DOCX/HTML export &mdash; no credit card, no sign-up. Paid plans unlock unlimited AI rewrites and PDF exports.
+            </p>
+          </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {PLANS.map((plan) => (
               <div

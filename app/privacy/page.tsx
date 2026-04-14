@@ -62,7 +62,7 @@ export default function PrivacyPage() {
       <section className="bg-gradient-to-br from-gray-900 via-slate-900 to-black py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 animate-fade-in-up">Privacy Policy</h1>
-          <p className="text-xl text-gray-300 animate-fade-in-up delay-100">Last updated: April 2026</p>
+          <p className="text-xl text-gray-300 animate-fade-in-up delay-100">Last updated: April 14, 2026</p>
         </div>
       </section>
 
