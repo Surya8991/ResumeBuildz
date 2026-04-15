@@ -6,6 +6,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ---
 
+## [1.15.0] - 2026-04-16
+
+### Added
+
+- **`components/LoaderCard.tsx`** — shared centered skeleton card used by both the production `PageLoader` and the `/loader-preview` gallery's Loader4. Single source of truth for brand visuals.
+
+### Fixed (codereview pass on PageLoader work)
+
+- **High:** `PageLoader` now has an 8-second safety timeout that auto-hides the loader if a navigation never completes (cancelled, network failure, hard crash). Previously the user could get stuck staring at a frozen overlay until they refreshed.
+- **Medium:** `prefers-reduced-motion` respected via Tailwind's `motion-safe:` / `motion-reduce:` variants. Users with the OS-level "Reduce motion" setting see a static skeleton with no pulse animation. WCAG 2.3.3 compliant.
+- **Medium:** SVG `<a>` elements now type-guarded — the click listener checks `instanceof HTMLAnchorElement` before reading `target` / `rel` / `download`, preventing undefined behavior on inline SVG links.
+- **Medium:** Relative URLs now resolved correctly. `<a href="about">` clicked from `/some/path` now correctly compares against the resolved URL `/some/about`. Was previously doing a raw string comparison that triggered the loader on no-op same-page navigations.
+- **Low:** `<aria-live="polite">` + visually-hidden "Loading page" announcement so screen readers know a navigation is happening. Previously `aria-hidden` made the loader invisible to assistive tech.
+- **Low:** All `<style jsx>` keyframe blocks in `PageLoaderOptions.tsx` extracted to `app/globals.css` with `loader-` prefixed names (`loader-pulse-scale`, `loader-dot-bounce`, `loader-pulse-ring`, `loader-eq-bar`, `loader-aurora-sweep`). No more global-scope keyframe collisions.
+- **Low:** `Loader4_SkeletonCard` now imports the shared `LoaderCard` component instead of duplicating 30 lines of JSX.
+- **Low:** `/loader-preview` and `/hero-preview` get `<meta name="robots" content="noindex,nofollow">` injected on mount to keep them out of search engine indexes. `app/robots.ts` also adds them to the crawler `disallow` list as defense-in-depth.
+
+Lint: 0 errors, 13 warnings. Build clean.
+
+---
+
 ## [1.14.0] - 2026-04-15
 
 ### Changed

@@ -196,6 +196,19 @@ export default function HeroPreviewPage() {
 
   useEffect(() => {
     document.title = 'Hero Preview Gallery (internal) - ResumeBuildz';
+    // Prevent search engines from indexing this internal selection tool
+    let robotsTag = document.querySelector('meta[name="robots"]') as HTMLMetaElement | null;
+    if (!robotsTag) {
+      robotsTag = document.createElement('meta');
+      robotsTag.name = 'robots';
+      document.head.appendChild(robotsTag);
+    }
+    const previousContent = robotsTag.getAttribute('content');
+    robotsTag.setAttribute('content', 'noindex,nofollow');
+    return () => {
+      if (previousContent) robotsTag?.setAttribute('content', previousContent);
+      else robotsTag?.remove();
+    };
   }, []);
 
   const visibleOptions = familyFilter === 'all' ? OPTIONS : OPTIONS.filter((o) => o.family === familyFilter);

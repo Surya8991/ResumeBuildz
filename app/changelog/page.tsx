@@ -15,6 +15,24 @@ interface ChangelogEntry {
 
 const CHANGELOG: ChangelogEntry[] = [
   {
+    version: 'v1.15.0',
+    date: 'April 16, 2026',
+    title: 'PageLoader Hardening (Codereview Pass)',
+    added: [
+      'Shared LoaderCard component used by both production PageLoader and the loader preview gallery (single source of truth for brand visuals).',
+    ],
+    improved: [
+      'PageLoader: 8-second safety timeout auto-hides the loader if a navigation never completes. No more stuck overlays.',
+      'PageLoader: respects prefers-reduced-motion via motion-safe: / motion-reduce: Tailwind variants.',
+      'PageLoader: SVG <a> elements now type-guarded with instanceof check.',
+      'PageLoader: relative URLs resolved correctly via new URL(href, location.href).',
+      'PageLoader: aria-live="polite" + visually-hidden announcement for screen readers.',
+      'PageLoaderOptions: all <style jsx> keyframes extracted to globals.css with loader- prefixed names to avoid collisions.',
+      'PageLoaderOptions: Loader4_SkeletonCard now imports shared LoaderCard.',
+      '/loader-preview and /hero-preview now noindex,nofollow with robots.txt disallow as defense-in-depth.',
+    ],
+  },
+  {
     version: 'v1.14.0',
     date: 'April 15, 2026',
     title: 'Centered Skeleton Card Page Loader + Loader Preview',

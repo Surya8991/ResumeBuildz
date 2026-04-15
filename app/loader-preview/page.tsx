@@ -147,6 +147,20 @@ export default function LoaderPreviewPage() {
 
   useEffect(() => {
     document.title = 'Loader Preview Gallery (internal) - ResumeBuildz';
+    // Prevent search engines from indexing this internal selection tool
+    let robotsTag = document.querySelector('meta[name="robots"]') as HTMLMetaElement | null;
+    if (!robotsTag) {
+      robotsTag = document.createElement('meta');
+      robotsTag.name = 'robots';
+      document.head.appendChild(robotsTag);
+    }
+    const previousContent = robotsTag.getAttribute('content');
+    robotsTag.setAttribute('content', 'noindex,nofollow');
+    return () => {
+      // Restore previous robots tag value when leaving the page
+      if (previousContent) robotsTag?.setAttribute('content', previousContent);
+      else robotsTag?.remove();
+    };
   }, []);
 
   return (
