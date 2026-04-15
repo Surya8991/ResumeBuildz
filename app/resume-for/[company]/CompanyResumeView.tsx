@@ -7,6 +7,7 @@ import SiteFooter from '@/components/SiteFooter';
 import TOC from '@/components/TOC';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import ArticleMeta from '@/components/ArticleMeta';
+import ReadingProgress from '@/components/ReadingProgress';
 import { useLoginGateway } from '@/components/LoginGateway';
 import type { CompanyEntry } from '@/lib/resumeCompanyData';
 import { getCompanyExtended } from '@/lib/resumeCompanyDataExtended';
@@ -24,6 +25,7 @@ export default function CompanyResumeView({ data, related }: Props) {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <ReadingProgress />
       <SiteNavbar />
 
       {/* Hero */}

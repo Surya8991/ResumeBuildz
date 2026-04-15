@@ -1,7 +1,11 @@
+'use client';
+
 import Link from 'next/link';
 import { FileText, Home, ArrowLeft } from 'lucide-react';
+import { useLoginGateway } from '@/components/LoginGateway';
 
 export default function NotFound() {
+  const { openGateway } = useLoginGateway();
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-slate-900 to-black text-white px-4">
       <div className="text-center max-w-md">
@@ -32,12 +36,12 @@ export default function NotFound() {
           >
             <Home className="h-4 w-4" /> Back to Home
           </Link>
-          <Link
-            href="/builder"
+          <button
+            onClick={() => openGateway('/builder')}
             className="inline-flex items-center justify-center gap-2 px-6 py-3 border border-gray-700 text-white rounded-xl font-semibold hover:bg-gray-800 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" /> Open Builder
-          </Link>
+          </button>
         </div>
 
         {/* Helpful links */}

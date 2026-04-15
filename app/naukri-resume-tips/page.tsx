@@ -8,6 +8,7 @@ import SiteFooter from '@/components/SiteFooter';
 import TOC from '@/components/TOC';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import ArticleMeta from '@/components/ArticleMeta';
+import ReadingProgress from '@/components/ReadingProgress';
 import { useLoginGateway } from '@/components/LoginGateway';
 import { articleSchema, faqPageSchema, breadcrumbSchema, combineSchemas, jsonLd } from '@/lib/articleSchema';
 
@@ -145,6 +146,7 @@ export default function NaukriResumeTipsPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(schema) }} />
+      <ReadingProgress />
       <SiteNavbar />
 
       <section className="bg-gradient-to-br from-gray-900 via-slate-900 to-black text-white py-14 md:py-20">

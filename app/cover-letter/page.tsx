@@ -115,7 +115,7 @@ export default function CoverLetterGuidePage() {
               ))}
             </div>
             <p className="text-gray-600 leading-relaxed text-center max-w-2xl mx-auto">
-              Your resume shows what you&apos;ve done. Your cover letter explains why you&apos;re the right person for <em>this</em> job. Even when companies say it&apos;s &quot;optional,&quot; a strong cover letter puts you ahead of everyone who skipped it. Pair it with a well-built <Link href="/builder" className="text-blue-500 hover:underline">ATS-optimized resume</Link> and you&apos;re in a strong position.
+              Your resume shows what you&apos;ve done. Your cover letter explains why you&apos;re the right person for <em>this</em> job. Even when companies say it&apos;s &quot;optional,&quot; a strong cover letter puts you ahead of everyone who skipped it. Pair it with a well-built <button onClick={() => openGateway('/builder')} className="text-blue-500 hover:underline inline">ATS-optimized resume</button> and you&apos;re in a strong position.
             </p>
           </div>
         </section>

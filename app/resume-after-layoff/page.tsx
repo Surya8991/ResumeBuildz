@@ -8,6 +8,7 @@ import SiteFooter from '@/components/SiteFooter';
 import TOC from '@/components/TOC';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import ArticleMeta from '@/components/ArticleMeta';
+import ReadingProgress from '@/components/ReadingProgress';
 import { useLoginGateway } from '@/components/LoginGateway';
 import { articleSchema, faqPageSchema, howToSchema, breadcrumbSchema, combineSchemas, jsonLd } from '@/lib/articleSchema';
 
@@ -199,6 +200,7 @@ export default function ResumeAfterLayoffPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(schema) }} />
+      <ReadingProgress />
       <SiteNavbar />
 
       {/* Hero */}

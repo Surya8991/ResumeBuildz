@@ -55,7 +55,7 @@ export default function ATSGuidePage() {
                   Here&apos;s what happens: the ATS scans your resume, pulls out your contact info, job titles, skills, and education, then compares everything against the job description. If your resume doesn&apos;t match enough keywords and criteria, it gets filtered out, and no recruiter ever sees it.
                 </p>
                 <p className="text-gray-600 leading-relaxed">
-                  The good news? Once you understand how ATS works, it&apos;s not hard to beat. You can check your resume right now with our <Link href="/builder" className="text-blue-500 hover:underline">free ATS score checker</Link>.
+                  The good news? Once you understand how ATS works, it&apos;s not hard to beat. You can check your resume right now with our <button onClick={() => openGateway('/builder')} className="text-blue-500 hover:underline inline">free ATS score checker</button>.
                 </p>
               </div>
             </div>

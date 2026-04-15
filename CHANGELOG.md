@@ -6,6 +6,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ---
 
+## [1.9.0] - 2026-04-15
+
+### Added
+
+- **Long-form article scaffolding** for all 28 content pages (22 company + 6 situation): sticky TOC sidebar (xl+) with mobile accordion, breadcrumb navigation, ArticleMeta bar (author + reading time + last updated + fact-checked badge), JSON-LD Article + FAQPage + HowTo + BreadcrumbList schemas.
+- **components/TOC.tsx** — auto-detects h2 elements on mount, assigns stable IDs, uses IntersectionObserver for active-section highlighting, smooth scroll with URL hash update.
+- **components/Breadcrumbs.tsx** — visual breadcrumbs with Home icon.
+- **components/ArticleMeta.tsx** — author avatar + reading time + last updated + fact-checked badge.
+- **components/ReadingProgress.tsx** — thin blue scroll progress bar + back-to-top floating button. Scoped to long-form pages only (not homepage/builder/marketing).
+- **lib/articleSchema.ts** — Article / FAQPage / HowTo / BreadcrumbList JSON-LD helpers + combineSchemas() for multi-graph pages.
+- **lib/resumeCompanyDataDeep.ts** — 5 new content fields per company: cover letter template (3 paragraphs), 5 common interview questions with hints, 5 red flags that auto-reject, salary benchmark table (3 roles x 3 seniority levels), referral strategy paragraph.
+- **5 new sections on every company page**: Cover letter template, interview questions, red flags, salary benchmarks, referral strategy.
+- **6 situation pages enriched** with topic-specific additions: email templates (layoff, career gap, career change), comparison tables (fresher chronological vs functional vs hybrid), glossary (fresher resume), case studies (Priya/Rohan/Arjun/Meera/Nikhil — composite stories).
+- **/hero-preview internal gallery** at `/hero-preview` with 10 hero variations (5 mouse-tracked tilt + 5 AI-fill animations) for selecting the homepage hero treatment.
+- **CSS keyframes** added to globals.css for marquee and floating animations.
+
+### Changed
+
+- **ReadingProgress scope**: moved out of the global `app/layout.tsx` and now only renders on long-form content pages (6 situation pages + CompanyResumeView covers all 22 company pages). Homepage, builder, templates, pricing, auth, and legal pages no longer show the scroll progress bar.
+- **Login gateway audit**: every remaining direct `<Link href="/builder">` in app/ replaced with a `<button onClick={() => openGateway('/builder')}>` pattern. Fixed in `app/not-found.tsx`, `app/ats-guide/page.tsx`, `app/cover-letter/page.tsx`. The only remaining `href="/builder"` is the post-login profile dropdown link in the navbar, which is intentional (user is already authenticated).
+- **CompanyResumeView** renders 5 additional deep-content sections conditionally when deep data exists (cover letter, questions, red flags, salary, referral).
+
+---
+
 ## [1.8.0] - 2026-04-14
 
 ### Added

@@ -15,6 +15,31 @@ interface ChangelogEntry {
 
 const CHANGELOG: ChangelogEntry[] = [
   {
+    version: 'v1.9.0',
+    date: 'April 15, 2026',
+    title: 'Article Scaffolding, Deep Content & Hero Preview Gallery',
+    added: [
+      'Sticky TOC (desktop sidebar + mobile accordion) on all 28 long-form pages.',
+      'Breadcrumbs + JSON-LD BreadcrumbList schema on every content page.',
+      'ArticleMeta bar with author, reading time, last updated, and fact-checked badge.',
+      'JSON-LD Article + FAQPage + HowTo schemas for rich Google results.',
+      'Scroll progress bar and back-to-top button (scoped to long-form pages only).',
+      '5 new sections on every company page: cover letter template, interview questions, red flags, salary benchmarks, referral strategy.',
+      'Email templates on situation pages (layoff networking, pivot outreach, career gap explanation).',
+      'Comparison table on fresher resume page (chronological vs functional vs hybrid).',
+      '10-term glossary on fresher resume page (ATS, CGPA, DSA, NQT, InfyTQ, NTH, OT, GD, PPT, CTC).',
+      'Composite case studies on every situation page (Priya, Rohan, Arjun, Meera, Nikhil).',
+      'Hero preview gallery at /hero-preview with 10 variations (5 tilt + 5 fill) for homepage hero selection.',
+      'lib/resumeCompanyDataDeep.ts with 4 new content fields per company entry.',
+      'lib/articleSchema.ts with pure helper functions for building JSON-LD graphs.',
+    ],
+    improved: [
+      'Scroll progress bar moved out of global layout — now only renders on blog + resources/long-form pages, not on homepage, builder, or marketing pages.',
+      'Every remaining direct /builder link replaced with useLoginGateway() pattern (not-found, ats-guide, cover-letter).',
+      'Sitemap covers all new URLs. Homepage now has lower visual noise at rest.',
+    ],
+  },
+  {
     version: 'v1.8.0',
     date: 'April 14, 2026',
     title: 'SEO Expansion: 22 Company Guides + 6 Situation Pages',
