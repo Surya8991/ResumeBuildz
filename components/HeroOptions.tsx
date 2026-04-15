@@ -556,6 +556,151 @@ export function Fill4_HighlightSweep() {
 }
 
 // ───────────────────────────────────────────────────────────
+// Option 11 — COMBINED: Score Climb + Suggestion Popups
+// The resume fills in, suggestion chips appear beside each section,
+// each suggestion then "resolves" to a green ✓, and the ATS score chip
+// in the corner climbs in lock-step as each suggestion is resolved.
+// This is the full AI workflow: write → coach → improve → score.
+// ───────────────────────────────────────────────────────────
+export function Fill6_Combined() {
+  const [step, setStep] = useState(0);
+  const [score, setScore] = useState(0);
+
+  // Loop: 14 steps, 600ms each = ~8.4s per cycle
+  useEffect(() => {
+    const timer = setInterval(() => setStep((s) => (s + 1) % 14), 600);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Score target derived from step — each resolved suggestion bumps the score
+  useEffect(() => {
+    const target =
+      step >= 13 ? 94 :
+      step >= 12 ? 82 :
+      step >= 11 ? 68 :
+      step >= 10 ? 52 :
+      step >= 9 ? 36 :
+      step >= 7 ? 22 :
+      step >= 5 ? 12 :
+      step >= 3 ? 6 : 0;
+    const id = setInterval(() => {
+      setScore((s) => {
+        if (s === target) return s;
+        return s < target ? s + 1 : s - 1;
+      });
+    }, 14);
+    return () => clearInterval(id);
+  }, [step]);
+
+  // Suggestion config:
+  //   appearAt = step when the (amber/blue) chip pops in
+  //   resolveAt = step when the chip flips to green check
+  const suggestions = [
+    { top: '10%', side: 'right' as const, initial: 'Strong headline', resolved: 'Strong headline', appearAt: 6, resolveAt: 10 },
+    { top: '32%', side: 'left' as const, initial: '+ metric', resolved: 'Metric added', appearAt: 7, resolveAt: 11 },
+    { top: '52%', side: 'right' as const, initial: 'Use action verb', resolved: 'Strong verb', appearAt: 8, resolveAt: 12 },
+    { top: '74%', side: 'left' as const, initial: 'Quantify this', resolved: 'Quantified', appearAt: 9, resolveAt: 13 },
+  ];
+
+  return (
+    <div className="relative w-[440px] h-[540px] mx-auto">
+      {/* Resume card */}
+      <div className="w-[360px] h-[480px] mx-auto rounded-2xl overflow-hidden bg-white border border-gray-200 shadow-2xl shadow-blue-500/30 p-8">
+        {/* Header */}
+        <div className="space-y-2 mb-6">
+          <div className={`h-6 bg-gray-900 rounded transition-all duration-500 ${step >= 1 ? 'w-40 opacity-100' : 'w-0 opacity-0'}`} />
+          <div className={`h-3 bg-gray-400 rounded transition-all duration-500 ${step >= 2 ? 'w-56 opacity-100' : 'w-0 opacity-0'}`} />
+        </div>
+        {/* Summary */}
+        <div className="space-y-1.5 mb-6">
+          <div className={`h-3 bg-gray-300 rounded transition-all duration-500 ${step >= 3 ? 'w-full opacity-100' : 'w-0 opacity-0'}`} />
+          <div className={`h-3 bg-gray-300 rounded transition-all duration-500 ${step >= 3 ? 'w-[88%] opacity-100' : 'w-0 opacity-0'}`} />
+          <div className={`h-3 bg-gray-300 rounded transition-all duration-500 ${step >= 3 ? 'w-[72%] opacity-100' : 'w-0 opacity-0'}`} />
+        </div>
+        {/* Experience header */}
+        <div className={`h-4 bg-blue-500 rounded mb-3 transition-all duration-500 ${step >= 4 ? 'w-32 opacity-100' : 'w-0 opacity-0'}`} />
+        {/* Experience items */}
+        <div className="space-y-4 mb-6">
+          {[0, 1].map((i) => (
+            <div key={i} className="space-y-1.5">
+              <div className={`h-3 bg-gray-800 rounded transition-all duration-500 ${step >= 5 ? 'w-48 opacity-100' : 'w-0 opacity-0'}`} />
+              <div className={`h-2.5 bg-gray-300 rounded transition-all duration-500 ${step >= 5 ? 'w-full opacity-100' : 'w-0 opacity-0'}`} />
+              <div className={`h-2.5 bg-gray-300 rounded transition-all duration-500 ${step >= 5 ? 'w-[85%] opacity-100' : 'w-0 opacity-0'}`} />
+            </div>
+          ))}
+        </div>
+        {/* Skills header */}
+        <div className={`h-4 bg-blue-500 rounded mb-3 transition-all duration-500 ${step >= 6 ? 'w-24 opacity-100' : 'w-0 opacity-0'}`} />
+        <div className="flex flex-wrap gap-1.5">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <div
+              key={i}
+              className={`h-6 bg-blue-100 rounded-full transition-all duration-500 ${step >= 6 ? 'w-14 opacity-100' : 'w-0 opacity-0'}`}
+              style={{ transitionDelay: `${i * 60}ms` }}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* ATS Score chip — top-right */}
+      <div className="absolute -top-4 -right-2 bg-white rounded-2xl shadow-2xl border border-gray-200 p-4 w-36 z-20">
+        <div className="flex items-center gap-1.5 mb-1">
+          <div className={`h-1.5 w-1.5 rounded-full ${score >= 80 ? 'bg-green-500' : score >= 50 ? 'bg-amber-500' : 'bg-blue-500'} animate-pulse`} />
+          <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">ATS Score</p>
+        </div>
+        <div className="flex items-end gap-1 mb-2">
+          <span className={`text-4xl font-black tabular-nums transition-colors ${score >= 80 ? 'text-green-500' : score >= 50 ? 'text-amber-500' : 'text-blue-500'}`}>
+            {score}
+          </span>
+          <span className="text-sm text-gray-400 mb-1">%</span>
+        </div>
+        <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+          <div
+            className={`h-full rounded-full transition-all duration-300 ${score >= 80 ? 'bg-green-500' : score >= 50 ? 'bg-amber-500' : 'bg-blue-500'}`}
+            style={{ width: `${score}%` }}
+          />
+        </div>
+        {score >= 90 && (
+          <div className="mt-2 flex items-center gap-1 text-[9px] font-bold text-green-600">
+            <CheckCircle2 className="h-3 w-3" />
+            ATS-READY
+          </div>
+        )}
+      </div>
+
+      {/* Suggestion popups */}
+      {suggestions.map((s, i) => {
+        const appeared = step >= s.appearAt;
+        const resolved = step >= s.resolveAt;
+        const colorClasses = resolved
+          ? 'bg-green-500 text-white'
+          : 'bg-amber-400 text-gray-900';
+        return (
+          <div
+            key={i}
+            className={`absolute text-[10px] font-bold px-2.5 py-1 rounded-full shadow-xl flex items-center gap-1 transition-all duration-500 z-10 ${colorClasses} ${
+              appeared ? 'opacity-100' : 'opacity-0'
+            }`}
+            style={{
+              top: s.top,
+              [s.side]: '0',
+              transform: appeared
+                ? 'translateX(0) scale(1)'
+                : s.side === 'right'
+                ? 'translateX(20px) scale(0.8)'
+                : 'translateX(-20px) scale(0.8)',
+            }}
+          >
+            {resolved && <CheckCircle2 className="h-3 w-3" />}
+            <span>{resolved ? s.resolved : s.initial}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ───────────────────────────────────────────────────────────
 // Option 10 — AI Suggestion Popups
 // Resume fills, then contextual suggestion chips pop in next to each
 // section ("add a metric", "strong verb", "quantify this"). Feels like

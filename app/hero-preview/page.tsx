@@ -16,9 +16,10 @@ import {
   Fill3_ScoreClimb,
   Fill4_HighlightSweep,
   Fill5_SuggestionPopups,
+  Fill6_Combined,
 } from '@/components/HeroOptions';
 
-type Family = 'tilt' | 'fill';
+type Family = 'tilt' | 'fill' | 'combined';
 
 interface OptionMeta {
   id: number;
@@ -30,9 +31,25 @@ interface OptionMeta {
   innovation: string;
   complexity: 'Low' | 'Medium' | 'High';
   vibe: string[];
+  featured?: boolean;
 }
 
 const OPTIONS: OptionMeta[] = [
+  // COMBINED (featured)
+  {
+    id: 11,
+    name: 'Combined: Score Climb + Suggestions',
+    family: 'combined',
+    component: Fill6_Combined,
+    inspiration: 'Grammarly + Duolingo + Notion AI',
+    description:
+      'The full AI workflow in one animation. The resume fills in section by section. As each section completes, a coaching chip pops in beside it ("+ metric", "Use action verb", "Quantify this"). A few steps later, each chip resolves to a green check with improved wording ("Metric added", "Strong verb", "Quantified") — and the ATS score chip in the corner climbs in lock-step from 0% → 94% with an "ATS-READY" badge at the end.',
+    innovation:
+      'Tells the complete product story in one loop: the AI writes, the AI coaches, the user improves, the score rises. No other hero in the resume category demonstrates write → review → improve → prove value in a single animation.',
+    complexity: 'High',
+    vibe: ['Full workflow', 'Value-proving', 'Featured'],
+    featured: true,
+  },
   // TILT FAMILY
   {
     id: 1,
