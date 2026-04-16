@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ---
 
+## [1.15.1] - 2026-04-16
+
+### Fixed (codereview pass #2 — 13 findings)
+
+- **High:** `GROQ_MODEL` was duplicated in 4 files (`groqAI.ts`, `AISuggestions.tsx`, `importResume.ts`, `CoverLetterForm.tsx`). Now exported once from `groqAI.ts` and imported everywhere.
+- **High:** `AISuggestions.tsx` duplicated the entire Groq fetch call instead of using `callGroqAI()`. Refactored to use the shared helper; same for `CoverLetterForm.tsx` and `importResume.ts`.
+- **Medium:** `callGroqAI()` enhanced with `status` field on errors (for granular 401/429/402 handling) and optional `apiKeyOverride` parameter (for `importResume.ts` which passes keys explicitly).
+- **Medium:** `ResumePreview.tsx` `overrideCSS` now passes through `sanitizeCSS()` that strips `<script`, `expression()`, and `url(javascript:)` patterns (defense-in-depth; values were already sanitized at construction).
+- **Medium:** `navigator.clipboard.writeText()` wrapped in try/catch in `AISuggestions.tsx` and `CoverLetterForm.tsx`. Shows toast/alert on failure instead of unhandled rejection.
+- **Medium:** `/hero-preview` and `/loader-preview` now use server-rendered `<meta name="robots" content="noindex,nofollow">` via Next.js `layout.tsx` metadata export. Removed client-side `useEffect` injection that search engine crawlers couldn't see.
+- **Low:** `LoaderCard` accepts `size` prop (`'sm' | 'md'`). `Loader7_BottomRightCard` now reuses `<LoaderCard size="sm" />` instead of duplicating skeleton markup.
+- **Low:** `hero-preview` familyLabel now correctly shows "Combined" (with amber badge) instead of "Fill" for combined-family options.
+- **Low:** `Loader10_SparkleCursor` documented: mousemove listener won't fire when parent has `pointer-events:none` (e.g., production PageLoader overlay). Only suitable for interactive containers.
+
+---
+
 ## [1.15.0] - 2026-04-16
 
 ### Added

@@ -447,30 +447,19 @@ function parseEntries(lines: string[]): { title: string; subtitle: string; locat
 
 // ---- AI Parsing via Groq ----
 
-const GROQ_MODEL = 'llama-3.3-70b-versatile';
+import { callGroqAI } from '@/components/ats/utils/groqAI';
 
 async function parseWithAI(rawText: string, apiKey: string): Promise<ResumeData | null> {
-  try {
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-      body: JSON.stringify({
-        model: GROQ_MODEL,
-        messages: [
-          { role: 'system', content: `You are a resume parser. Return ONLY valid JSON matching this schema (no markdown):
+  const systemPrompt = `You are a resume parser. Return ONLY valid JSON matching this schema (no markdown):
 {"personalInfo":{"fullName":"","jobTitle":"","email":"","phone":"","location":"","linkedin":"","website":"","github":"","photo":""},"summary":"","coverLetter":"","experience":[{"id":"exp-1","company":"","position":"","location":"","startDate":"","endDate":"","current":false,"description":"","highlights":[]}],"education":[{"id":"edu-1","institution":"","degree":"","field":"","location":"","startDate":"","endDate":"","gpa":"","highlights":[]}],"skills":[{"id":"skill-1","category":"","items":[]}],"projects":[{"id":"proj-1","name":"","description":"","technologies":[],"link":"","startDate":"","endDate":"","highlights":[]}],"certifications":[{"id":"cert-1","name":"","issuer":"","date":"","expiryDate":"","credentialId":"","url":""}],"languages":[{"id":"lang-1","name":"","proficiency":"Native|Fluent|Advanced|Intermediate|Basic"}],"customSections":[],"sectionOrder":["summary","experience","education","skills","projects","certifications","languages"]}
-Extract ALL bullet points completely. Keep exact text. Use unique IDs. Set current:true for "Present". Return ONLY JSON.` },
-          { role: 'user', content: rawText },
-        ],
-        max_tokens: 4000, temperature: 0.1,
-      }),
-    });
-    if (!response.ok) return null;
-    const data = await response.json();
-    const content = data.choices?.[0]?.message?.content?.trim();
-    if (!content) return null;
-    let jsonStr = content;
-    const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/);
+Extract ALL bullet points completely. Keep exact text. Use unique IDs. Set current:true for "Present". Return ONLY JSON.`;
+
+  const res = await callGroqAI(systemPrompt, rawText, 4000, 0.1, apiKey);
+  if (!res.success || !res.content) return null;
+
+  try {
+    let jsonStr = res.content;
+    const jsonMatch = res.content.match(/```(?:json)?\s*([\s\S]*?)```/);
     if (jsonMatch) jsonStr = jsonMatch[1].trim();
     const parsed = JSON.parse(jsonStr);
     if (!parsed?.personalInfo) return null;

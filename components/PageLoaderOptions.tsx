@@ -131,23 +131,8 @@ export function Loader6_EqualizerBars() {
 // ───────────────────────────────────────────────────────────
 export function Loader7_BottomRightCard() {
   return (
-    <div className="absolute bottom-4 right-4 w-44 bg-white rounded-xl shadow-2xl shadow-blue-500/30 border border-gray-200 p-4 z-50">
-      <div className="flex items-center gap-2 mb-3">
-        <div className="h-2 w-2 rounded-full bg-blue-500 motion-safe:animate-pulse" />
-        <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
-          Loading page
-        </p>
-      </div>
-      <div className="space-y-1.5 mb-2">
-        <div className="h-2 bg-gray-900 rounded motion-safe:animate-pulse" style={{ width: '60%' }} />
-        <div className="h-1.5 bg-gray-300 rounded motion-safe:animate-pulse" style={{ width: '90%', animationDelay: '100ms' }} />
-        <div className="h-1.5 bg-gray-300 rounded motion-safe:animate-pulse" style={{ width: '75%', animationDelay: '200ms' }} />
-      </div>
-      <div className="h-2 bg-blue-500 rounded mb-1.5 motion-safe:animate-pulse" style={{ width: '40%' }} />
-      <div className="space-y-1">
-        <div className="h-1.5 bg-gray-300 rounded motion-safe:animate-pulse" style={{ width: '100%', animationDelay: '300ms' }} />
-        <div className="h-1.5 bg-gray-300 rounded motion-safe:animate-pulse" style={{ width: '85%', animationDelay: '400ms' }} />
-      </div>
+    <div className="absolute bottom-4 right-4 z-50">
+      <LoaderCard size="sm" />
     </div>
   );
 }
@@ -189,6 +174,10 @@ export function Loader9_AuroraSweep() {
 
 // ───────────────────────────────────────────────────────────
 // Option 10 — Sparkle Cursor Pill (Linear / modern AI tools)
+// NOTE: This loader tracks mousemove on its parentElement. If the parent has
+// pointer-events:none (like the production PageLoader overlay), the listener
+// will never fire and the pill stays at center. Only suitable for contexts
+// where the container is interactive (e.g., the /loader-preview gallery).
 // ───────────────────────────────────────────────────────────
 export function Loader10_SparkleCursor() {
   const ref = useRef<HTMLDivElement>(null);

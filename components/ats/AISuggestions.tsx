@@ -12,8 +12,7 @@ import { getUsage, incrementUsage, canUse } from '@/lib/usage';
 import UpgradeModal from '@/components/UpgradeModal';
 import { useToast } from '@/components/Toast';
 import { useAuthContext } from '@/components/Providers';
-
-const GROQ_MODEL = 'llama-3.3-70b-versatile';
+import { callGroqAI } from '@/components/ats/utils/groqAI';
 
 function getResumeContext(resumeData: ReturnType<typeof useResumeStore.getState>['resumeData']): string {
   const parts: string[] = [];
@@ -92,81 +91,48 @@ export default function AISuggestions() {
     setError('');
     setResult('');
 
-    try {
-      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          model: GROQ_MODEL,
-          messages: [
-            {
-              role: 'system',
-              content: 'You are a professional resume writer and ATS optimization expert. Give concise, actionable suggestions. Do not include any preamble or explanation - just the requested content.',
-            },
-            {
-              role: 'user',
-              content: `Here is the resume:\n\n${resumeContext}\n\n${prompt}`,
-            },
-          ],
-          max_tokens: 500,
-          temperature: 0.7,
-        }),
-      });
+    const res = await callGroqAI(
+      'You are a professional resume writer and ATS optimization expert. Give concise, actionable suggestions. Do not include any preamble or explanation - just the requested content.',
+      `Here is the resume:\n\n${resumeContext}\n\n${prompt}`,
+      500,
+      0.7,
+    );
+    setLoading(false);
 
-      if (!response.ok) {
-        const errData = await response.json().catch(() => ({}));
-        if (response.status === 401) {
-          setError('Invalid API key. Please check your Groq API key.');
-          setShowKeyInput(true);
-        } else if (response.status === 429) {
-          setError('Rate limit reached. Please wait a moment and try again.');
-        } else if (response.status === 402 || response.status === 403) {
-          setError('Quota exceeded. Check your Groq account at console.groq.com.');
-        } else {
-          setError(errData?.error?.message || `API error (${response.status}). Try again.`);
-        }
-        showToast('AI request failed. See error details below.', 'warning');
-        return;
-      }
-
-      let data;
-      try {
-        data = await response.json();
-      } catch {
-        setError('Invalid response from AI service. Try again.');
-        showToast('AI response was malformed. Try again.', 'warning');
-        return;
-      }
-
-      const content = data?.choices?.[0]?.message?.content?.trim();
-      if (typeof content === 'string' && content.length > 0) {
-        setResult(content);
-        incrementUsage('ai');
-        const remaining = getUsage('ai').remaining;
-        setAiRemaining(remaining);
-        if (remaining === 0) {
-          showToast('Last free AI rewrite used today. Upgrade for unlimited.', 'warning', 5000);
-        } else {
-          showToast('AI suggestion generated! Copy it to your resume.', 'success');
-        }
+    if (!res.success) {
+      if (res.status === 401) {
+        setError('Invalid API key. Please check your Groq API key.');
+        setShowKeyInput(true);
+      } else if (res.status === 429) {
+        setError('Rate limit reached. Please wait a moment and try again.');
+      } else if (res.status === 402 || res.status === 403) {
+        setError('Quota exceeded. Check your Groq account at console.groq.com.');
       } else {
-        setError('No suggestion was generated. Try a different prompt or try again.');
-        showToast('AI returned an empty response. Try again.', 'warning');
+        setError(res.error || 'AI request failed. Try again.');
       }
-    } catch {
-      setError('Failed to connect to AI service. Check your internet connection.');
-    } finally {
-      setLoading(false);
+      showToast('AI request failed. See error details below.', 'warning');
+      return;
+    }
+
+    setResult(res.content!);
+    incrementUsage('ai');
+    const remaining = getUsage('ai').remaining;
+    setAiRemaining(remaining);
+    if (remaining === 0) {
+      showToast('Last free AI rewrite used today. Upgrade for unlimited.', 'warning', 5000);
+    } else {
+      showToast('AI suggestion generated! Copy it to your resume.', 'success');
     }
   };
 
   const copyToClipboard = async () => {
-    await navigator.clipboard.writeText(result);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    try {
+      await navigator.clipboard.writeText(result);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      showToast('Failed to copy — try selecting the text manually.', 'warning');
+    }
   };
 
   return (

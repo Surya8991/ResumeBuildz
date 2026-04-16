@@ -6,7 +6,35 @@
 // `motion-reduce:` variants — users with the OS-level "Reduce motion"
 // setting see a static skeleton with no pulse animation.
 
-export default function LoaderCard() {
+interface LoaderCardProps {
+  /** 'md' (default) for the full-size centered loader, 'sm' for the floating mini card. */
+  size?: 'sm' | 'md';
+}
+
+export default function LoaderCard({ size = 'md' }: LoaderCardProps) {
+  if (size === 'sm') {
+    return (
+      <div className="w-44 rounded-xl bg-white border border-gray-200 shadow-2xl shadow-blue-500/30 p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="h-2 w-2 rounded-full bg-blue-500 motion-safe:animate-pulse" />
+          <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
+            Loading page
+          </p>
+        </div>
+        <div className="space-y-1.5 mb-2">
+          <div className="h-2 bg-gray-900 rounded motion-safe:animate-pulse" style={{ width: '60%' }} />
+          <div className="h-1.5 bg-gray-300 rounded motion-safe:animate-pulse" style={{ width: '90%', animationDelay: '100ms' }} />
+          <div className="h-1.5 bg-gray-300 rounded motion-safe:animate-pulse" style={{ width: '75%', animationDelay: '200ms' }} />
+        </div>
+        <div className="h-2 bg-blue-500 rounded mb-1.5 motion-safe:animate-pulse" style={{ width: '40%' }} />
+        <div className="space-y-1">
+          <div className="h-1.5 bg-gray-300 rounded motion-safe:animate-pulse" style={{ width: '100%', animationDelay: '300ms' }} />
+          <div className="h-1.5 bg-gray-300 rounded motion-safe:animate-pulse" style={{ width: '85%', animationDelay: '400ms' }} />
+        </div>
+      </div>
+    );
+  }
+
   // motion-safe applies the pulse animation only when the user has NOT
   // enabled prefers-reduced-motion. motion-reduce hides the dot's pulse.
   return (

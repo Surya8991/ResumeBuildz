@@ -15,6 +15,22 @@ interface ChangelogEntry {
 
 const CHANGELOG: ChangelogEntry[] = [
   {
+    version: 'v1.15.1',
+    date: 'April 16, 2026',
+    title: 'Codereview Pass #2 — 13 Findings Fixed',
+    added: [],
+    improved: [
+      'Groq AI: GROQ_MODEL + fetch logic consolidated into single callGroqAI() helper. Removed 3 duplicate declarations and 3 duplicate fetch implementations (AISuggestions, CoverLetterForm, importResume).',
+      'callGroqAI() now returns HTTP status on errors (for granular 401/429/402 handling) and accepts optional apiKey override.',
+      'ResumePreview: overrideCSS sanitized via sanitizeCSS() that strips <script>, expression(), and url(javascript:) patterns.',
+      'Clipboard: navigator.clipboard.writeText() wrapped in try/catch in AISuggestions and CoverLetterForm.',
+      '/hero-preview and /loader-preview: noindex,nofollow now server-rendered via Next.js layout.tsx metadata. Removed client-side useEffect injection.',
+      'LoaderCard: accepts size prop (sm/md). Loader7_BottomRightCard reuses shared component instead of duplicating markup.',
+      'hero-preview: familyLabel correctly shows "Combined" with amber badge for combined-family options.',
+      'Loader10_SparkleCursor: documented pointer-events constraint for production contexts.',
+    ],
+  },
+  {
     version: 'v1.15.0',
     date: 'April 16, 2026',
     title: 'PageLoader Hardening (Codereview Pass)',

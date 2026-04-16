@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Sparkles, Copy, Check } from 'lucide-react';
+import { callGroqAI } from '@/components/ats/utils/groqAI';
 
 export default function CoverLetterForm() {
   const { resumeData, updateCoverLetter } = useResumeStore();
@@ -39,31 +40,25 @@ export default function CoverLetterForm() {
     ].filter(Boolean).join('\n');
 
     setLoading(true);
-    try {
-      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-        body: JSON.stringify({
-          model: 'llama-3.3-70b-versatile',
-          messages: [
-            { role: 'system', content: 'Write a professional cover letter. Be concise (250-350 words). No placeholders  -  use the provided details. Return only the letter text.' },
-            { role: 'user', content: `Write a cover letter for ${jobTitle || 'a role'} at ${company || 'a company'}.\n\nCandidate info:\n${context}` },
-          ],
-          max_tokens: 800, temperature: 0.7,
-        }),
-      });
-      if (!res.ok) { alert('AI generation failed. Check your API key.'); return; }
-      const data = await res.json();
-      const text = data.choices?.[0]?.message?.content?.trim();
-      if (text) updateCoverLetter(text);
-    } catch { alert('Failed to connect to AI service.'); }
-    finally { setLoading(false); }
+    const res = await callGroqAI(
+      'Write a professional cover letter. Be concise (250-350 words). No placeholders  -  use the provided details. Return only the letter text.',
+      `Write a cover letter for ${jobTitle || 'a role'} at ${company || 'a company'}.\n\nCandidate info:\n${context}`,
+      800,
+      0.7,
+    );
+    setLoading(false);
+    if (!res.success) { alert(res.error || 'AI generation failed.'); return; }
+    if (res.content) updateCoverLetter(res.content);
   };
 
   const copyToClipboard = async () => {
-    await navigator.clipboard.writeText(resumeData.coverLetter);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    try {
+      await navigator.clipboard.writeText(resumeData.coverLetter);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      alert('Failed to copy — try selecting the text manually.');
+    }
   };
 
   return (

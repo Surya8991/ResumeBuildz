@@ -17,6 +17,15 @@ function clamp(val: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, val));
 }
 
+/** Strip patterns that could escape a <style> tag or execute code. */
+function sanitizeCSS(css: string): string {
+  return css
+    .replace(/<\/?style/gi, '')
+    .replace(/<\/?\s*script/gi, '')
+    .replace(/expression\s*\(/gi, '')
+    .replace(/url\s*\(\s*javascript:/gi, '');
+}
+
 const ResumePreview = forwardRef<HTMLDivElement>((_, ref) => {
   const { resumeData, selectedTemplate, primaryColor, styleOptions } = useResumeStore();
   const TemplateComponent = getTemplateComponent(selectedTemplate);
@@ -91,7 +100,7 @@ const ResumePreview = forwardRef<HTMLDivElement>((_, ref) => {
         position: 'relative',
       }}
     >
-      {overrideCSS && <style dangerouslySetInnerHTML={{ __html: overrideCSS }} />}
+      {overrideCSS && <style dangerouslySetInnerHTML={{ __html: sanitizeCSS(overrideCSS) }} />}
       {createElement(TemplateComponent, { data: resumeData, primaryColor, styleOptions })}
       {pageBreaks.map((y, i) => (
         <div key={i}>

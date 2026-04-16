@@ -1,4 +1,4 @@
-const GROQ_MODEL = 'llama-3.3-70b-versatile';
+export const GROQ_MODEL = 'llama-3.3-70b-versatile';
 const GROQ_ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
 
 export function getGroqApiKey(): string | null {
@@ -10,9 +10,10 @@ export async function callGroqAI(
   systemPrompt: string,
   userPrompt: string,
   maxTokens: number = 300,
-  temperature: number = 0.7
-): Promise<{ success: boolean; content?: string; error?: string }> {
-  const apiKey = getGroqApiKey();
+  temperature: number = 0.7,
+  apiKeyOverride?: string
+): Promise<{ success: boolean; content?: string; error?: string; status?: number }> {
+  const apiKey = apiKeyOverride || getGroqApiKey();
   if (!apiKey) return { success: false, error: 'No API key configured' };
 
   try {
@@ -34,9 +35,13 @@ export async function callGroqAI(
     });
 
     if (!response.ok) {
-      if (response.status === 401) return { success: false, error: 'Invalid API key' };
+      if (response.status === 401) return { success: false, error: 'Invalid API key', status: 401 };
       const errData = await response.json().catch(() => ({}));
-      return { success: false, error: errData?.error?.message || `API error (${response.status})` };
+      return {
+        success: false,
+        error: errData?.error?.message || `API error (${response.status})`,
+        status: response.status,
+      };
     }
 
     const data = await response.json();

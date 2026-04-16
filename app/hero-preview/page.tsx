@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Check, MousePointer2, Sparkles as SparklesIcon } from 'lucide-react';
 import SiteNavbar from '@/components/SiteNavbar';
@@ -194,23 +194,6 @@ export default function HeroPreviewPage() {
   const [selected, setSelected] = useState<number | null>(null);
   const [familyFilter, setFamilyFilter] = useState<Family | 'all'>('all');
 
-  useEffect(() => {
-    document.title = 'Hero Preview Gallery (internal) - ResumeBuildz';
-    // Prevent search engines from indexing this internal selection tool
-    let robotsTag = document.querySelector('meta[name="robots"]') as HTMLMetaElement | null;
-    if (!robotsTag) {
-      robotsTag = document.createElement('meta');
-      robotsTag.name = 'robots';
-      document.head.appendChild(robotsTag);
-    }
-    const previousContent = robotsTag.getAttribute('content');
-    robotsTag.setAttribute('content', 'noindex,nofollow');
-    return () => {
-      if (previousContent) robotsTag?.setAttribute('content', previousContent);
-      else robotsTag?.remove();
-    };
-  }, []);
-
   const visibleOptions = familyFilter === 'all' ? OPTIONS : OPTIONS.filter((o) => o.family === familyFilter);
 
   return (
@@ -267,8 +250,8 @@ export default function HeroPreviewPage() {
           {visibleOptions.map((opt) => {
             const Comp = opt.component;
             const isSelected = selected === opt.id;
-            const familyLabel = opt.family === 'tilt' ? 'Tilt' : 'Fill';
-            const familyColor = opt.family === 'tilt' ? 'bg-purple-100 text-purple-700' : 'bg-sky-100 text-sky-700';
+            const familyLabel = opt.family === 'tilt' ? 'Tilt' : opt.family === 'combined' ? 'Combined' : 'Fill';
+            const familyColor = opt.family === 'tilt' ? 'bg-purple-100 text-purple-700' : opt.family === 'combined' ? 'bg-amber-100 text-amber-700' : 'bg-sky-100 text-sky-700';
             return (
               <div
                 key={opt.id}
