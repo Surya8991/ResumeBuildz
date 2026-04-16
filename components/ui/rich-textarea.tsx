@@ -9,6 +9,8 @@ interface RichTextareaProps {
   placeholder?: string;
   rows?: number;
   className?: string;
+  /** Hard cap on text length. Protects against DoS via multi-megabyte paste. */
+  maxLength?: number;
 }
 
 function insertAtCursor(textarea: HTMLTextAreaElement, before: string, after: string = '') {
@@ -67,7 +69,7 @@ function toggleLinePrefix(textarea: HTMLTextAreaElement, prefix: string) {
   textarea.focus();
 }
 
-export default function RichTextarea({ value, onChange, placeholder, rows = 5, className = '' }: RichTextareaProps) {
+export default function RichTextarea({ value, onChange, placeholder, rows = 5, className = '', maxLength }: RichTextareaProps) {
   const ref = useRef<HTMLTextAreaElement>(null);
 
   const handleBold = () => {
@@ -146,10 +148,16 @@ export default function RichTextarea({ value, onChange, placeholder, rows = 5, c
       <textarea
         ref={ref}
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => {
+          const v = maxLength !== undefined && e.target.value.length > maxLength
+            ? e.target.value.slice(0, maxLength)
+            : e.target.value;
+          onChange(v);
+        }}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
         rows={rows}
+        maxLength={maxLength}
         className={`flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none ${className}`}
       />
     </div>

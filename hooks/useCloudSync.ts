@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useResumeStore } from '@/store/useResumeStore';
+import { logger } from '@/lib/logger';
 
 // Cloud sync hook — mirrors the local resume store to a Supabase `resumes`
 // table so the user's data follows them across devices.
@@ -57,7 +58,7 @@ export function useCloudSync(): { state: SyncState; lastSyncedAt: number | null 
         if (cancelled) return;
         if (error) {
           // Table likely doesn't exist yet — silently drop sync.
-          console.warn('Cloud sync unavailable:', error.message);
+          logger.warn('Cloud sync unavailable:', error.message);
           setState('offline');
           return;
         }
@@ -72,7 +73,7 @@ export function useCloudSync(): { state: SyncState; lastSyncedAt: number | null 
         }
         setState('idle');
       } catch (err) {
-        console.warn('Cloud pull failed:', err);
+        logger.warn('Cloud pull failed:', err);
         if (!cancelled) setState('error');
       }
     })();
@@ -101,7 +102,7 @@ export function useCloudSync(): { state: SyncState; lastSyncedAt: number | null 
           .from('resumes')
           .upsert({ user_id: user.id, data: resumeData, updated_at: new Date().toISOString() });
         if (error) {
-          console.warn('Cloud push failed:', error.message);
+          logger.warn('Cloud push failed:', error.message);
           setState('error');
           return;
         }
@@ -109,7 +110,7 @@ export function useCloudSync(): { state: SyncState; lastSyncedAt: number | null 
         setLastSyncedAt(Date.now());
         setState('idle');
       } catch (err) {
-        console.warn('Cloud push failed:', err);
+        logger.warn('Cloud push failed:', err);
         setState('error');
       }
     }, 2500);

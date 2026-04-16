@@ -6,6 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ---
 
+## [1.19.0] - 2026-04-16
+
+### Security — 10 hardening fixes
+
+1. **Content-Security-Policy** header added (`next.config.ts`) with `frame-ancestors 'none'`, `object-src 'none'`, strict `default-src 'self'`, and allowlisted `connect-src` for Supabase + Groq + Vercel. Also adds `Cross-Origin-Opener-Policy` and `Cross-Origin-Resource-Policy`.
+2. **Rate limit on `/api/checkout`** (`lib/rateLimit.ts`): in-memory token bucket, 10 sessions/hour/IP. Protects against Stripe-fee DoS.
+3. **CSRF / Origin verification on `/api/checkout`**: rejects cross-origin POSTs. Prevents hidden-form attacks from racking up checkout sessions.
+4. **Photo upload magic-byte validation** (`lib/imageMagic.ts`): verifies first 12 bytes match JPEG/PNG/GIF/WebP signatures before accepting. MIME type alone was spoofable.
+5. **`maxLength` support in RichTextarea** + 2000-char cap on summary. Defense against multi-MB paste DoS. Pattern available for all RichTextarea usages.
+6. **`Referrer-Policy: no-referrer`** on `/r/*` share pages. Even though URL fragments never hit the wire, this prevents leaking resume content via any potential Referer on outbound link clicks.
+7. **Narrowed proxy middleware matcher** to only auth-requiring paths (`/builder`, `/login`, `/auth/*`, `/api/*`, `/pricing`). Marketing pages no longer trigger Supabase session refresh on every request — less attack surface + faster TTFB.
+8. **Stripe webhook signature stub** at `/api/stripe/webhook`: reads raw body, verifies with `STRIPE_WEBHOOK_SECRET`, routes 4 event types. Returns 503 until env vars set so Stripe retries. Prevents spoofed subscription upgrades.
+9. **BYOK security warning banner** in AI tab: explicit callout that the Groq key lives in localStorage and is vulnerable to XSS/extensions, with rotation + spending-cap guidance.
+10. **Production-safe logger** (`lib/logger.ts`): silences `.info`/`.warn` in prod, scrubs sensitive keys (password/token/secret/api_key/auth/cookie/session) from `.error` args. Wired into useAuth, useCloudSync, proxy, webhook handler.
+
+### Added
+- Local PDF.js worker `Content-Type` header (`text/javascript`) and 1-year `Cache-Control`.
+
+---
+
 ## [1.18.0] - 2026-04-16
 
 ### Added — 8 roadmap features shipped

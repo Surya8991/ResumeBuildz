@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PLANS, type PlanId, isStripeConfigured } from '@/lib/stripe';
 import { SITE_URL } from '@/lib/siteConfig';
+import { rateLimit, clientId } from '@/lib/rateLimit';
 
 // Stripe checkout session creator.
 //
@@ -14,6 +15,38 @@ import { SITE_URL } from '@/lib/siteConfig';
 // actually used, so the app still builds without it installed.
 
 export async function POST(req: NextRequest) {
+  // ── CSRF defense: require same-origin POST ──────────────────────────
+  // Checkout sessions cost money. A cross-origin attacker embedding a
+  // hidden form on evil.com would otherwise create sessions in our
+  // Stripe account using a victim's cookies. We verify Origin (set by
+  // every modern browser on POST) matches SITE_URL.
+  const origin = req.headers.get('origin');
+  if (!origin) {
+    return NextResponse.json({ error: 'Missing Origin header' }, { status: 403 });
+  }
+  try {
+    const reqOrigin = new URL(origin).origin;
+    const siteOrigin = new URL(SITE_URL).origin;
+    // In dev, also allow localhost origins so http://localhost:5467 works.
+    const devOk = process.env.NODE_ENV !== 'production' && /^http:\/\/(localhost|127\.0\.0\.1)/.test(reqOrigin);
+    if (reqOrigin !== siteOrigin && !devOk) {
+      return NextResponse.json({ error: 'Cross-origin requests not allowed' }, { status: 403 });
+    }
+  } catch {
+    return NextResponse.json({ error: 'Invalid Origin' }, { status: 403 });
+  }
+
+  // ── Rate limit: 10 checkout sessions / hour / IP ────────────────────
+  // Protects against Stripe-fee exhaustion + accidental double-clicks.
+  const id = clientId(req);
+  const rl = rateLimit(`checkout:${id}`, 10, 60 * 60 * 1000);
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: `Rate limited. Try again in ${rl.retryAfterSec}s.`, code: 'rate_limited' },
+      { status: 429, headers: { 'Retry-After': String(rl.retryAfterSec) } },
+    );
+  }
+
   if (!isStripeConfigured()) {
     return NextResponse.json(
       {

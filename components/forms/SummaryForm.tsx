@@ -19,6 +19,7 @@ export default function SummaryForm() {
           onChange={(v) => updateSummary(v)}
           placeholder="Results-driven software engineer with 5+ years of experience..."
           rows={5}
+          maxLength={2000}
         />
         <p className="text-xs text-muted-foreground mt-1">
           {resumeData.summary.length} characters

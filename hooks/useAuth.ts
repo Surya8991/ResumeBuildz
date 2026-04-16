@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
+import { logger } from '@/lib/logger';
 
 export type Profile = {
   id: string;
@@ -28,10 +29,10 @@ export function useAuth() {
           .select('id, email, full_name, avatar_url, plan, ai_rewrites_used, ai_rewrites_reset_date')
           .eq('id', userId)
           .single();
-        if (error) console.warn('Profile fetch failed:', error.message);
+        if (error) logger.warn('Profile fetch failed:', error.message);
         if (data) setProfile(data);
       } catch (err) {
-        console.warn('Profile fetch error:', err);
+        logger.warn('Profile fetch error:', err);
       }
     },
     [supabase]
@@ -171,11 +172,11 @@ export function useAuth() {
     try {
       const { error: fnError } = await supabase.functions.invoke('delete-user');
       if (fnError) {
-        console.warn('delete-user function failed, falling back:', fnError.message);
+        logger.warn('delete-user function failed, falling back:', fnError.message);
         edgeFailed = true;
       }
     } catch (err) {
-      console.warn('delete-user function unavailable, falling back:', err);
+      logger.warn('delete-user function unavailable, falling back:', err);
       edgeFailed = true;
     }
 

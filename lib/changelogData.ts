@@ -14,6 +14,29 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: 'v1.19.0',
+    date: 'April 16, 2026',
+    isoDate: '2026-04-16',
+    title: 'Security Hardening — 10 Cybersecurity Fixes',
+    added: [
+      'Content-Security-Policy header with frame-ancestors none, strict default-src, allowlisted connect-src.',
+      'In-memory rate limiter (lib/rateLimit.ts) — 10 sessions/hour/IP on /api/checkout.',
+      'CSRF defense: Origin verification on /api/checkout rejects cross-origin POSTs.',
+      'Photo upload magic-byte validation (lib/imageMagic.ts) — MIME spoofing no longer accepted.',
+      'maxLength support in RichTextarea + 2000-char cap on summary.',
+      'Referrer-Policy: no-referrer on /r/* share pages.',
+      'Stripe webhook signature stub with 4 event-type routing at /api/stripe/webhook.',
+      'BYOK security warning banner in AI tab (XSS/extension risk + rotation guidance).',
+      'Production-safe logger (lib/logger.ts) scrubs password/token/secret/api_key/auth/cookie keys.',
+    ],
+    improved: [
+      'Narrowed Supabase middleware matcher to /builder, /auth/*, /api/*, /login, /pricing. Marketing pages no longer hit auth refresh.',
+      'Added Cross-Origin-Opener-Policy + Cross-Origin-Resource-Policy headers.',
+      '/pdfjs/ worker served with correct Content-Type and 1-year immutable cache.',
+      'useAuth, useCloudSync, proxy, webhook handler all use logger instead of console.',
+    ],
+  },
+  {
     version: 'v1.18.0',
     date: 'April 16, 2026',
     isoDate: '2026-04-16',

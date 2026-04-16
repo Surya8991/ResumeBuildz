@@ -159,6 +159,15 @@ export default function AISuggestions() {
             2. Click &quot;Create API Key&quot; and copy it<br/>
             3. Paste it below  -  stored only in your browser, never on any server
           </p>
+          <div className="text-[11px] bg-amber-50 border border-amber-200 rounded-md p-2 space-y-1 text-amber-900">
+            <p className="font-semibold">Security notice</p>
+            <ul className="list-disc list-inside space-y-0.5">
+              <li>Key lives in localStorage — any browser extension or XSS could read it.</li>
+              <li>Set a <strong>low spending cap</strong> in the Groq console so leaks are bounded.</li>
+              <li>Rotate the key if you sign in on a shared/public machine.</li>
+              <li>Use &ldquo;Change key&rdquo; above to remove it when finished.</li>
+            </ul>
+          </div>
           <div className="flex gap-2">
             <input
               type="password"

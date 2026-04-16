@@ -36,7 +36,7 @@ export default function PersonalInfoForm() {
     { key: 'github' as const, label: 'GitHub', icon: Code, placeholder: 'e.g. github.com/johndoe', type: 'url' },
   ];
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     // Whitelist allowed image MIME types (no SVG to prevent embedded scripts)
@@ -47,6 +47,14 @@ export default function PersonalInfoForm() {
     }
     if (file.size > 2 * 1024 * 1024) {
       alert('Photo must be under 2MB');
+      return;
+    }
+    // Magic-byte check: MIME type is spoofable by renaming. Verify actual
+    // file bytes match one of the allowed image signatures.
+    const { detectImageKind } = await import('@/lib/imageMagic');
+    const kind = await detectImageKind(file);
+    if (!kind) {
+      alert('File does not appear to be a valid image. Please pick another.');
       return;
     }
     const reader = new FileReader();
