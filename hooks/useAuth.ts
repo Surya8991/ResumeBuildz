@@ -162,12 +162,31 @@ export function useAuth() {
 
   const deleteAccount = useCallback(async () => {
     if (!user) return { error: new Error('Not signed in') };
-    // Delete profile row (cascades from auth.users via FK)
-    const { error: profileError } = await supabase.from('profiles').delete().eq('id', user.id);
-    if (profileError) return { error: profileError };
-    // Sign out the user
+
+    // Primary path: invoke the delete-user Edge Function which deletes BOTH
+    // the profiles row and the auth.users row (GDPR-compliant). If the
+    // function isn't deployed yet (404 / FunctionsHttpError), fall back to
+    // the legacy profile-only delete so users aren't blocked.
+    let edgeFailed = false;
+    try {
+      const { error: fnError } = await supabase.functions.invoke('delete-user');
+      if (fnError) {
+        console.warn('delete-user function failed, falling back:', fnError.message);
+        edgeFailed = true;
+      }
+    } catch (err) {
+      console.warn('delete-user function unavailable, falling back:', err);
+      edgeFailed = true;
+    }
+
+    if (edgeFailed) {
+      // Legacy fallback: delete only the profiles row. The auth.users row
+      // will persist — deploy the delete-user Edge Function to fix that.
+      const { error: profileError } = await supabase.from('profiles').delete().eq('id', user.id);
+      if (profileError) return { error: profileError };
+    }
+
     await supabase.auth.signOut();
-    // Clear localStorage
     if (typeof window !== 'undefined') {
       localStorage.removeItem('resumeforge-storage');
       localStorage.removeItem('resumeforge-usage-ai');

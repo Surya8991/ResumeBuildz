@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Sparkles, Copy, Check } from 'lucide-react';
-import { callGroqAI } from '@/components/ats/utils/groqAI';
+import { streamGroqAI } from '@/components/ats/utils/groqAI';
 
 export default function CoverLetterForm() {
   const { resumeData, updateCoverLetter } = useResumeStore();
@@ -40,15 +40,17 @@ export default function CoverLetterForm() {
     ].filter(Boolean).join('\n');
 
     setLoading(true);
+    // Clear any existing letter so streamed output replaces it cleanly.
+    updateCoverLetter('');
     try {
-      const res = await callGroqAI(
+      const res = await streamGroqAI(
         'Write a professional cover letter. Be concise (250-350 words). No placeholders  -  use the provided details. Return only the letter text.',
         `Write a cover letter for ${jobTitle || 'a role'} at ${company || 'a company'}.\n\nCandidate info:\n${context}`,
+        (_delta, full) => updateCoverLetter(full),
         800,
         0.7,
       );
-      if (!res.success) { alert(res.error || 'AI generation failed.'); return; }
-      if (res.content) updateCoverLetter(res.content);
+      if (!res.success) alert(res.error || 'AI generation failed.');
     } catch {
       alert('Failed to connect to AI service.');
     } finally {

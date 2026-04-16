@@ -81,6 +81,12 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        {/* Apply dark class before first paint to avoid FOUC */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(localStorage.getItem('resumeforge-dark')==='1')document.documentElement.classList.add('dark');}catch(e){}`,
+          }}
+        />
         <meta name="theme-color" content="#2563eb" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />

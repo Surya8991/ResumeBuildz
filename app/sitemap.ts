@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { COMPANIES } from '@/lib/resumeCompanyData';
 import { BLOG_CATEGORIES } from '@/lib/blogCategories';
+import { BLOG_POSTS } from '@/lib/blogPosts';
 import { SITE_URL } from '@/lib/siteConfig';
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -20,6 +21,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/terms`, lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${base}/contact`, lastModified: now, changeFrequency: 'monthly', priority: 0.4 },
     { url: `${base}/changelog`, lastModified: now, changeFrequency: 'monthly', priority: 0.3 },
+    { url: `${base}/roadmap`, lastModified: now, changeFrequency: 'weekly', priority: 0.4 },
+    { url: `${base}/status`, lastModified: now, changeFrequency: 'daily', priority: 0.3 },
     { url: `${base}/privacy`, lastModified: now, changeFrequency: 'yearly', priority: 0.2 },
 
     // Resources hub + situation pages (PART 3 + 4)
@@ -51,5 +54,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
-  return [...staticEntries, ...companyEntries, ...blogCategoryEntries];
+  // Blog posts — auto-discovered from registry so new posts hit the sitemap
+  // without manual edits. Slugs point to top-level routes (e.g. /fresher-resume).
+  const staticSlugs = new Set(staticEntries.map((e) => e.url));
+  const blogPostEntries: MetadataRoute.Sitemap = BLOG_POSTS
+    .map((p) => ({
+      url: `${base}/${p.slug}`,
+      lastModified: new Date(p.dateModified),
+      changeFrequency: 'monthly' as const,
+      priority: p.featured ? 0.8 : 0.7,
+    }))
+    .filter((e) => !staticSlugs.has(e.url));
+
+  return [...staticEntries, ...companyEntries, ...blogCategoryEntries, ...blogPostEntries];
 }

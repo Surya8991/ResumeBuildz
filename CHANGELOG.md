@@ -6,6 +6,40 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ---
 
+## [1.17.0] - 2026-04-16
+
+### Added — 15 features across builder, AI, infra, growth
+
+#### Builder
+- **Markdown export** (`.md`) — dev-friendly, GitHub-renderable.
+- **ATS plain-text export** (`.txt`) — pure UTF-8, ASCII-safe bullets, for Workday/Greenhouse/Naukri.
+- **Streaming AI** — cover letter now streams live instead of 3-5s blank wait. New `streamGroqAI()` helper with SSE parser.
+- **Keyboard shortcut cheatsheet** (`Ctrl+/` or `?`) — full dialog of all 11 shortcuts.
+- **Last-edited timestamp** — "Saved 2m ago" in the builder footer. Auto-refreshes every 30s.
+- **Dark mode persist** — localStorage-backed, init-before-paint script prevents FOUC.
+- **Removed duplicate Ctrl+E shortcut** — `Ctrl+P` and `Ctrl+E` were both bound to PDF export.
+
+#### Infrastructure
+- **Stripe checkout scaffold** — `lib/stripe.ts` + `app/api/checkout/route.ts` + `hooks/useCheckout.ts`. Lazy SDK load, returns 503 when not configured. Pricing page + UpgradeModal wired.
+- **Cloud sync hook** — `hooks/useCloudSync.ts` pulls on sign-in and debounced-pushes on edits to a Supabase `resumes` table. Silent fallback when table missing.
+- **Edge Function: `delete-user`** — GDPR-safe account deletion (deletes both `profiles` row and `auth.users` row). `useAuth.deleteAccount` invokes this with fallback to legacy behavior.
+- **Edge Function: `increment-usage`** — server-side rate limiting for AI/PDF. Plan-aware limits, dry-run mode.
+- **`supabase/README.md`** with deploy steps + required SQL.
+
+#### Growth / SEO
+- **Changelog RSS feed** at `/changelog/rss.xml`.
+- **Status page** at `/status` — live health of app, AI, auth, PDF-import upstreams.
+- **Roadmap page** at `/roadmap` — public tracker with shipped / in-progress / planned.
+- **404 page with live search** — searches all pages + blog posts + company guides.
+- **ShareButton component** — copy link + LinkedIn/X/email intents for blog posts.
+- **Sitemap auto-discovery** — blog posts now pulled from `BLOG_POSTS` registry instead of manual entries. Adds `/roadmap` and `/status`.
+- **Changelog data extracted** to `lib/changelogData.ts` — single source for page + RSS route.
+
+### Fixed
+- `toggleDarkMode` now persists state to localStorage and initializes from DOM class (was always starting `false`).
+
+---
+
 ## [1.16.0] - 2026-04-16
 
 ### Fixed (full-project codereview — 40+ findings across 31 files)

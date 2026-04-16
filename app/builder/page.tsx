@@ -6,6 +6,7 @@ import { useReactToPrint } from 'react-to-print';
 import { useResumeStore } from '@/store/useResumeStore';
 import { downloadDocx } from '@/lib/exportDocx';
 import { downloadHtml } from '@/lib/exportHtml';
+import { downloadMarkdown, downloadAtsText } from '@/lib/exportMarkdown';
 import { importResumeFromFile, SUPPORTED_IMPORT_FORMATS } from '@/lib/importResume';
 import ResumePreview from '@/components/preview/ResumePreview';
 import HelpDialog from '@/components/HelpDialog';
@@ -28,9 +29,11 @@ import ATSScoreChecker from '@/components/ats/ATSScoreChecker';
 import AISuggestions from '@/components/ats/AISuggestions';
 import UpgradeModal from '@/components/UpgradeModal';
 import PasteImportModal from '@/components/PasteImportModal';
+import ShortcutsDialog from '@/components/ShortcutsDialog';
 import { getUsage, incrementUsage, canUse } from '@/lib/usage';
 import { useToast } from '@/components/Toast';
 import { useAuthContext as useAuth } from '@/components/Providers';
+import { useCloudSync } from '@/hooks/useCloudSync';
 import CustomSectionForm from '@/components/forms/CustomSectionForm';
 import CoverLetterForm from '@/components/forms/CoverLetterForm';
 import { Button } from '@/components/ui/button';
@@ -92,7 +95,10 @@ export default function HomePage() {
   const resumeRef = useRef<HTMLDivElement>(null);
   const [activeTab, setActiveTab] = useState<'edit' | 'preview' | 'templates' | 'ats' | 'ai'>('edit');
   const [activeSection, setActiveSection] = useState('personalInfo');
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(() => {
+    if (typeof document === 'undefined') return false;
+    return document.documentElement.classList.contains('dark');
+  });
   const [previewScale, setPreviewScale] = useState(0.8);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isFullPreview, setIsFullPreview] = useState(false);
@@ -107,8 +113,14 @@ export default function HomePage() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [showPasteModal, setShowPasteModal] = useState(false);
   const [pdfRemaining, setPdfRemaining] = useState(() => getUsage('pdf').remaining);
+  const [lastEdited, setLastEdited] = useState<number | null>(null);
+  const [lastEditedLabel, setLastEditedLabel] = useState('');
+  const [showShortcuts, setShowShortcuts] = useState(false);
   const { showToast } = useToast();
   const { user, profile, isPro, isEmailVerified } = useAuth();
+  // Cloud sync: pull on sign-in, debounced push on edits. Silent fallback
+  // to localStorage when the resumes table isn't provisioned yet.
+  const { state: syncState } = useCloudSync();
 
   // Touch swipe handler for mobile tabs
   const touchStartX = useRef<number>(0);
@@ -257,8 +269,10 @@ export default function HomePage() {
   });
 
   const toggleDarkMode = () => {
-    setIsDark(!isDark);
-    document.documentElement.classList.toggle('dark');
+    const next = !isDark;
+    setIsDark(next);
+    document.documentElement.classList.toggle('dark', next);
+    try { localStorage.setItem('resumeforge-dark', next ? '1' : '0'); } catch { /* private mode */ }
   };
 
   const handleExportJSON = () => {
@@ -344,6 +358,26 @@ export default function HomePage() {
     }
   };
 
+  const handleExportMarkdown = () => {
+    setShowExportMenu(false);
+    try {
+      downloadMarkdown(useResumeStore.getState().resumeData);
+      showToast('Markdown exported.', 'success');
+    } catch {
+      showToast('Markdown export failed.', 'warning');
+    }
+  };
+
+  const handleExportAtsText = () => {
+    setShowExportMenu(false);
+    try {
+      downloadAtsText(useResumeStore.getState().resumeData);
+      showToast('ATS plain-text exported.', 'success');
+    } catch {
+      showToast('Text export failed.', 'warning');
+    }
+  };
+
   const handleExportPdf = () => {
     if (!canUse('pdf', isPro())) {
       setShowUpgradeModal(true);
@@ -374,10 +408,34 @@ export default function HomePage() {
   useEffect(() => {
     const id = setTimeout(() => {
       pushHistory();
+      const now = Date.now();
+      setLastEdited(now);
+      try { localStorage.setItem('resumeforge-last-edited', String(now)); } catch { /* private mode */ }
     }, 1500);
     return () => clearTimeout(id);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resumeData]);
+
+  // Relative-time label: refresh every 30s so "2m ago" stays current.
+  useEffect(() => {
+    if (typeof window !== 'undefined' && lastEdited === null) {
+      try {
+        const saved = localStorage.getItem('resumeforge-last-edited');
+        if (saved) setLastEdited(parseInt(saved, 10));
+      } catch { /* private mode */ }
+    }
+    const format = () => {
+      if (!lastEdited) { setLastEditedLabel(''); return; }
+      const diff = Math.max(0, Date.now() - lastEdited);
+      if (diff < 5_000) setLastEditedLabel('Saved just now');
+      else if (diff < 60_000) setLastEditedLabel(`Saved ${Math.round(diff / 1000)}s ago`);
+      else if (diff < 3_600_000) setLastEditedLabel(`Saved ${Math.round(diff / 60_000)}m ago`);
+      else setLastEditedLabel(`Saved ${Math.round(diff / 3_600_000)}h ago`);
+    };
+    format();
+    const t = setInterval(format, 30_000);
+    return () => clearInterval(t);
+  }, [lastEdited]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -400,9 +458,15 @@ export default function HomePage() {
         handleExportJSON();
         return;
       }
-      if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+      // Ctrl+/ or ? opens the keyboard-shortcuts cheatsheet.
+      if ((e.ctrlKey || e.metaKey) && e.key === '/') {
         e.preventDefault();
-        handleExportPdf();
+        setShowShortcuts((v) => !v);
+        return;
+      }
+      if (!inEditableField && e.key === '?' && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        setShowShortcuts((v) => !v);
         return;
       }
       // Undo / Redo
@@ -541,6 +605,12 @@ export default function HomePage() {
                       </button>
                       <button onClick={handleExportHtml} disabled={isExporting} className="w-full px-3 py-2 text-sm flex items-center gap-2.5 hover:bg-muted text-left rounded-lg mx-0.5 transition-colors" style={{ width: 'calc(100% - 4px)' }}>
                         <Code className="h-4 w-4 text-muted-foreground" /> {exportingType === 'html' ? 'Exporting...' : 'HTML'} <span className="text-[11px] text-muted-foreground ml-auto">Web</span>
+                      </button>
+                      <button onClick={handleExportMarkdown} disabled={isExporting} className="w-full px-3 py-2 text-sm flex items-center gap-2.5 hover:bg-muted text-left rounded-lg mx-0.5 transition-colors" style={{ width: 'calc(100% - 4px)' }}>
+                        <FileText className="h-4 w-4 text-muted-foreground" /> Markdown <span className="text-[11px] text-muted-foreground ml-auto">.md</span>
+                      </button>
+                      <button onClick={handleExportAtsText} disabled={isExporting} className="w-full px-3 py-2 text-sm flex items-center gap-2.5 hover:bg-muted text-left rounded-lg mx-0.5 transition-colors" style={{ width: 'calc(100% - 4px)' }}>
+                        <FileText className="h-4 w-4 text-muted-foreground" /> ATS Plain Text <span className="text-[11px] text-muted-foreground ml-auto">.txt</span>
                       </button>
                     </div>
                   </>
@@ -1027,13 +1097,28 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="h-10 border-t border-gray-800 bg-gray-900 flex items-center justify-between px-5 shrink-0">
-        <Link href="/" className="text-xs text-gray-400 hover:text-white hidden sm:inline transition-colors">
-          ResumeBuildz
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link href="/" className="text-xs text-gray-400 hover:text-white hidden sm:inline transition-colors">
+            ResumeBuildz
+          </Link>
+          {lastEditedLabel && (
+            <span className="text-[10px] text-gray-500 hidden sm:inline" title="Auto-saved locally">
+              · {lastEditedLabel}
+            </span>
+          )}
+          {user && syncState !== 'idle' && syncState !== 'offline' && (
+            <span className="text-[10px] text-blue-400 hidden md:inline" title="Cloud sync">
+              · {syncState === 'pulling' ? 'Loading cloud...' : syncState === 'pushing' ? 'Syncing...' : 'Sync error'}
+            </span>
+          )}
+        </div>
         <div className="flex items-center gap-4 mx-auto md:mx-0">
           <span className="text-xs text-gray-400 flex items-center gap-1">
             Designed with <span className="text-red-500">&#10084;</span> by Surya L &copy; {new Date().getFullYear()}
           </span>
+          <button onClick={() => setShowShortcuts(true)} className="text-xs text-gray-400 hover:text-white transition-colors hidden md:inline" title="Keyboard shortcuts (Ctrl+/)">
+            ⌨ Shortcuts
+          </button>
           <a href="https://github.com/Surya8991" target="_blank" rel="noopener noreferrer" className="text-xs text-gray-400 hover:text-white flex items-center gap-1 transition-colors">
             GitHub
           </a>
@@ -1042,6 +1127,7 @@ export default function HomePage() {
 
       <UpgradeModal feature="pdf" open={showUpgradeModal} onOpenChange={setShowUpgradeModal} />
       <PasteImportModal open={showPasteModal} onClose={() => setShowPasteModal(false)} />
+      <ShortcutsDialog open={showShortcuts} onOpenChange={setShowShortcuts} />
     </div>
     </ErrorBoundary>
   );

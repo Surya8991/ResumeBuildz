@@ -10,8 +10,9 @@ import {
   DialogClose,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Crown, Check, Sparkles, FileDown } from 'lucide-react';
+import { Crown, Check, Sparkles, FileDown, Loader2 } from 'lucide-react';
 import { FREE_LIMITS, type GatedFeature } from '@/lib/usage';
+import { useCheckout } from '@/hooks/useCheckout';
 
 const FEATURE_LABELS: Record<GatedFeature, { name: string; icon: typeof Sparkles }> = {
   ai: { name: 'AI Rewrites', icon: Sparkles },
@@ -27,6 +28,7 @@ interface UpgradeModalProps {
 export default function UpgradeModal({ feature, open, onOpenChange }: UpgradeModalProps) {
   const { name } = FEATURE_LABELS[feature];
   const limit = FREE_LIMITS[feature];
+  const { startCheckout, loading, error } = useCheckout();
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -86,13 +88,19 @@ export default function UpgradeModal({ feature, open, onOpenChange }: UpgradeMod
           </div>
         </div>
 
+        {error && (
+          <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-2 py-1.5">
+            {error}
+          </p>
+        )}
+
         <DialogFooter>
           <DialogClose render={<Button variant="outline" size="sm" />}>
             Maybe later
           </DialogClose>
-          <Button size="sm" disabled className="gap-1.5">
-            <Crown className="h-3.5 w-3.5" />
-            Coming Soon
+          <Button size="sm" onClick={() => startCheckout('pro')} disabled={loading} className="gap-1.5">
+            {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Crown className="h-3.5 w-3.5" />}
+            {loading ? 'Redirecting...' : 'Upgrade to Pro'}
           </Button>
         </DialogFooter>
       </DialogContent>
