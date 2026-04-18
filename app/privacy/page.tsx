@@ -77,6 +77,14 @@ export default function PrivacyPage() {
       {/* Content */}
       <section className="bg-gray-50 py-16 px-4">
         <div className="max-w-3xl mx-auto space-y-6">
+          {/* TL;DR */}
+          <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-6 animate-fade-in-up">
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-indigo-700 mb-2">The short version</h2>
+            <p className="text-gray-800 leading-relaxed">
+              Your resume stays in your browser &mdash; it never touches our servers. Sign-in is optional and only stores your email and plan tier. Analytics are cookieless. AI calls (if you use them) go directly from your browser to Groq with your own key. Below is the long version.
+            </p>
+          </div>
+
           {sections.map((section, i) => (
             <div key={section.title} className={`bg-white rounded-xl shadow-sm border border-gray-100 p-8 animate-fade-in-up delay-${Math.min((i + 1) * 100, 500)}`}>
               <h2 className="text-xl font-bold text-gray-900 mb-4">{section.title}</h2>

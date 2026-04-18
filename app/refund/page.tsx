@@ -25,6 +25,7 @@ export default function RefundPage() {
       <main className="flex-1 bg-white py-16 md:py-20">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Refund &amp; Cancellation Policy</h1>
+          <p className="text-sm text-gray-600 mb-3">7-day no-questions-asked window on all paid plans. Payments processed by Razorpay (INR) or Stripe (other currencies).</p>
           <p className="text-sm text-gray-400 mb-10">Last updated: April 18, 2026</p>
 
           <div className="space-y-8 text-sm leading-relaxed text-gray-600">

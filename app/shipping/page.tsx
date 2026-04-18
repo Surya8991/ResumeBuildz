@@ -24,7 +24,8 @@ export default function ShippingPage() {
 
       <main className="flex-1 bg-white py-16 md:py-20">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Shipping &amp; Delivery Policy</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Service Delivery</h1>
+          <p className="text-sm text-gray-500 mb-3">Your account activates within 60 minutes of payment.</p>
           <p className="text-sm text-gray-400 mb-10">Last updated: April 18, 2026</p>
 
           <div className="space-y-8 text-sm leading-relaxed text-gray-600">

@@ -44,12 +44,6 @@ const SHOWCASE_TEMPLATES = [
   { name: 'Nordic', color: '#64748b' },
 ];
 
-const TESTIMONIALS = [
-  { name: 'Alex R.', role: 'Software Engineer', text: 'I rewrote my resume in about 25 minutes. The ATS checker flagged that I was missing 4 keywords from the job description. Added them, applied, and got a callback the next day.' },
-  { name: 'Priya S.', role: 'Marketing Manager', text: 'Honestly didn\'t expect a free tool to be this polished. The AI rewrote my bullet points with actual metrics, and I got 3 interview calls in my first week of applying.' },
-  { name: 'James C.', role: '2024 CS Graduate', text: 'I\'d been using Google Docs for my resume. Switched to ResumeBuildz, ran the ATS check, and realized my old resume would\'ve been filtered out by most systems. Wish I found this sooner.' },
-];
-
 export default function HomePage() {
   const { openGateway } = useLoginGateway();
   useEffect(() => {
@@ -72,7 +66,7 @@ export default function HomePage() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 animate-fade-in-up">
-                Land More Interviews with ATS-Tested Resumes
+                Your resume shouldn&apos;t be the reason you don&apos;t get hired.
               </h1>
               <p className="text-lg text-gray-300 mb-8 max-w-lg animate-fade-in-up delay-100">
                 75% of resumes get filtered by ATS before a human sees them<sup className="ml-0.5"><Link href="/ats-guide#ats-stats" className="text-gray-500 hover:text-gray-300 text-xs" title="Source: Jobscan, 2024">[1]</Link></sup><span className="sr-only"> (Source: Jobscan, 2024)</span>. ResumeBuildz gives you 20 templates, AI writing help, and 12 ATS checks. Free to start, no sign-up needed.
@@ -98,16 +92,16 @@ export default function HomePage() {
                         <Star key={i} className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
                       ))}
                     </div>
-                    <p className="text-xs text-gray-400">Trusted by 1,000+ job seekers</p>
+                    <p className="text-xs text-gray-400">Built by engineers tired of losing to ATS filters</p>
                   </div>
                 </div>
               </div>
               <div className="flex flex-wrap gap-4 animate-fade-in-up delay-200">
-                <button onClick={() => openGateway('/builder')} className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition flex items-center gap-2">
-                  Build My Resume <ArrowRight className="h-4 w-4" />
+                <button onClick={() => openGateway('/builder')} className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition flex items-center gap-2 shadow-sm">
+                  Build my resume — 15 min, free <ArrowRight className="h-4 w-4" />
                 </button>
-                <Link href="/templates" className="border border-gray-600 hover:border-gray-400 text-white px-6 py-3 rounded-lg font-semibold transition">
-                  See All 20 Templates
+                <Link href="/ats-guide" className="border border-gray-600 hover:border-gray-400 text-white px-6 py-3 rounded-lg font-semibold transition">
+                  Read the ATS guide →
                 </Link>
               </div>
             </div>
@@ -119,14 +113,14 @@ export default function HomePage() {
       </section>
 
       {/* Stats Bar */}
-      <section className="bg-blue-500 py-6">
+      <section className="bg-indigo-600 py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center text-white">
             {[
               { num: '20', label: 'Templates' },
               { num: '201', label: 'Roles' },
               { num: '12', label: 'ATS Tools' },
-              { num: 'Free', label: 'To Start' },
+              { num: '15m', label: 'Avg build time' },
             ].map((s, i) => (
               <div key={s.label} className={`animate-fade-in-up delay-${(i + 1) * 100}`}>
                 <div className="text-2xl md:text-3xl font-bold">{s.num}</div>
@@ -140,7 +134,7 @@ export default function HomePage() {
       {/* Features */}
       <section className="bg-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-gray-900 text-center mb-4 animate-fade-in-up">Everything You Need to Land Interviews</h2>
+          <h2 className="text-3xl font-bold text-gray-900 text-center mb-4 animate-fade-in-up">Built for one thing: getting you interviewed.</h2>
           <p className="text-gray-600 text-center mb-12 max-w-2xl mx-auto animate-fade-in-up delay-100">
             Professional resume tools (templates, AI writing, ATS scoring) without paying a dime or creating an account.
           </p>
@@ -231,12 +225,15 @@ export default function HomePage() {
               </ul>
             </div>
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="font-semibold text-gray-900">ATS Score</h3>
-                <span className="text-3xl font-bold text-blue-500">92%</span>
+              <div className="flex items-start justify-between mb-2">
+                <div>
+                  <h3 className="font-semibold text-gray-900">ATS Score</h3>
+                  <p className="text-xs text-gray-500 mt-0.5">Sample — your score will vary</p>
+                </div>
+                <span className="text-3xl font-bold text-indigo-600">92%</span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-3 mb-8">
-                <div className="bg-blue-500 h-3 rounded-full" style={{ width: '92%' }} />
+              <div className="w-full bg-gray-200 rounded-full h-3 mb-8 mt-4">
+                <div className="bg-indigo-600 h-3 rounded-full" style={{ width: '92%' }} />
               </div>
               <div className="space-y-4">
                 {[
@@ -260,38 +257,15 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="bg-white py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">What People Say</h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {TESTIMONIALS.map((t, i) => (
-              <div key={t.name} className={`bg-white rounded-xl shadow-sm border border-gray-100 p-6 animate-fade-in-up delay-${(i + 1) * 100}`}>
-                <div className="flex gap-1 mb-4">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} className="h-4 w-4 text-yellow-400 fill-yellow-400" />
-                  ))}
-                </div>
-                <p className="text-gray-600 mb-6 text-sm leading-relaxed">{t.text}</p>
-                <div>
-                  <p className="font-semibold text-gray-900">{t.name}</p>
-                  <p className="text-gray-500 text-sm">{t.role}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* CTA */}
       <section className="bg-gradient-to-br from-gray-900 via-slate-900 to-black py-20">
         <div className="max-w-3xl mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 animate-fade-in-up">Your Resume Shouldn&apos;t Be the Reason You Don&apos;t Get Hired</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 animate-fade-in-up">Ready when you are.</h2>
           <p className="text-gray-300 mb-8 text-lg animate-fade-in-up delay-100">
-            Build a resume that actually passes ATS screening. It takes about 15 minutes and costs nothing.
+            Build a resume that actually passes ATS screening. About 15 minutes, no sign-up, no catch.
           </p>
-          <button onClick={() => openGateway('/builder')} className="inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold text-lg transition">
-            Build My Resume Now <ArrowRight className="h-5 w-5" />
+          <button onClick={() => openGateway('/builder')} className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition shadow-sm">
+            Build my resume now <ArrowRight className="h-5 w-5" />
           </button>
         </div>
       </section>
