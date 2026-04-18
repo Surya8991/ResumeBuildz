@@ -1,9 +1,11 @@
 'use client';
 
+import { useMemo, useState } from 'react';
 import { useResumeStore } from '@/store/useResumeStore';
+import { useAuthContext as useAuth } from '@/components/Providers';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { User, Mail, Phone, MapPin, Link, Globe, Code, Camera, X, Zap } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Link, Globe, Code, Camera, X, Zap, Sparkles } from 'lucide-react';
 
 function getValidationError(key: string, value: string): string | null {
   if (!value) return null; // Don't show errors for empty fields (just mark as required)
@@ -24,6 +26,39 @@ function getValidationError(key: string, value: string): string | null {
 export default function PersonalInfoForm() {
   const { resumeData, updatePersonalInfo } = useResumeStore();
   const { personalInfo } = resumeData;
+  const { user, profile } = useAuth();
+  const [autofilled, setAutofilled] = useState<number | null>(null);
+
+  // Map /account profile fields to personalInfo. Only offered when signed in
+  // and at least one mapped field in profile has data the current resume
+  // lacks — so the banner is never a no-op.
+  const autofillCandidates = useMemo(() => {
+    if (!user || !profile) return null;
+    const firstLocation = (profile.target_locations || '').split(',')[0]?.trim() || '';
+    const map: Array<{ key: keyof typeof personalInfo; value: string }> = [
+      { key: 'fullName', value: profile.full_name || '' },
+      { key: 'jobTitle', value: profile.current_role || '' },
+      { key: 'email', value: user.email || '' },
+      { key: 'location', value: firstLocation },
+      { key: 'linkedin', value: profile.linkedin_url || '' },
+      { key: 'github', value: profile.github_url || '' },
+      { key: 'website', value: profile.portfolio_url || '' },
+      { key: 'photo', value: profile.avatar_url || '' },
+    ];
+    const missing = map.filter(m => m.value && !personalInfo[m.key]);
+    return missing.length ? missing : null;
+  }, [user, profile, personalInfo]);
+
+  function handleAutofill() {
+    if (!autofillCandidates) return;
+    const patch: Partial<typeof personalInfo> = {};
+    for (const { key, value } of autofillCandidates) {
+      (patch as Record<string, string>)[key] = value;
+    }
+    updatePersonalInfo(patch);
+    setAutofilled(autofillCandidates.length);
+    setTimeout(() => setAutofilled(null), 4000);
+  }
 
   const fields = [
     { key: 'fullName' as const, label: 'Full Name', icon: User, placeholder: 'e.g. John Doe', required: true },
@@ -70,6 +105,31 @@ export default function PersonalInfoForm() {
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">Personal Information</h3>
+
+      {/* Auto-fill from /account profile. Only renders when signed in AND
+          at least one mapped field has data the current resume lacks. */}
+      {autofillCandidates && (
+        <div className="flex items-center justify-between gap-3 p-3 rounded-lg border border-indigo-200 bg-indigo-50/60">
+          <div className="flex items-center gap-2 text-xs text-indigo-900">
+            <Sparkles className="h-3.5 w-3.5 text-indigo-600 shrink-0" />
+            <span>
+              Fill <strong>{autofillCandidates.length}</strong> field{autofillCandidates.length === 1 ? '' : 's'} from your account profile
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={handleAutofill}
+            className="text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-md transition whitespace-nowrap"
+          >
+            Auto-fill
+          </button>
+        </div>
+      )}
+      {autofilled != null && (
+        <p className="text-xs text-emerald-600" role="status">
+          Filled {autofilled} field{autofilled === 1 ? '' : 's'} from your profile.
+        </p>
+      )}
 
       {/* Photo upload */}
       <div className="flex items-center gap-4">
