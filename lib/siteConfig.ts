@@ -11,7 +11,7 @@
 
 export const SITE_URL: string =
   (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_SITE_URL) ||
-  'https://resume-forge-orcin.vercel.app';
+  'https://resumebuildz.tech';
 
 /**
  * Helper for building absolute URLs from a path (or absolute URL passed through).

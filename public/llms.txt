@@ -15,7 +15,7 @@ ResumeBuildz is a free, client-side ATS-friendly resume builder built by Surya L
 - All data stored in browser localStorage only
 - Built with Next.js 16, TypeScript, Tailwind CSS, shadcn/ui, Zustand
 - Open source: https://github.com/Surya8991/ResumeBuildz
-- Live at: https://resume-forge-orcin.vercel.app
+- Live at: https://resumebuildz.tech
 
 ## Contact
 Surya L — Suryaraj8147@gmail.com — Bangalore, India
