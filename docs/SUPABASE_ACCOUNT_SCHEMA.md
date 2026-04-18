@@ -13,7 +13,8 @@ caps are a last line of defence.
 ```sql
 alter table public.profiles
   add column if not exists headline         text check (char_length(headline) <= 120),
-  add column if not exists current_role     text check (char_length(current_role) <= 120),
+  -- current_role is a reserved keyword in Postgres 16+, so quote it
+  add column if not exists "current_role"   text check (char_length("current_role") <= 120),
   add column if not exists years_experience smallint check (years_experience between 0 and 60),
   add column if not exists timezone         text check (char_length(timezone) <= 64),
   add column if not exists locale           text check (char_length(locale) <= 16),

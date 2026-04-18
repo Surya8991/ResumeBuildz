@@ -3,6 +3,9 @@
 Server-side enforcement for GDPR-compliant account deletion and
 bypass-proof rate limiting.
 
+**For one-time schema setup (profile columns, RLS, avatars bucket)
+run the SQL in [`docs/SUPABASE_ACCOUNT_SCHEMA.md`](../docs/SUPABASE_ACCOUNT_SCHEMA.md) first.** This doc covers the Edge Functions only.
+
 ## Prerequisites
 
 ```bash
