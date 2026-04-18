@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toMonthInput, fromMonthInput } from '@/lib/dateUtils';
 import RichTextarea from '@/components/ui/rich-textarea';
+import BulletScoreList from '@/components/forms/BulletScoreList';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
@@ -126,6 +127,14 @@ function SortableExperienceEntry({ exp, onUpdate, onRemove }: {
                 value={exp.highlights.join('\n')}
                 onChange={(v) => onUpdate({ highlights: v.split('\n').filter((h) => h.trim()) })}
                 rows={4}
+              />
+              <BulletScoreList
+                bullets={exp.highlights}
+                onReplace={(idx, next) => {
+                  const copy = [...exp.highlights];
+                  copy[idx] = next;
+                  onUpdate({ highlights: copy });
+                }}
               />
             </div>
           </div>

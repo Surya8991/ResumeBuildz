@@ -6,6 +6,7 @@ import { Project } from '@/types/resume';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import RichTextarea from '@/components/ui/rich-textarea';
+import BulletScoreList from '@/components/forms/BulletScoreList';
 import { toMonthInput, fromMonthInput } from '@/lib/dateUtils';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -85,6 +86,14 @@ function SortableProjectEntry({ project, onUpdate, onRemove }: {
               value={project.highlights.join('\n')}
               onChange={(v) => onUpdate({ highlights: v.split('\n').filter((h) => h.trim()) })}
               rows={4}
+            />
+            <BulletScoreList
+              bullets={project.highlights}
+              onReplace={(idx, next) => {
+                const copy = [...project.highlights];
+                copy[idx] = next;
+                onUpdate({ highlights: copy });
+              }}
             />
           </div>
         </div>
