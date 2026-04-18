@@ -45,7 +45,7 @@ export default function MyPostPage() {
   const schema = combineSchemas(
     articleSchema({ headline: 'Post Title', description: '...', slug: 'post-slug', datePublished: '2026-04-18', dateModified: '2026-04-18' }),
     faqPageSchema(FAQS),
-    breadcrumbSchema([{ label: 'Resources', slug: 'resume-for' }, { label: 'Post name' }]),
+    breadcrumbSchema([{ label: 'Blog', slug: 'blog' }, { label: 'Post name' }]),
   );
 
   return (

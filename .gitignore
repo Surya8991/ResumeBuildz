@@ -41,3 +41,15 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 MONETIZATION_PLAN.md
+
+# Preview / scratch folders. Used for design bake-offs (10 login layouts,
+# 10 blog layouts, etc.) that live locally, get reviewed, one is picked,
+# and the folder is deleted. Never commit these to main.
+app/*-preview/
+app/login-preview/
+
+# Local-only advisory / review docs that live at the repo root. Created
+# by marketing review passes for offline viewing, never meant for prod.
+/MARKETING_REVIEW.html
+/MARKETING_REVIEW_V2.html
+/FEATURES_PLAN.html
