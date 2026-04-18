@@ -59,7 +59,7 @@ export default function RefundPage() {
                   suryaraj8147@gmail.com
                 </a>{' '}
                 with the subject line &quot;Refund Request&quot; and your order/transaction ID. Refunds are
-                issued to the original payment method within 5–10 business days.
+                issued to the original payment method within 5 to 10 business days.
               </p>
               <p className="mt-2">
                 The 7-day refund window does not apply to renewal charges on recurring
@@ -73,7 +73,7 @@ export default function RefundPage() {
               <p>
                 Monthly and annual subscriptions renew automatically until cancelled. You can
                 cancel at any time from your account settings → Manage Plan, or by emailing us.
-                Cancellation takes effect at the end of the current billing period — you retain
+                Cancellation takes effect at the end of the current billing period. You retain
                 access to paid features until then, and you will not be charged again.
               </p>
             </section>
@@ -113,7 +113,7 @@ export default function RefundPage() {
             <section>
               <h2 className="text-base font-semibold text-gray-900 mb-2">8. Chargebacks &amp; Disputes</h2>
               <p>
-                Before raising a chargeback with your bank, please email us first — almost every
+                Before raising a chargeback with your bank, please email us first. Almost every
                 issue is resolvable directly and faster than the chargeback process. Chargebacks
                 raised without prior contact may result in account suspension pending review.
               </p>
@@ -126,7 +126,7 @@ export default function RefundPage() {
                 <a href="mailto:suryaraj8147@gmail.com" className="text-blue-500 hover:underline">
                   suryaraj8147@gmail.com
                 </a>
-                . Typical response time is 24–48 hours, Monday through Friday.
+                . Typical response time is 24 to 48 hours, Monday through Friday.
               </p>
             </section>
 

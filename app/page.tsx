@@ -98,7 +98,7 @@ export default function HomePage() {
               </div>
               <div className="flex flex-wrap gap-4 animate-fade-in-up delay-200">
                 <button onClick={() => openGateway('/builder')} className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition flex items-center gap-2 shadow-sm">
-                  Build my resume — 15 min, free <ArrowRight className="h-4 w-4" />
+                  Build my resume. 15 min, free <ArrowRight className="h-4 w-4" />
                 </button>
                 <Link href="/ats-guide" className="border border-gray-600 hover:border-gray-400 text-white px-6 py-3 rounded-lg font-semibold transition">
                   Read the ATS guide →
@@ -228,7 +228,7 @@ export default function HomePage() {
               <div className="flex items-start justify-between mb-2">
                 <div>
                   <h3 className="font-semibold text-gray-900">ATS Score</h3>
-                  <p className="text-xs text-gray-500 mt-0.5">Sample — your score will vary</p>
+                  <p className="text-xs text-gray-500 mt-0.5">Sample. Your score will vary</p>
                 </div>
                 <span className="text-3xl font-bold text-indigo-600">92%</span>
               </div>

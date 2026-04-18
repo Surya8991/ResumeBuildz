@@ -23,7 +23,7 @@ const sections = [
   },
   {
     title: 'Third-Party Services',
-    content: 'ResumeBuildz offers an optional AI-powered feature that uses the Groq API. This feature requires your own free API key from console.groq.com. When you use this feature, your resume data is sent directly from your browser to Groq\'s servers — it never passes through our servers. We do not have access to your API key or the data you send to Groq. Please review Groq\'s privacy policy for information about how they handle your data.',
+    content: 'ResumeBuildz offers an optional AI-powered feature that uses the Groq API. This feature requires your own free API key from console.groq.com. When you use this feature, your resume data is sent directly from your browser to Groq\'s servers. It never passes through our servers. We do not have access to your API key or the data you send to Groq. Please review Groq\'s privacy policy for information about how they handle your data.',
   },
   {
     title: 'Waitlist Emails',
@@ -81,7 +81,7 @@ export default function PrivacyPage() {
           <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-6 animate-fade-in-up">
             <h2 className="text-sm font-semibold uppercase tracking-wide text-indigo-700 mb-2">The short version</h2>
             <p className="text-gray-800 leading-relaxed">
-              Your resume stays in your browser &mdash; it never touches our servers. Sign-in is optional and only stores your email and plan tier. Analytics are cookieless. AI calls (if you use them) go directly from your browser to Groq with your own key. Below is the long version.
+              Your resume stays in your browser. It never touches our servers. Sign-in is optional and only stores your email and plan tier. Analytics are cookieless. AI calls (if you use them) go directly from your browser to Groq with your own key. Below is the long version.
             </p>
           </div>
 
