@@ -23,20 +23,37 @@ import { serve } from 'https://deno.land/std@0.224.0/http/server.ts';
 // @ts-expect-error - Deno global, not Node
 declare const Deno: { env: { get(k: string): string | undefined } };
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+// Allowed origins for CORS. Production apex + www, plus common dev ports.
+// A caller from any other origin gets their CORS headers omitted entirely,
+// so the browser blocks the response before any credential is used. This
+// doesn't authenticate — we still JWT-verify the Bearer — but it prevents a
+// stolen token from being weaponised from an attacker-controlled origin.
+const ALLOWED_ORIGINS = new Set([
+  'https://resumebuildz.tech',
+  'https://www.resumebuildz.tech',
+  'http://localhost:3000',
+  'http://localhost:5467',
+]);
+
+function corsHeaders(origin: string | null): Record<string, string> {
+  const allow = origin && ALLOWED_ORIGINS.has(origin) ? origin : 'https://resumebuildz.tech';
+  return {
+    'Access-Control-Allow-Origin': allow,
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Vary': 'Origin',
+  };
+}
 
 serve(async (req: Request): Promise<Response> => {
+  const CORS = corsHeaders(req.headers.get('origin'));
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: CORS_HEADERS });
+    return new Response('ok', { headers: CORS });
   }
   if (req.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), {
       status: 405,
-      headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+      headers: { ...CORS, 'Content-Type': 'application/json' },
     });
   }
 
@@ -47,7 +64,7 @@ serve(async (req: Request): Promise<Response> => {
   if (!url || !anonKey || !serviceKey) {
     return new Response(JSON.stringify({ error: 'Function environment not configured' }), {
       status: 500,
-      headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+      headers: { ...CORS, 'Content-Type': 'application/json' },
     });
   }
 
@@ -56,7 +73,7 @@ serve(async (req: Request): Promise<Response> => {
   if (!auth || !auth.startsWith('Bearer ')) {
     return new Response(JSON.stringify({ error: 'Missing Authorization header' }), {
       status: 401,
-      headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+      headers: { ...CORS, 'Content-Type': 'application/json' },
     });
   }
 
@@ -67,7 +84,7 @@ serve(async (req: Request): Promise<Response> => {
   if (userErr || !user) {
     return new Response(JSON.stringify({ error: 'Invalid session' }), {
       status: 401,
-      headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+      headers: { ...CORS, 'Content-Type': 'application/json' },
     });
   }
 
@@ -81,7 +98,7 @@ serve(async (req: Request): Promise<Response> => {
   if (profileErr) {
     return new Response(JSON.stringify({ error: `Profile delete failed: ${profileErr.message}` }), {
       status: 500,
-      headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+      headers: { ...CORS, 'Content-Type': 'application/json' },
     });
   }
 
@@ -89,12 +106,12 @@ serve(async (req: Request): Promise<Response> => {
   if (authErr) {
     return new Response(JSON.stringify({ error: `Auth delete failed: ${authErr.message}` }), {
       status: 500,
-      headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+      headers: { ...CORS, 'Content-Type': 'application/json' },
     });
   }
 
   return new Response(JSON.stringify({ success: true, userId: user.id }), {
     status: 200,
-    headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+    headers: { ...CORS, 'Content-Type': 'application/json' },
   });
 });

@@ -188,11 +188,8 @@ async function extractTextFromPlain(file: File): Promise<string> {
 
 // ---- Resume Parser ----
 
-function generateId(): string {
-  return Math.random().toString(36).substring(2, 9);
-}
-
 import { SECTION_HEADINGS, SECTION_LOOSE, PARSER_PATTERNS } from './parserConfig';
+import { generateId } from './ids';
 
 const EMAIL_RE = PARSER_PATTERNS.email;
 const PHONE_RE = PARSER_PATTERNS.phone;

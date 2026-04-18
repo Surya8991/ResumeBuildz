@@ -31,11 +31,22 @@ import { serve } from 'https://deno.land/std@0.224.0/http/server.ts';
 // @ts-expect-error - Deno global
 declare const Deno: { env: { get(k: string): string | undefined } };
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+const ALLOWED_ORIGINS = new Set([
+  'https://resumebuildz.tech',
+  'https://www.resumebuildz.tech',
+  'http://localhost:3000',
+  'http://localhost:5467',
+]);
+
+function corsHeaders(origin: string | null): Record<string, string> {
+  const allow = origin && ALLOWED_ORIGINS.has(origin) ? origin : 'https://resumebuildz.tech';
+  return {
+    'Access-Control-Allow-Origin': allow,
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Vary': 'Origin',
+  };
+}
 
 const LIMITS: Record<'ai' | 'pdf', Record<string, number>> = {
   ai: { free: 1, starter: 5, pro: 1_000_000, team: 1_000_000, lifetime: 1_000_000 },
@@ -43,11 +54,12 @@ const LIMITS: Record<'ai' | 'pdf', Record<string, number>> = {
 };
 
 serve(async (req: Request): Promise<Response> => {
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS_HEADERS });
+  const CORS = corsHeaders(req.headers.get('origin'));
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS });
   if (req.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), {
       status: 405,
-      headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+      headers: { ...CORS, 'Content-Type': 'application/json' },
     });
   }
 
@@ -57,7 +69,7 @@ serve(async (req: Request): Promise<Response> => {
   if (!url || !anonKey || !serviceKey) {
     return new Response(JSON.stringify({ error: 'Function env not configured' }), {
       status: 500,
-      headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+      headers: { ...CORS, 'Content-Type': 'application/json' },
     });
   }
 
@@ -65,7 +77,7 @@ serve(async (req: Request): Promise<Response> => {
   if (!auth) {
     return new Response(JSON.stringify({ error: 'Missing auth' }), {
       status: 401,
-      headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+      headers: { ...CORS, 'Content-Type': 'application/json' },
     });
   }
 
@@ -75,7 +87,7 @@ serve(async (req: Request): Promise<Response> => {
   if (feature !== 'ai' && feature !== 'pdf') {
     return new Response(JSON.stringify({ error: 'Invalid feature' }), {
       status: 400,
-      headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+      headers: { ...CORS, 'Content-Type': 'application/json' },
     });
   }
 
@@ -86,7 +98,7 @@ serve(async (req: Request): Promise<Response> => {
   if (!user) {
     return new Response(JSON.stringify({ error: 'Invalid session' }), {
       status: 401,
-      headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+      headers: { ...CORS, 'Content-Type': 'application/json' },
     });
   }
 
@@ -104,7 +116,7 @@ serve(async (req: Request): Promise<Response> => {
   if (pErr || !profile) {
     return new Response(JSON.stringify({ error: 'Profile not found' }), {
       status: 404,
-      headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+      headers: { ...CORS, 'Content-Type': 'application/json' },
     });
   }
 
@@ -117,7 +129,7 @@ serve(async (req: Request): Promise<Response> => {
   if (used >= limit) {
     return new Response(
       JSON.stringify({ allowed: false, used, limit, remaining: 0 }),
-      { status: 200, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } },
+      { status: 200, headers: { ...CORS, 'Content-Type': 'application/json' } },
     );
   }
 
@@ -125,7 +137,7 @@ serve(async (req: Request): Promise<Response> => {
   if (body.dryRun) {
     return new Response(
       JSON.stringify({ allowed: true, used, limit, remaining: limit - used, dryRun: true }),
-      { status: 200, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } },
+      { status: 200, headers: { ...CORS, 'Content-Type': 'application/json' } },
     );
   }
 
@@ -137,12 +149,12 @@ serve(async (req: Request): Promise<Response> => {
   if (uErr) {
     return new Response(JSON.stringify({ error: uErr.message }), {
       status: 500,
-      headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+      headers: { ...CORS, 'Content-Type': 'application/json' },
     });
   }
 
   return new Response(
     JSON.stringify({ allowed: true, used: used + 1, limit, remaining: limit - used - 1 }),
-    { status: 200, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } },
+    { status: 200, headers: { ...CORS, 'Content-Type': 'application/json' } },
   );
 });

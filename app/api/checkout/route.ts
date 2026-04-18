@@ -81,7 +81,8 @@ export async function POST(req: NextRequest) {
   // Lazy import so the app builds without the Stripe SDK installed.
   // `new Function('return import(...)')` bypasses static module resolution so
   // Turbopack/webpack don't try to find `stripe` at build time. Once the
-  // SDK is installed, swap this for a direct `await import('stripe')`.
+  // SDK is installed (npm install stripe), swap this for a direct
+  // `await import('stripe')`. Tracked as audit item M3.
   type StripeCtor = new (key: string) => {
     checkout: { sessions: { create: (opts: Record<string, unknown>) => Promise<{ url: string | null }> } };
   };

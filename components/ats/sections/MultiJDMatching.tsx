@@ -5,6 +5,7 @@ import { useResumeStore } from '@/store/useResumeStore';
 import { Separator } from '@/components/ui/separator';
 import { Plus, BarChart3, X, FileText } from 'lucide-react';
 import { extractKeywords, getResumeText } from '../utils/textAnalysis';
+import { generateId } from '@/lib/ids';
 
 interface SavedJD {
   id: string;
@@ -59,7 +60,7 @@ export default function MultiJDMatching({ jobDescription, onLoadJD }: MultiJDMat
     if (!jobDescription.trim()) return;
 
     const newJD: SavedJD = {
-      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+      id: generateId(),
       label: jobDescription.trim().slice(0, 40).replace(/\s+/g, ' ') + (jobDescription.length > 40 ? '...' : ''),
       text: jobDescription.trim(),
       savedAt: Date.now(),

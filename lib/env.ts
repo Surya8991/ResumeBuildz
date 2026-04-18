@@ -1,57 +1,17 @@
 // Typed, fail-fast env var accessors.
 //
-// Replaces `process.env.FOO!` (non-null assertions). If a required var is
-// missing at the moment of access, we throw with the var name instead of
-// `TypeError: Cannot read properties of undefined`.
+// Each getter accesses `process.env.NEXT_PUBLIC_*` as a LITERAL property so
+// Next.js can inline the value into the client bundle at build time. Dynamic
+// access via `process.env[name]` is NOT inlined — it returns undefined in the
+// browser because browsers have no real `process.env` object. That's why the
+// helpers below take the already-read value as a parameter; the literal
+// `process.env.X` read stays at the call site.
 //
-// All accessors are lazy (getter-based). Importing this module never throws
-// — only touching a required property does, and only at the moment of use.
+// All accessors are lazy (getter-based). Importing this module never throws —
+// only touching a required property does, and only at the moment of use.
 // This keeps `next build` passing when the build environment lacks non-build
 // secrets (e.g., SUPABASE_SERVICE_ROLE_KEY isn't needed to compile).
-//
-// Client bundles: Next.js statically inlines `process.env.NEXT_PUBLIC_*` at
-// build time. Our getter re-reads `process.env.X` on every access, so these
-// will still resolve correctly in the browser.
 
-function required(name: string): string {
-  const v = typeof process !== 'undefined' ? process.env[name] : undefined;
-  if (!v || v.trim() === '') {
-    throw new Error(
-      `Missing required env var: ${name}. Set it in .env.local (dev) or Vercel project settings (prod).`,
-    );
-  }
-  return v;
-}
-
-function optional(name: string): string | undefined {
-  const v = typeof process !== 'undefined' ? process.env[name] : undefined;
-  return v && v.trim() !== '' ? v : undefined;
-}
-
-/**
- * Soft-required: return empty string if missing. The app supports guest mode
- * (no auth) so we don't want a missing Supabase URL to crash the whole
- * client bundle on first render. The actual Supabase calls will surface
- * the auth failure at the point of use instead.
- *
- * In production, always set these in Vercel. A missing value is operator
- * error, not a user problem.
- */
-function softRequired(name: string): string {
-  const v = typeof process !== 'undefined' ? process.env[name] : undefined;
-  if (!v || v.trim() === '') {
-    if (typeof console !== 'undefined' && typeof process !== 'undefined' && process.env.NODE_ENV !== 'production') {
-      console.warn(`[env] ${name} is not set — auth features will not work until you add it to .env.local`);
-    }
-    return '';
-  }
-  return v;
-}
-
-// Helpers for soft/optional/required using a literal value.
-// Next.js's build-time replacement only works with LITERAL property access
-// (`process.env.NEXT_PUBLIC_X`), not dynamic bracket access. The helpers
-// accept the already-read value and wrap the same empty/warning/throw logic.
 function softValue(name: string, v: string | undefined): string {
   if (!v || v.trim() === '') {
     if (typeof console !== 'undefined' && typeof process !== 'undefined' && process.env.NODE_ENV !== 'production') {
@@ -75,13 +35,7 @@ function requiredValue(name: string, v: string | undefined): string {
   return v;
 }
 
-/** Public vars (safe to use on client). Lazy getters — never throw on import.
- *
- * IMPORTANT: every getter references `process.env.NEXT_PUBLIC_*` as a LITERAL
- * property so Next.js can inline the value into the client bundle at build
- * time. Dynamic access (`process.env[name]`) is NOT inlined and returns
- * undefined in the browser.
- */
+/** Public vars (safe to use on client). Lazy getters — never throw on import. */
 export const env = {
   get SUPABASE_URL(): string { return softValue('NEXT_PUBLIC_SUPABASE_URL', process.env.NEXT_PUBLIC_SUPABASE_URL); },
   get SUPABASE_ANON_KEY(): string { return softValue('NEXT_PUBLIC_SUPABASE_ANON_KEY', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY); },

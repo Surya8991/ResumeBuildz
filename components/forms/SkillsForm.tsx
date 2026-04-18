@@ -8,10 +8,7 @@ import { Card } from '@/components/ui/card';
 import { Plus, Trash2, X, Sparkles } from 'lucide-react';
 import { useState, useMemo } from 'react';
 import { INDUSTRIES } from '@/components/ats/data/industryKeywords';
-
-function generateId() {
-  return Math.random().toString(36).substring(2, 9);
-}
+import { generateId } from '@/lib/ids';
 
 export default function SkillsForm() {
   const { resumeData, addSkill, updateSkill, removeSkill } = useResumeStore();
@@ -121,7 +118,7 @@ export default function SkillsForm() {
                   if (firstCategory) {
                     updateSkill(firstCategory.id, { items: [...firstCategory.items, skill] });
                   } else {
-                    const id = Math.random().toString(36).substring(2, 9);
+                    const id = generateId();
                     addSkill({ id, category: 'Skills', items: [skill] });
                   }
                 }}

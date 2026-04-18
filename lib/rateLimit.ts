@@ -39,12 +39,29 @@ export function rateLimit(
   return { allowed: true, remaining: limit - b.count, retryAfterSec: 0 };
 }
 
-/** Extract a best-effort client identifier from a request. */
+/** Extract a best-effort client identifier from a request.
+ *
+ * IMPORTANT: assumes deployment on Vercel (or any proxy that overwrites
+ * `x-real-ip` and strips untrusted `x-forwarded-for` entries). On a raw
+ * origin without such a proxy, clients can spoof both headers to bypass
+ * rate limits — don't use this verbatim for self-hosted deploys.
+ *
+ * Preference order (stricter → looser):
+ *   1. `x-real-ip` — Vercel sets this directly from the edge, clients
+ *      cannot spoof it.
+ *   2. `x-forwarded-for` first hop — the leftmost entry is the originating
+ *      client IP when the proxy is trusted. Fallback only.
+ *   3. `'unknown'` — same bucket for all unidentifiable callers, which
+ *      intentionally makes them share a quota.
+ */
 export function clientId(req: Request): string {
   const h = req.headers;
-  // Vercel / most proxies set x-forwarded-for. Take the first hop (closest
-  // to the actual client) — anything else can be spoofed by the client.
+  const real = h.get('x-real-ip');
+  if (real && real.trim()) return real.trim();
   const xff = h.get('x-forwarded-for');
-  if (xff) return xff.split(',')[0].trim();
-  return h.get('x-real-ip') || 'unknown';
+  if (xff) {
+    const first = xff.split(',')[0]?.trim();
+    if (first) return first;
+  }
+  return 'unknown';
 }

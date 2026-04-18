@@ -9,8 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Plus, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
-
-function generateId() { return Math.random().toString(36).substring(2, 9); }
+import { generateId } from '@/lib/ids';
 
 function ItemEntry({ item, onUpdate, onRemove }: {
   item: CustomSectionItem;

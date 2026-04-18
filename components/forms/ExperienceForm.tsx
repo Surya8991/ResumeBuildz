@@ -14,10 +14,7 @@ import { Plus, Trash2, ChevronDown, ChevronUp, Briefcase, GripVertical } from 'l
 import { DndContext, closestCenter, DragEndEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-
-function generateId() {
-  return Math.random().toString(36).substring(2, 9);
-}
+import { generateId } from '@/lib/ids';
 
 function SortableExperienceEntry({ exp, onUpdate, onRemove }: {
   exp: Experience;

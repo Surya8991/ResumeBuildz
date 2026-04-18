@@ -51,6 +51,8 @@ export async function POST(req: NextRequest) {
   const rawBody = await req.text();
 
   // Lazy import so the app builds without the Stripe SDK installed.
+  // See M3 in audit — swap for a direct `await import('stripe')` once the
+  // SDK is a permanent dep.
   type StripeCtor = new (key: string) => {
     webhooks: { constructEvent: (body: string, sig: string, secret: string) => { type: string; data: { object: Record<string, unknown> } } };
   };

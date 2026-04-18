@@ -7,10 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Plus, Trash2 } from 'lucide-react';
-
-function generateId() {
-  return Math.random().toString(36).substring(2, 9);
-}
+import { generateId } from '@/lib/ids';
 
 const PROFICIENCY_LEVELS = ['Native', 'Fluent', 'Advanced', 'Intermediate', 'Basic'] as const;
 

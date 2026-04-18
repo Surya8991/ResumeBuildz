@@ -2,6 +2,7 @@
 
 import { create } from 'zustand';
 import { persist, createJSONStorage, type StateStorage } from 'zustand/middleware';
+import { generateId } from '@/lib/ids';
 
 /**
  * Debounced localStorage wrapper.
@@ -393,7 +394,7 @@ export const useResumeStore = create<ResumeStore>()(
       saveProfile: (name) =>
         set((state) => {
           const profile: SavedProfile = {
-            id: Math.random().toString(36).substring(2, 9),
+            id: generateId(),
             name,
             data: JSON.parse(JSON.stringify(state.resumeData)),
             template: state.selectedTemplate,

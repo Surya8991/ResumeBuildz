@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
 import { logger } from '@/lib/logger';
+import { SITE_URL } from '@/lib/siteConfig';
 
 export type Profile = {
   id: string;
@@ -102,7 +103,10 @@ export function useAuth() {
       supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          // SITE_URL is the single source of truth — guarantees the redirect
+          // lands on the canonical apex regardless of whether the user is on
+          // www, a preview deployment, or a mobile webview.
+          redirectTo: `${SITE_URL}/auth/callback`,
         },
       }),
     [supabase]
