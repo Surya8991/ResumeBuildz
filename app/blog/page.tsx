@@ -3,37 +3,51 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowUpRight, Clock } from 'lucide-react';
+import { ArrowUpRight, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
 import SiteNavbar from '@/components/SiteNavbar';
 import SiteFooter from '@/components/SiteFooter';
 import { BLOG_CATEGORIES, getCategoriesByParent, PARENT_GROUPS, getCategoryBySlug } from '@/lib/blogCategories';
-import { VIRTUAL_POSTS, getAllPosts, getFeaturedPosts, getPostCountByCategory } from '@/lib/blogPosts';
+import { VIRTUAL_POSTS, getAllPosts, getFeaturedPosts, type BlogPost, type VirtualPost } from '@/lib/blogPosts';
 
-// Blog hub. Vercel/Linear tech-blog structure (featured hero + 3-col grid +
-// filter chips) in the ResumeBuildz light theme: paper background, ink text,
-// indigo accent, hairline borders.
-
+// Blog hub. Vercel/Linear tech-blog structure (featured hero + card grid +
+// filter chips + pagination) in the ResumeBuildz light theme.
+//
 // Filter types:
-//  'all'               -> show everything
-//  parent-group slug   -> show all posts whose child-category belongs to that group
-//  child-category slug -> show only posts in that category
+//   'all'               -> every post + every hub
+//   parent-group slug   -> every post whose child-category belongs to that group
+//                          + every hub whose category belongs to that group
+//   child-category slug -> only posts in that category
+//                          + only hubs in that category
+
+const POSTS_PER_PAGE = 9;
+
 type FilterValue = 'all' | string;
 
-function isParentGroup(slug: string): slug is 'resume-ats' | 'job-search' | 'india-hiring' | 'company-guides' {
+type PARENT_SLUG = 'resume-ats' | 'job-search' | 'india-hiring' | 'company-guides';
+
+function isParentGroup(slug: string): slug is PARENT_SLUG {
   return PARENT_GROUPS.some((g) => g.slug === slug);
 }
+
+// Combined display item so posts and hubs flow through the same grid.
+type DisplayItem =
+  | { kind: 'post'; post: BlogPost }
+  | { kind: 'hub'; hub: VirtualPost };
 
 export default function BlogHubPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const initialCat = searchParams.get('cat') || 'all';
-  const [filter, setFilter] = useState<FilterValue>(initialCat);
 
-  // Sync local state if the URL changes (e.g. from the navbar dropdown).
+  const initialFilter = searchParams.get('cat') || 'all';
+  const initialPage = Math.max(1, Number(searchParams.get('page') || 1));
+  const [filter, setFilter] = useState<FilterValue>(initialFilter);
+  const [page, setPage] = useState<number>(initialPage);
+
+  // Sync local state when the URL changes (navbar dropdown, back button).
   useEffect(() => {
-    const cat = searchParams.get('cat') || 'all';
-    setFilter(cat);
+    setFilter(searchParams.get('cat') || 'all');
+    setPage(Math.max(1, Number(searchParams.get('page') || 1)));
   }, [searchParams]);
 
   useEffect(() => {
@@ -47,42 +61,121 @@ export default function BlogHubPage() {
     ogMeta('og:description')?.setAttribute('content', desc);
   }, []);
 
-  const allPosts = getAllPosts();
-  const featured = getFeaturedPosts();
+  // ---------- Data (stable across renders) ----------
+  // allPosts is sorted once and reused. getAllPosts returns a fresh array so
+  // wrapping in useMemo with [] keeps the reference stable.
+  const allPosts = useMemo(() => getAllPosts(), []);
+  const featured = useMemo(() => getFeaturedPosts(), []);
   const hero = featured[0] || allPosts[0];
 
-  // Chips grouped by parent group, each followed by its child categories.
-  // User sees "All", then parent groups, then child filters under each.
+  // Precomputed indexes. Built once on mount, O(n). Filtering becomes O(1)
+  // lookup afterward regardless of post count.
+  const postsByCategory = useMemo(() => {
+    const map = new Map<string, BlogPost[]>();
+    for (const p of allPosts) {
+      const list = map.get(p.category);
+      if (list) list.push(p);
+      else map.set(p.category, [p]);
+    }
+    return map;
+  }, [allPosts]);
+
+  const postsByParent = useMemo(() => {
+    const map = new Map<PARENT_SLUG, BlogPost[]>();
+    for (const g of PARENT_GROUPS) {
+      const childSlugs = new Set(getCategoriesByParent(g.slug).map((c) => c.slug));
+      map.set(g.slug, allPosts.filter((p) => childSlugs.has(p.category)));
+    }
+    return map;
+  }, [allPosts]);
+
+  const hubsByCategory = useMemo(() => {
+    const map = new Map<string, VirtualPost[]>();
+    for (const v of VIRTUAL_POSTS) {
+      const list = map.get(v.category);
+      if (list) list.push(v);
+      else map.set(v.category, [v]);
+    }
+    return map;
+  }, []);
+
+  const hubsByParent = useMemo(() => {
+    const map = new Map<PARENT_SLUG, VirtualPost[]>();
+    for (const g of PARENT_GROUPS) {
+      const childSlugs = new Set(getCategoriesByParent(g.slug).map((c) => c.slug));
+      map.set(g.slug, VIRTUAL_POSTS.filter((v) => childSlugs.has(v.category)));
+    }
+    return map;
+  }, []);
+
+  // Counts per parent include hubs too, so the chip badge reflects reality.
   const parentChips = useMemo(
     () => [
-      { value: 'all' as const, label: 'All', kind: 'all' as const, count: allPosts.length },
-      ...PARENT_GROUPS.flatMap((g) => {
-        const children = getCategoriesByParent(g.slug);
-        const parentCount = children.reduce((sum, c) => sum + getPostCountByCategory(c.slug), 0);
-        return [{ value: g.slug, label: g.name, kind: 'parent' as const, count: parentCount }];
-      }),
+      { value: 'all' as const, label: 'All', count: allPosts.length + VIRTUAL_POSTS.length },
+      ...PARENT_GROUPS.map((g) => ({
+        value: g.slug,
+        label: g.name,
+        count: (postsByParent.get(g.slug)?.length || 0) + (hubsByParent.get(g.slug)?.length || 0),
+      })),
     ],
-    [allPosts],
+    [allPosts, postsByParent, hubsByParent],
   );
 
-  const setFilterAndUrl = (value: FilterValue) => {
-    setFilter(value);
-    const params = new URLSearchParams(searchParams.toString());
-    if (value === 'all') params.delete('cat');
-    else params.set('cat', value);
+  // URL + state sync. `cat` is preserved across pagination; `page` is dropped
+  // when filter changes so the user is not stranded on an empty page 4.
+  const updateUrl = (nextFilter: FilterValue, nextPage: number) => {
+    const params = new URLSearchParams();
+    if (nextFilter !== 'all') params.set('cat', nextFilter);
+    if (nextPage > 1) params.set('page', String(nextPage));
     const qs = params.toString();
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   };
 
-  const visiblePosts = useMemo(() => {
-    if (filter === 'all') return allPosts.filter((p) => p.slug !== hero?.slug);
-    if (isParentGroup(filter)) {
-      const childSlugs = getCategoriesByParent(filter).map((c) => c.slug);
-      return allPosts.filter((p) => childSlugs.includes(p.category) && p.slug !== hero?.slug);
+  const handleFilter = (value: FilterValue) => {
+    setFilter(value);
+    setPage(1);
+    updateUrl(value, 1);
+  };
+
+  const handlePage = (next: number) => {
+    setPage(next);
+    updateUrl(filter, next);
+    // Scroll to the grid so the user sees the new page start.
+    if (typeof window !== 'undefined') {
+      const grid = document.getElementById('post-grid');
+      if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-    // Child category slug
-    return allPosts.filter((p) => p.category === filter && p.slug !== hero?.slug);
-  }, [filter, allPosts, hero]);
+  };
+
+  // ---------- Filtered results (O(1) via indexes) ----------
+  const filteredPosts = useMemo((): BlogPost[] => {
+    const excludeHero = (p: BlogPost) => p.slug !== hero?.slug;
+    if (filter === 'all') return allPosts.filter(excludeHero);
+    if (isParentGroup(filter)) return (postsByParent.get(filter) || []).filter(excludeHero);
+    return (postsByCategory.get(filter) || []).filter(excludeHero);
+  }, [filter, allPosts, postsByParent, postsByCategory, hero]);
+
+  const filteredHubs = useMemo((): VirtualPost[] => {
+    if (filter === 'all') return VIRTUAL_POSTS;
+    if (isParentGroup(filter)) return hubsByParent.get(filter) || [];
+    return hubsByCategory.get(filter) || [];
+  }, [filter, hubsByParent, hubsByCategory]);
+
+  // Unified display stream: posts first, hubs after, so the highlighted
+  // content types are predictable.
+  const allItems: DisplayItem[] = useMemo(
+    () => [
+      ...filteredPosts.map((post) => ({ kind: 'post' as const, post })),
+      ...filteredHubs.map((hub) => ({ kind: 'hub' as const, hub })),
+    ],
+    [filteredPosts, filteredHubs],
+  );
+
+  const totalItems = allItems.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / POSTS_PER_PAGE));
+  const safePage = Math.min(page, totalPages);
+  const startIdx = (safePage - 1) * POSTS_PER_PAGE;
+  const pageItems = allItems.slice(startIdx, startIdx + POSTS_PER_PAGE);
 
   const activeLabel = useMemo(() => {
     if (filter === 'all') return null;
@@ -110,7 +203,7 @@ export default function BlogHubPage() {
             {parentChips.map((chip) => (
               <button
                 key={chip.value}
-                onClick={() => setFilterAndUrl(chip.value)}
+                onClick={() => handleFilter(chip.value)}
                 className={`px-4 py-1.5 text-sm rounded-full border transition ${
                   filter === chip.value
                     ? 'bg-gray-900 text-white border-gray-900 font-medium'
@@ -127,14 +220,14 @@ export default function BlogHubPage() {
 
           {activeLabel && (
             <p className="text-sm text-gray-500 mt-4">
-              Showing: <strong className="text-gray-900">{activeLabel}</strong> ({visiblePosts.length} post{visiblePosts.length === 1 ? '' : 's'})
+              Showing: <strong className="text-gray-900">{activeLabel}</strong> ({totalItems} item{totalItems === 1 ? '' : 's'})
             </p>
           )}
         </div>
       </section>
 
-      {/* Featured hero */}
-      {hero && filter === 'all' && (
+      {/* Featured hero (only on All filter, page 1) */}
+      {hero && filter === 'all' && safePage === 1 && (
         <section className="border-b border-gray-200 bg-gray-50/40">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-16">
             <Link
@@ -173,67 +266,29 @@ export default function BlogHubPage() {
         </section>
       )}
 
-      {/* Post grid */}
-      <section className="flex-1 py-14 md:py-20 bg-white">
+      {/* Post grid + pagination */}
+      <section id="post-grid" className="flex-1 py-14 md:py-20 bg-white scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {visiblePosts.length === 0 ? (
+          {totalItems === 0 ? (
             <p className="text-gray-500 text-center py-20">No posts in this section yet.</p>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-14">
-              {visiblePosts.map((p) => {
-                const cat = BLOG_CATEGORIES.find((c) => c.slug === p.category);
-                return (
-                  <Link key={p.slug} href={`/${p.slug}`} className="group">
-                    <div className="aspect-video bg-gradient-to-br from-indigo-50 via-indigo-100 to-purple-100 rounded-xl mb-5 relative overflow-hidden border border-gray-200">
-                      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(99,102,241,0.18),transparent_60%)]" />
-                      <div className="absolute bottom-4 left-4 text-xs text-indigo-700 uppercase tracking-wider font-semibold">
-                        {cat?.name || p.category.replace('-', ' ')}
-                      </div>
-                    </div>
-                    <h3 className="font-bold text-gray-900 text-xl leading-snug group-hover:text-indigo-700 transition mb-3 tracking-tight">
-                      {p.title}
-                    </h3>
-                    <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-2">
-                      {p.excerpt}
-                    </p>
-                    <div className="flex items-center gap-3 text-sm">
-                      <AuthorAvatar size="sm" />
-                      <span className="text-gray-900 font-medium">Surya L</span>
-                      <span className="text-gray-300">.</span>
-                      <span className="text-gray-500 inline-flex items-center gap-1">
-                        <Clock className="h-3.5 w-3.5" /> {p.readingTime} min
-                      </span>
-                    </div>
-                  </Link>
-                );
-              })}
-
-              {filter === 'all' &&
-                VIRTUAL_POSTS.map((v) => (
-                  <Link key={v.slug} href={v.href} className="group">
-                    <div className="aspect-video bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl mb-5 relative overflow-hidden border border-indigo-500/30 shadow-sm">
-                      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(255,255,255,0.22),transparent_55%)]" />
-                      <div className="absolute bottom-4 left-4 flex items-center gap-2">
-                        <span className="text-[10px] font-bold bg-white text-indigo-700 px-2 py-0.5 rounded-full">
-                          {v.badge}
-                        </span>
-                        <span className="text-xs text-white/90 uppercase tracking-wider font-semibold">
-                          Company guides
-                        </span>
-                      </div>
-                    </div>
-                    <h3 className="font-bold text-gray-900 text-xl leading-snug group-hover:text-indigo-700 transition mb-3 tracking-tight">
-                      {v.title}
-                    </h3>
-                    <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-2">
-                      {v.excerpt}
-                    </p>
-                    <div className="flex items-center gap-1 text-sm font-medium text-indigo-600 group-hover:gap-2 transition-all">
-                      Open hub <ArrowUpRight className="h-4 w-4" />
-                    </div>
-                  </Link>
+            <>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-14">
+                {pageItems.map((item) => item.kind === 'post' ? (
+                  <PostCard key={item.post.slug} post={item.post} />
+                ) : (
+                  <HubCard key={item.hub.slug} hub={item.hub} />
                 ))}
-            </div>
+              </div>
+
+              {totalPages > 1 && (
+                <Pagination
+                  page={safePage}
+                  totalPages={totalPages}
+                  onChange={handlePage}
+                />
+              )}
+            </>
           )}
         </div>
       </section>
@@ -242,6 +297,136 @@ export default function BlogHubPage() {
     </div>
   );
 }
+
+// --------------------------------------------------------------------
+// Cards
+// --------------------------------------------------------------------
+
+function PostCard({ post }: { post: BlogPost }) {
+  const cat = BLOG_CATEGORIES.find((c) => c.slug === post.category);
+  return (
+    <Link href={`/${post.slug}`} className="group">
+      <div className="aspect-video bg-gradient-to-br from-indigo-50 via-indigo-100 to-purple-100 rounded-xl mb-5 relative overflow-hidden border border-gray-200">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(99,102,241,0.18),transparent_60%)]" />
+        <div className="absolute bottom-4 left-4 text-xs text-indigo-700 uppercase tracking-wider font-semibold">
+          {cat?.name || post.category.replace('-', ' ')}
+        </div>
+      </div>
+      <h3 className="font-bold text-gray-900 text-xl leading-snug group-hover:text-indigo-700 transition mb-3 tracking-tight">
+        {post.title}
+      </h3>
+      <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-2">{post.excerpt}</p>
+      <div className="flex items-center gap-3 text-sm">
+        <AuthorAvatar size="sm" />
+        <span className="text-gray-900 font-medium">Surya L</span>
+        <span className="text-gray-300">.</span>
+        <span className="text-gray-500 inline-flex items-center gap-1">
+          <Clock className="h-3.5 w-3.5" /> {post.readingTime} min
+        </span>
+      </div>
+    </Link>
+  );
+}
+
+function HubCard({ hub }: { hub: VirtualPost }) {
+  return (
+    <Link href={hub.href} className="group">
+      <div className="aspect-video bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl mb-5 relative overflow-hidden border border-indigo-500/30 shadow-sm">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(255,255,255,0.22),transparent_55%)]" />
+        <div className="absolute bottom-4 left-4 flex items-center gap-2">
+          <span className="text-[10px] font-bold bg-white text-indigo-700 px-2 py-0.5 rounded-full">
+            {hub.badge}
+          </span>
+          <span className="text-xs text-white/90 uppercase tracking-wider font-semibold">
+            Company guides
+          </span>
+        </div>
+      </div>
+      <h3 className="font-bold text-gray-900 text-xl leading-snug group-hover:text-indigo-700 transition mb-3 tracking-tight">
+        {hub.title}
+      </h3>
+      <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-2">{hub.excerpt}</p>
+      <div className="flex items-center gap-1 text-sm font-medium text-indigo-600 group-hover:gap-2 transition-all">
+        Open hub <ArrowUpRight className="h-4 w-4" />
+      </div>
+    </Link>
+  );
+}
+
+// --------------------------------------------------------------------
+// Pagination
+// --------------------------------------------------------------------
+
+function Pagination({
+  page,
+  totalPages,
+  onChange,
+}: {
+  page: number;
+  totalPages: number;
+  onChange: (n: number) => void;
+}) {
+  // Build the range of page numbers to show. For small N we show all; for
+  // larger N we elide with ellipses (1 ... 4 5 6 ... 12).
+  const pages = useMemo(() => pageWindow(page, totalPages), [page, totalPages]);
+
+  return (
+    <nav className="mt-14 flex items-center justify-center gap-1 flex-wrap" aria-label="Pagination">
+      <button
+        onClick={() => onChange(page - 1)}
+        disabled={page <= 1}
+        className="px-3 py-2 text-sm rounded-md border border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 disabled:opacity-40 disabled:cursor-not-allowed transition inline-flex items-center gap-1"
+      >
+        <ChevronLeft className="h-4 w-4" /> Prev
+      </button>
+
+      {pages.map((p, i) =>
+        p === 'ellipsis' ? (
+          <span key={`e-${i}`} className="px-2 text-gray-400 text-sm select-none">…</span>
+        ) : (
+          <button
+            key={p}
+            onClick={() => onChange(p)}
+            aria-current={p === page ? 'page' : undefined}
+            className={`min-w-[36px] px-2 py-2 text-sm rounded-md border transition ${
+              p === page
+                ? 'bg-gray-900 text-white border-gray-900 font-medium'
+                : 'border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300'
+            }`}
+          >
+            {p}
+          </button>
+        ),
+      )}
+
+      <button
+        onClick={() => onChange(page + 1)}
+        disabled={page >= totalPages}
+        className="px-3 py-2 text-sm rounded-md border border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 disabled:opacity-40 disabled:cursor-not-allowed transition inline-flex items-center gap-1"
+      >
+        Next <ChevronRight className="h-4 w-4" />
+      </button>
+    </nav>
+  );
+}
+
+// Returns a compact list of page numbers for the pagination strip.
+// Keeps first and last page anchored, shows a window of 3 around current.
+function pageWindow(current: number, total: number): Array<number | 'ellipsis'> {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  const out: Array<number | 'ellipsis'> = [1];
+  const from = Math.max(2, current - 1);
+  const to = Math.min(total - 1, current + 1);
+  if (from > 2) out.push('ellipsis');
+  for (let i = from; i <= to; i++) out.push(i);
+  if (to < total - 1) out.push('ellipsis');
+  out.push(total);
+  return out;
+}
+
+// --------------------------------------------------------------------
+// Shared UI
+// --------------------------------------------------------------------
 
 function AuthorAvatar({ size = 'md' }: { size?: 'sm' | 'md' }) {
   const dims = size === 'sm' ? 'h-7 w-7 text-xs' : 'h-9 w-9 text-sm';
