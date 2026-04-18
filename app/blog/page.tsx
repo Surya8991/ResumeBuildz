@@ -3,11 +3,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowUpRight, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowUpRight, Clock, ChevronLeft, ChevronRight, Building2 } from 'lucide-react';
 import SiteNavbar from '@/components/SiteNavbar';
 import SiteFooter from '@/components/SiteFooter';
 import { BLOG_CATEGORIES, getCategoriesByParent, PARENT_GROUPS, getCategoryBySlug } from '@/lib/blogCategories';
 import { VIRTUAL_POSTS, getAllPosts, getFeaturedPosts, type BlogPost, type VirtualPost } from '@/lib/blogPosts';
+import { COMPANIES, type CompanyEntry } from '@/lib/resumeCompanyData';
 
 // Blog hub. Vercel/Linear tech-blog structure (featured hero + card grid +
 // filter chips + pagination) in the ResumeBuildz light theme.
@@ -29,10 +30,19 @@ function isParentGroup(slug: string): slug is PARENT_SLUG {
   return PARENT_GROUPS.some((g) => g.slug === slug);
 }
 
-// Combined display item so posts and hubs flow through the same grid.
+// Combined display item so posts, hubs, and company guides flow through the
+// same grid. When the Company Guides filter is active we decompose the single
+// virtual hub card into 22 individual company article cards.
 type DisplayItem =
   | { kind: 'post'; post: BlogPost }
-  | { kind: 'hub'; hub: VirtualPost };
+  | { kind: 'hub'; hub: VirtualPost }
+  | { kind: 'company'; company: CompanyEntry };
+
+// True when the selected filter should surface the 22 individual company
+// guides rather than the bundled hub card.
+function isCompanyGuidesFilter(filter: string): boolean {
+  return filter === 'company-guides';
+}
 
 export default function BlogHubPage() {
   const searchParams = useSearchParams();
@@ -108,15 +118,21 @@ export default function BlogHubPage() {
     return map;
   }, []);
 
-  // Counts per parent include hubs too, so the chip badge reflects reality.
+  // Counts per parent include hubs (and for Company Guides, the 22 decomposed
+  // company cards) so the chip badge matches what the grid will render.
   const parentChips = useMemo(
     () => [
       { value: 'all' as const, label: 'All', count: allPosts.length + VIRTUAL_POSTS.length },
-      ...PARENT_GROUPS.map((g) => ({
-        value: g.slug,
-        label: g.name,
-        count: (postsByParent.get(g.slug)?.length || 0) + (hubsByParent.get(g.slug)?.length || 0),
-      })),
+      ...PARENT_GROUPS.map((g) => {
+        const postCount = postsByParent.get(g.slug)?.length || 0;
+        const hubCount = hubsByParent.get(g.slug)?.length || 0;
+        // Company Guides expands its hub into 22 company cards when filtered.
+        const companyCount = g.slug === 'company-guides' ? COMPANIES.length : 0;
+        const displayed = g.slug === 'company-guides'
+          ? postCount + companyCount
+          : postCount + hubCount;
+        return { value: g.slug, label: g.name, count: displayed };
+      }),
     ],
     [allPosts, postsByParent, hubsByParent],
   );
@@ -162,14 +178,17 @@ export default function BlogHubPage() {
   }, [filter, hubsByParent, hubsByCategory]);
 
   // Unified display stream: posts first, hubs after, so the highlighted
-  // content types are predictable.
-  const allItems: DisplayItem[] = useMemo(
-    () => [
-      ...filteredPosts.map((post) => ({ kind: 'post' as const, post })),
-      ...filteredHubs.map((hub) => ({ kind: 'hub' as const, hub })),
-    ],
-    [filteredPosts, filteredHubs],
-  );
+  // content types are predictable. When Company Guides is the active filter,
+  // the hub card is replaced by 22 individual company article cards.
+  const allItems: DisplayItem[] = useMemo(() => {
+    const postItems = filteredPosts.map((post) => ({ kind: 'post' as const, post }));
+    if (isCompanyGuidesFilter(filter)) {
+      const companyItems = COMPANIES.map((company) => ({ kind: 'company' as const, company }));
+      return [...postItems, ...companyItems];
+    }
+    const hubItems = filteredHubs.map((hub) => ({ kind: 'hub' as const, hub }));
+    return [...postItems, ...hubItems];
+  }, [filter, filteredPosts, filteredHubs]);
 
   const totalItems = allItems.length;
   const totalPages = Math.max(1, Math.ceil(totalItems / POSTS_PER_PAGE));
@@ -274,11 +293,11 @@ export default function BlogHubPage() {
           ) : (
             <>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-14">
-                {pageItems.map((item) => item.kind === 'post' ? (
-                  <PostCard key={item.post.slug} post={item.post} />
-                ) : (
-                  <HubCard key={item.hub.slug} hub={item.hub} />
-                ))}
+                {pageItems.map((item) => {
+                  if (item.kind === 'post') return <PostCard key={item.post.slug} post={item.post} />;
+                  if (item.kind === 'hub') return <HubCard key={item.hub.slug} hub={item.hub} />;
+                  return <CompanyCard key={item.company.slug} company={item.company} />;
+                })}
               </div>
 
               {totalPages > 1 && (
@@ -323,6 +342,39 @@ function PostCard({ post }: { post: BlogPost }) {
         <span className="text-gray-500 inline-flex items-center gap-1">
           <Clock className="h-3.5 w-3.5" /> {post.readingTime} min
         </span>
+      </div>
+    </Link>
+  );
+}
+
+function CompanyCard({ company }: { company: CompanyEntry }) {
+  const tierColor = company.tier === 'Global'
+    ? 'from-indigo-500 via-indigo-600 to-blue-600'
+    : 'from-amber-500 via-orange-500 to-rose-500';
+  return (
+    <Link href={`/blog/company-guides/${company.slug}`} className="group">
+      <div className={`aspect-video bg-gradient-to-br ${tierColor} rounded-xl mb-5 relative overflow-hidden border border-gray-200 shadow-sm`}>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(255,255,255,0.22),transparent_60%)]" />
+        <div className="absolute top-4 right-4">
+          <span className="text-[10px] font-bold uppercase tracking-wider bg-white/20 text-white px-2 py-0.5 rounded-full backdrop-blur-sm">
+            {company.tier}
+          </span>
+        </div>
+        <div className="absolute bottom-4 left-4 flex items-center gap-2">
+          <div className="h-8 w-8 rounded-lg bg-white/20 flex items-center justify-center backdrop-blur-sm">
+            <Building2 className="h-4 w-4 text-white" />
+          </div>
+          <span className="text-xs text-white/90 uppercase tracking-wider font-semibold">Company guide</span>
+        </div>
+      </div>
+      <h3 className="font-bold text-gray-900 text-xl leading-snug group-hover:text-indigo-700 transition mb-2 tracking-tight">
+        {company.name} Resume Guide
+      </h3>
+      <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-2">
+        {company.industry}. Headquartered in {company.hq}.
+      </p>
+      <div className="flex items-center gap-1 text-sm font-medium text-indigo-600 group-hover:gap-2 transition-all">
+        Read guide <ArrowUpRight className="h-4 w-4" />
       </div>
     </Link>
   );
