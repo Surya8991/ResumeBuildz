@@ -35,6 +35,8 @@ import VersionHistoryDialog from '@/components/VersionHistoryDialog';
 import LinkedInImportModal from '@/components/LinkedInImportModal';
 import ShareResumeDialog from '@/components/ShareResumeDialog';
 import SaveStateChip from '@/components/SaveStateChip';
+import CommandPalette, { type Command } from '@/components/CommandPalette';
+import { TEMPLATES } from '@/types/resume';
 import { getUsage, incrementUsage, canUse } from '@/lib/usage';
 import { useToast } from '@/components/Toast';
 import { useAuthContext as useAuth } from '@/components/Providers';
@@ -114,7 +116,7 @@ export default function HomePage() {
   const [isExporting, setIsExporting] = useState(false);
   const [exportingType, setExportingType] = useState<string | null>(null);
   const [showMobileSheet, setShowMobileSheet] = useState(false);
-  const { importData, resetData, addCustomSection, resumeData, undo, redo, pushHistory, canUndo, canRedo } = useResumeStore();
+  const { importData, resetData, addCustomSection, resumeData, undo, redo, pushHistory, canUndo, canRedo, setSelectedTemplate } = useResumeStore();
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [showPasteModal, setShowPasteModal] = useState(false);
   const [pdfRemaining, setPdfRemaining] = useState(() => getUsage('pdf').remaining);
@@ -125,6 +127,7 @@ export default function HomePage() {
   // user sees active save activity, not just a stale "Saved 3m ago".
   const [isSaving, setIsSaving] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
+  const [showPalette, setShowPalette] = useState(false);
   const [showVersionHistory, setShowVersionHistory] = useState(false);
   const [showLinkedInImport, setShowLinkedInImport] = useState(false);
   const [showShare, setShowShare] = useState(false);
@@ -485,6 +488,11 @@ export default function HomePage() {
         target?.tagName === 'SELECT' ||
         target?.isContentEditable;
 
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        setShowPalette((v) => !v);
+        return;
+      }
       if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
         e.preventDefault();
         handleExportPdf();
@@ -561,6 +569,46 @@ export default function HomePage() {
       default: return <PersonalInfoForm />;
     }
   };
+
+  // Command palette catalogue. Rebuilt whenever handlers/section list change
+  // so we always dispatch the current closure.
+  const paletteCommands: Command[] = useMemo(() => {
+    const out: Command[] = [];
+    const tabs: Array<{ id: 'edit' | 'preview' | 'templates' | 'ats' | 'ai'; label: string }> = [
+      { id: 'edit', label: 'Edit' },
+      { id: 'preview', label: 'Preview' },
+      { id: 'templates', label: 'Templates' },
+      { id: 'ats', label: 'ATS score' },
+      { id: 'ai', label: 'AI tools' },
+    ];
+    for (const t of tabs) {
+      out.push({ id: `tab-${t.id}`, group: 'Go to', label: `Open ${t.label}`, run: () => setActiveTab(t.id) });
+    }
+    for (const s of BASE_SECTIONS) {
+      out.push({ id: `section-${s.id}`, group: 'Jump to section', label: s.label, run: () => { setActiveTab('edit'); setActiveSection(s.id); } });
+    }
+    for (const tpl of TEMPLATES) {
+      out.push({
+        id: `template-${tpl.name}`,
+        group: 'Switch template',
+        label: tpl.label,
+        hint: tpl.description,
+        run: () => setSelectedTemplate(tpl.name),
+      });
+    }
+    out.push({ id: 'export-pdf', group: 'Export', label: 'Export as PDF', hint: 'Ctrl+P', run: handleExportPdf });
+    out.push({ id: 'export-docx', group: 'Export', label: 'Export as DOCX', run: handleExportDocx });
+    out.push({ id: 'export-html', group: 'Export', label: 'Export as HTML', run: handleExportHtml });
+    out.push({ id: 'export-json', group: 'Export', label: 'Export as JSON', hint: 'Ctrl+S', run: handleExportJSON });
+    out.push({ id: 'export-md', group: 'Export', label: 'Export as Markdown', run: handleExportMarkdown });
+    out.push({ id: 'export-ats', group: 'Export', label: 'Export as ATS text', run: handleExportAtsText });
+    out.push({ id: 'undo', group: 'Edit', label: 'Undo', hint: 'Ctrl+Z', run: () => { if (canUndo()) undo(); } });
+    out.push({ id: 'redo', group: 'Edit', label: 'Redo', hint: 'Ctrl+Shift+Z', run: () => { if (canRedo()) redo(); } });
+    out.push({ id: 'dark', group: 'View', label: 'Toggle dark mode', run: toggleDarkMode });
+    out.push({ id: 'shortcuts', group: 'Help', label: 'Keyboard shortcuts', hint: '?', run: () => setShowShortcuts(true) });
+    return out;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!mounted) {
     return (
@@ -836,6 +884,8 @@ export default function HomePage() {
             <button
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
               className="px-1.5 hover:bg-muted border-l transition-colors shrink-0 self-stretch"
+              aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             >
               {sidebarCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
             </button>
@@ -1080,7 +1130,7 @@ export default function HomePage() {
                 <Sparkles className="h-3.5 w-3.5" /> AI
               </button>
 
-              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setIsFullPreview(!isFullPreview)}>
+              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setIsFullPreview(!isFullPreview)} aria-label={isFullPreview ? 'Exit full preview' : 'Enter full preview'} title={isFullPreview ? 'Exit full preview' : 'Full preview'}>
                 {isFullPreview ? <Minimize2 className="h-3.5 w-3.5" /> : <Maximize2 className="h-3.5 w-3.5" />}
               </Button>
             </div>
@@ -1174,6 +1224,7 @@ export default function HomePage() {
       <VersionHistoryDialog open={showVersionHistory} onOpenChange={setShowVersionHistory} />
       <LinkedInImportModal open={showLinkedInImport} onOpenChange={setShowLinkedInImport} />
       <ShareResumeDialog open={showShare} onOpenChange={setShowShare} />
+      <CommandPalette commands={paletteCommands} open={showPalette} onClose={() => setShowPalette(false)} />
     </div>
     </ErrorBoundary>
   );
