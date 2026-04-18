@@ -43,6 +43,14 @@ const nextConfig: NextConfig = {
     // `@next/next/no-img-element` rule is silenced for them in eslint.config.mjs.
     unoptimized: true,
   },
+  async redirects() {
+    // Company guides moved from /resume-for to /blog/company-guides so all
+    // resume content lives under the blog section. 301s preserve inbound SEO.
+    return [
+      { source: '/resume-for', destination: '/blog/company-guides', permanent: true },
+      { source: '/resume-for/:company', destination: '/blog/company-guides/:company', permanent: true },
+    ];
+  },
   async headers() {
     return [
       {

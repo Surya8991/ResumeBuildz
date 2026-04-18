@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: data.metaTitle,
     description: data.metaDescription,
-    alternates: { canonical: absoluteUrl(`/resume-for/${data.slug}`) },
+    alternates: { canonical: absoluteUrl(`/blog/company-guides/${data.slug}`) },
     openGraph: {
       title: data.metaTitle,
       description: data.metaDescription,
@@ -53,13 +53,14 @@ export default async function CompanyResumePage({ params }: PageProps) {
     articleSchema({
       headline: `${data.name} Resume Guide 2026`,
       description: data.metaDescription,
-      slug: `resume-for/${data.slug}`,
+      slug: `blog/company-guides/${data.slug}`,
       datePublished: '2026-04-14',
       dateModified: '2026-04-15',
     }),
     ...(extended?.faqs && extended.faqs.length > 0 ? [faqPageSchema(extended.faqs)] : []),
     breadcrumbSchema([
-      { label: 'Company Guides', slug: 'resume-for' },
+      { label: 'Blog', slug: 'blog' },
+      { label: 'Company Guides', slug: 'blog/company-guides' },
       { label: data.name },
     ])
   );

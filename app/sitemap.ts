@@ -27,8 +27,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/refund`, lastModified: now, changeFrequency: 'yearly', priority: 0.2 },
     { url: `${base}/shipping`, lastModified: now, changeFrequency: 'yearly', priority: 0.2 },
 
-    // Resources hub + situation pages (PART 3 + 4)
-    { url: `${base}/resume-for`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
+    // Resources hub + situation pages
+    { url: `${base}/blog/company-guides`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${base}/fresher-resume`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${base}/campus-placement-resume`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${base}/naukri-resume-tips`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
@@ -40,17 +40,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/blog`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
   ];
 
-  // Blog category pages
-  const blogCategoryEntries: MetadataRoute.Sitemap = BLOG_CATEGORIES.map((c) => ({
-    url: `${base}/blog/category/${c.slug}`,
+  // Blog filter deep-links (parent groups). Child-category filter deep-links
+  // are also valid but omitted from the sitemap to avoid duplicate-content
+  // flags; the canonical entry for each post handles discovery.
+  const blogFilterEntries: MetadataRoute.Sitemap = BLOG_CATEGORIES.map((c) => ({
+    url: `${base}/blog?cat=${c.slug}`,
     lastModified: now,
     changeFrequency: 'weekly' as const,
     priority: 0.7,
   }));
 
-  // PART 2: dynamic company pages (22 entries)
+  // Dynamic company pages (22 entries), now living under /blog/company-guides/.
   const companyEntries: MetadataRoute.Sitemap = COMPANIES.map((c) => ({
-    url: `${base}/resume-for/${c.slug}`,
+    url: `${base}/blog/company-guides/${c.slug}`,
     lastModified: now,
     changeFrequency: 'monthly' as const,
     priority: 0.6,
@@ -68,5 +70,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }))
     .filter((e) => !staticSlugs.has(e.url));
 
-  return [...staticEntries, ...companyEntries, ...blogCategoryEntries, ...blogPostEntries];
+  return [...staticEntries, ...companyEntries, ...blogFilterEntries, ...blogPostEntries];
 }

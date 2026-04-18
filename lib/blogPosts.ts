@@ -1,7 +1,7 @@
-// Blog post registry. Each entry points to an existing page URL — the
-// blog hub is an index layer, not a URL move, so no SEO redirects are
-// needed. Company pages live at /resume-for/[company] and are surfaced
-// here via a "company-guides" category that links to the /resume-for hub.
+// Blog post registry. Each entry points to an existing page URL. The blog
+// hub is an index layer, not a URL move, so no SEO redirects are needed.
+// Company pages live at /blog/company-guides/[company] and are surfaced
+// here via a "company-guides" category that links to the /blog/company-guides hub.
 
 export interface BlogPost {
   slug: string; // canonical URL slug (matches the actual page path after /)
@@ -142,8 +142,8 @@ export const BLOG_POSTS: BlogPost[] = [
 ];
 
 /**
- * "Virtual" posts — entries that represent the /resume-for company guides hub
- * as a single card in the blog. Clicking goes to /resume-for (not a real post).
+ * "Virtual" posts. Entries that represent the /blog/company-guides hub
+ * as a single card in the blog index. Clicking goes to the hub, not a real post.
  */
 export interface VirtualPost {
   slug: string;
@@ -157,7 +157,7 @@ export interface VirtualPost {
 export const VIRTUAL_POSTS: VirtualPost[] = [
   {
     slug: 'company-guides-hub',
-    href: '/resume-for',
+    href: '/blog/company-guides',
     title: '22 Company-Specific Resume Guides',
     excerpt:
       'Full resume guides for Google, Amazon, Microsoft, Meta, Apple, McKinsey, Goldman Sachs, TCS, Infosys, Flipkart, PhonePe, Razorpay, and 10 more. Each includes 15 ATS keywords, 5 insider tips, interview questions, salary benchmarks, and a cover letter template.',

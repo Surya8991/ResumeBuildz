@@ -33,13 +33,13 @@ export default function CompanyResumeView({ data, related }: Props) {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <Breadcrumbs
             items={[
-              { label: 'Company Guides', href: '/resume-for' },
+              { label: 'Company Guides', href: '/blog/company-guides' },
               { label: data.name },
             ]}
             className="mb-4"
           />
           <Link
-            href="/resume-for"
+            href="/blog/company-guides"
             className="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-white mb-6 transition"
           >
             <ChevronLeft className="h-4 w-4" /> All company guides
@@ -380,7 +380,7 @@ export default function CompanyResumeView({ data, related }: Props) {
               {related.map((c) => (
                 <Link
                   key={c.slug}
-                  href={`/resume-for/${c.slug}`}
+                  href={`/blog/company-guides/${c.slug}`}
                   className="flex items-center justify-between bg-gray-50 hover:bg-blue-50 hover:border-blue-200 border border-gray-200 rounded-lg px-4 py-3 transition group"
                 >
                   <div>

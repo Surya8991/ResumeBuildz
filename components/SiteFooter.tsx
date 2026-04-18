@@ -20,8 +20,6 @@ const COLUMNS: FooterColumn[] = [
     links: [
       { kind: 'gateway', label: 'Resume Builder', target: '/builder', highlight: true },
       { kind: 'link', label: 'Templates', href: '/templates' },
-      { kind: 'link', label: 'Cover Letter', href: '/cover-letter' },
-      { kind: 'link', label: 'ATS Guide', href: '/ats-guide' },
       { kind: 'link', label: 'Pricing', href: '/pricing' },
     ],
   },
@@ -29,7 +27,6 @@ const COLUMNS: FooterColumn[] = [
     heading: 'Resources',
     links: [
       { kind: 'link', label: 'Blog', href: '/blog' },
-      { kind: 'link', label: 'Resume Tips', href: '/resume-tips' },
       { kind: 'link', label: 'FAQ', href: '/faq' },
       { kind: 'link', label: 'Changelog', href: '/changelog' },
       { kind: 'link', label: 'Roadmap', href: '/roadmap' },

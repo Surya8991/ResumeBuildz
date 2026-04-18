@@ -65,15 +65,6 @@ export default function BlogHubPage() {
     [allPosts],
   );
 
-  const childChips = useMemo(() => {
-    return BLOG_CATEGORIES.map((c) => ({
-      value: c.slug,
-      label: c.name,
-      parent: c.parentGroup,
-      count: getPostCountByCategory(c.slug),
-    })).filter((c) => c.count > 0);
-  }, []);
-
   const setFilterAndUrl = (value: FilterValue) => {
     setFilter(value);
     const params = new URLSearchParams(searchParams.toString());
@@ -132,28 +123,6 @@ export default function BlogHubPage() {
                 </span>
               </button>
             ))}
-          </div>
-
-          {/* Secondary child-category chips (rendered only when a parent is active or always on lg) */}
-          <div className="flex flex-wrap gap-1.5 mt-3">
-            {childChips
-              .filter((c) => filter === 'all' || c.value === filter || c.parent === filter || (isParentGroup(filter) && c.parent === filter))
-              .map((chip) => (
-                <button
-                  key={chip.value}
-                  onClick={() => setFilterAndUrl(chip.value)}
-                  className={`px-3 py-1 text-xs rounded-full border transition ${
-                    filter === chip.value
-                      ? 'bg-indigo-600 text-white border-indigo-600 font-medium'
-                      : 'border-gray-200 text-gray-600 hover:bg-indigo-50 hover:border-indigo-200 hover:text-indigo-700'
-                  }`}
-                >
-                  {chip.label}
-                  <span className={`ml-1 ${filter === chip.value ? 'text-white/70' : 'text-gray-400'}`}>
-                    {chip.count}
-                  </span>
-                </button>
-              ))}
           </div>
 
           {activeLabel && (
