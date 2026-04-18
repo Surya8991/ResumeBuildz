@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { toMonthInput, fromMonthInput } from '@/lib/dateUtils';
 import RichTextarea from '@/components/ui/rich-textarea';
 import BulletScoreList from '@/components/forms/BulletScoreList';
+import { ROLE_PRESETS } from '@/lib/rolePresets';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
@@ -120,7 +121,28 @@ function SortableExperienceEntry({ exp, onUpdate, onRemove }: {
 
           {/* Row 5: Achievements */}
           <div>
-            <Label className="text-xs text-muted-foreground">Achievements (one per line  -  bullets added automatically)</Label>
+            <div className="flex items-center justify-between gap-2">
+              <Label className="text-xs text-muted-foreground">Achievements (one per line  -  bullets added automatically)</Label>
+              <div className="relative">
+                <select
+                  aria-label="Insert preset bullets for role"
+                  className="text-[11px] border border-gray-200 rounded-md px-2 py-1 bg-white hover:bg-gray-50"
+                  value=""
+                  onChange={(e) => {
+                    const preset = ROLE_PRESETS.find((p) => p.role === e.target.value);
+                    if (!preset) return;
+                    const nextBullets = [...exp.highlights.filter(Boolean), ...preset.bullets];
+                    onUpdate({ highlights: nextBullets });
+                    e.target.value = '';
+                  }}
+                >
+                  <option value="">Insert preset...</option>
+                  {ROLE_PRESETS.map((p) => (
+                    <option key={p.role} value={p.role}>{p.role}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
             <div className="mt-1">
               <RichTextarea
                 placeholder="Led a team of 5 engineers to deliver a new feature&#10;Increased system performance by 40%&#10;Mentored 3 junior developers"
