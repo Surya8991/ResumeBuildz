@@ -37,7 +37,8 @@ export default function BulletScoreList({ bullets, onReplace }: BulletScoreListP
 
   function applyWeakRewrite(index: number, newOpener: string) {
     const original = bullets[index] || '';
-    const match = original.match(/^([-*.·•]\s*)?(\S.*)/s);
+    // Use [\s\S] instead of . + /s flag so the ES2017 target accepts this.
+    const match = original.match(/^([-*.·•]\s*)?(\S[\s\S]*)/);
     if (!match) return;
     const prefix = match[1] || '';
     const rest = match[2];
