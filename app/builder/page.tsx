@@ -34,6 +34,7 @@ import ShortcutsDialog from '@/components/ShortcutsDialog';
 import VersionHistoryDialog from '@/components/VersionHistoryDialog';
 import LinkedInImportModal from '@/components/LinkedInImportModal';
 import ShareResumeDialog from '@/components/ShareResumeDialog';
+import SaveStateChip from '@/components/SaveStateChip';
 import { getUsage, incrementUsage, canUse } from '@/lib/usage';
 import { useToast } from '@/components/Toast';
 import { useAuthContext as useAuth } from '@/components/Providers';
@@ -119,6 +120,10 @@ export default function HomePage() {
   const [pdfRemaining, setPdfRemaining] = useState(() => getUsage('pdf').remaining);
   const [lastEdited, setLastEdited] = useState<number | null>(null);
   const [lastEditedLabel, setLastEditedLabel] = useState('');
+  // Transient "dirty" flag flipped true when resumeData changes, then flipped
+  // false when the 1.5s debounce commits. Drives the "Saving..." chip so the
+  // user sees active save activity, not just a stale "Saved 3m ago".
+  const [isSaving, setIsSaving] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [showVersionHistory, setShowVersionHistory] = useState(false);
   const [showLinkedInImport, setShowLinkedInImport] = useState(false);
@@ -417,10 +422,12 @@ export default function HomePage() {
   // Debounced history snapshot for undo/redo
   // Push a snapshot 1.5s after the user stops editing
   useEffect(() => {
+    setIsSaving(true);
     const id = setTimeout(() => {
       pushHistory();
       const now = Date.now();
       setLastEdited(now);
+      setIsSaving(false);
       try { localStorage.setItem('resumeforge-last-edited', String(now)); } catch { /* private mode */ }
     }, 1500);
     return () => clearTimeout(id);
@@ -588,11 +595,8 @@ export default function HomePage() {
                 </span>
               </div>
             )}
-            {lastEditTime && (
-              <span className="hidden lg:inline text-xs text-gray-500" title={`Last edited: ${lastEditTime}`}>
-                Saved
-              </span>
-            )}
+            <SaveStateChip saving={isSaving} label={lastEditedLabel} />
+            {lastEditTime && null /* legacy label superseded by SaveStateChip */}
           </div>
 
           {/* Right - Actions */}
