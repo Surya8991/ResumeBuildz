@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Sparkles, Copy, Check, AlertCircle, Key } from 'lucide-react';
 import { HelpTip } from '@/components/ui/help-tip';
 import { getUsage, incrementUsage, canUse } from '@/lib/usage';
+import { track } from '@/lib/analytics';
 import UpgradeModal from '@/components/UpgradeModal';
 import { useToast } from '@/components/Toast';
 import { useAuthContext } from '@/components/Providers';
@@ -70,6 +71,7 @@ export default function AISuggestions() {
 
   const generate = async (type: SuggestionType) => {
     if (!canUse('ai', isPro())) {
+      track('upgrade_modal_opened', { feature: 'ai', source: 'ai_rewrite' });
       setShowUpgrade(true);
       return;
     }
@@ -125,6 +127,7 @@ export default function AISuggestions() {
     incrementUsage('ai');
     const remaining = getUsage('ai').remaining;
     setAiRemaining(remaining);
+    track('ai_rewrite_used', { remaining });
     if (remaining === 0) {
       showToast('Last free AI rewrite used today. Upgrade for unlimited.', 'warning', 5000);
     } else {

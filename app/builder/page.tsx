@@ -39,6 +39,7 @@ import CommandPalette, { type Command } from '@/components/CommandPalette';
 import { TEMPLATES, sampleResumeData } from '@/types/resume';
 import { resumeFilename } from '@/lib/exportFilename';
 import { getUsage, incrementUsage, canUse } from '@/lib/usage';
+import { track } from '@/lib/analytics';
 import { useToast } from '@/components/Toast';
 import { useAuthContext as useAuth } from '@/components/Providers';
 import { useCloudSync } from '@/hooks/useCloudSync';
@@ -356,6 +357,7 @@ export default function HomePage() {
     try {
       const { resumeData, primaryColor } = useResumeStore.getState();
       await downloadDocx(resumeData, primaryColor);
+      track('resume_exported', { format: 'docx' });
       showToast('DOCX exported successfully.', 'success');
     } catch {
       showToast('DOCX export failed. Try again.', 'warning');
@@ -372,6 +374,7 @@ export default function HomePage() {
     try {
       const { resumeData, primaryColor } = useResumeStore.getState();
       downloadHtml(resumeData, primaryColor);
+      track('resume_exported', { format: 'html' });
       showToast('HTML exported successfully.', 'success');
     } catch {
       showToast('HTML export failed. Try again.', 'warning');
@@ -385,6 +388,7 @@ export default function HomePage() {
     setShowExportMenu(false);
     try {
       downloadMarkdown(useResumeStore.getState().resumeData);
+      track('resume_exported', { format: 'markdown' });
       showToast('Markdown exported.', 'success');
     } catch {
       showToast('Markdown export failed.', 'warning');
@@ -403,6 +407,7 @@ export default function HomePage() {
 
   const handleExportPdf = () => {
     if (!canUse('pdf', isPro())) {
+      track('upgrade_modal_opened', { feature: 'pdf', source: 'pdf_export' });
       setShowUpgradeModal(true);
       return;
     }
@@ -410,6 +415,7 @@ export default function HomePage() {
     setExportingType('pdf');
     handlePrint();
     incrementUsage('pdf');
+    track('resume_exported', { format: 'pdf' });
     const remaining = getUsage('pdf').remaining;
     setPdfRemaining(remaining);
     if (remaining > 0) {

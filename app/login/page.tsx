@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { FileText, Users } from 'lucide-react';
 import { classifyAuthError, authErrorLabel } from '@/lib/authErrors';
+import { track } from '@/lib/analytics';
 
 // Login / signup page. Visual: glass card on a dark gradient with animated
 // blobs (Variant 4 from the login-preview bake-off). Auth wiring preserved
@@ -70,11 +71,18 @@ export default function LoginPage() {
     if (mode === 'login') {
       const { error: e } = await signInWithEmail(email, password);
       if (e) setError(authErrorLabel(classifyAuthError(e)));
-      else router.push('/builder');
+      else {
+        track('login_success', { method: 'email' });
+        router.push('/builder');
+      }
     } else {
+      track('signup_submit', { method: 'email' });
       const { error: e } = await signUpWithEmail(email, password, name);
       if (e) setError(authErrorLabel(classifyAuthError(e)));
-      else setEmailSent(true);
+      else {
+        track('signup_success', { method: 'email' });
+        setEmailSent(true);
+      }
     }
     setLoading(false);
   }
@@ -124,7 +132,7 @@ export default function LoginPage() {
 
         <button
           type="button"
-          onClick={() => signInWithGoogle()}
+          onClick={() => { track('signup_submit', { method: 'google' }); signInWithGoogle(); }}
           className="group w-full flex items-center justify-center gap-2 bg-white text-gray-900 rounded-lg py-2.5 text-sm font-medium hover:bg-gray-100 mb-5 transition shadow-lg shadow-black/20"
         >
           <GoogleIcon />
