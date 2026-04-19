@@ -200,6 +200,48 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Role guides hub teaser — adds a discovery path to /resume and the
+          10 role-specific guides. Without this, users who never enter via
+          a blog post never find them. */}
+      <section className="bg-white py-16 border-y border-gray-100">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-indigo-600 mb-2">Role guides</p>
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Hand-written guides for 10+ roles</h2>
+              <p className="text-gray-600 mt-2 max-w-2xl">
+                ATS keywords, real bullet examples, common mistakes, and India salary benchmarks per role.
+              </p>
+            </div>
+            <Link href="/resume" className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 whitespace-nowrap">
+              See all role guides →
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+            {[
+              { slug: 'software-engineer', label: 'Software Engineer' },
+              { slug: 'data-scientist', label: 'Data Scientist' },
+              { slug: 'product-manager', label: 'Product Manager' },
+              { slug: 'ui-ux-designer', label: 'UI/UX Designer' },
+              { slug: 'digital-marketer', label: 'Digital Marketer' },
+              { slug: 'full-stack-developer', label: 'Full-Stack Developer' },
+              { slug: 'devops-engineer', label: 'DevOps Engineer' },
+              { slug: 'business-analyst', label: 'Business Analyst' },
+              { slug: 'cybersecurity-analyst', label: 'Cybersecurity Analyst' },
+              { slug: 'machine-learning-engineer', label: 'ML Engineer' },
+            ].map((r) => (
+              <Link
+                key={r.slug}
+                href={`/resume/${r.slug}`}
+                className="border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-700 hover:border-indigo-300 hover:text-indigo-700 hover:bg-indigo-50 transition text-center"
+              >
+                {r.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ATS Section */}
       <section className="bg-gray-50 py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

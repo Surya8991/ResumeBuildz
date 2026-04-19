@@ -23,6 +23,11 @@ const eslintConfig = defineConfig([
     "supabase/.temp/**",
     // Standalone HTML reference docs at repo root (RESEND_SETUP, README.html, etc).
     "*.html",
+    // Playwright test output
+    "test-results/**",
+    "playwright-report/**",
+    "blob-report/**",
+    "playwright/.cache/**",
   ]),
   // Resume template files render the user's resume in the print preview.
   // next.config.ts sets `images.unoptimized: true`, so `<img>` is no worse

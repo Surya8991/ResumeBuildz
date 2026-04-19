@@ -1,0 +1,57 @@
+name: check
+
+# Runs lint + type-check + build on every PR and on direct pushes to main.
+#
+# Rationale:
+#   - Husky pre-push hook enforces this locally, but a contributor can
+#     skip it with `git push --no-verify`. This workflow is the server-
+#     side safety net.
+#   - Matches the Husky pre-push script (lint + tsc --noEmit + build).
+#   - Build step catches Next-specific errors that tsc alone misses
+#     (route config, static generation, missing dynamic exports).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Cancel in-progress runs for the same ref when new commits land.
+# Saves CI minutes on rapid-fire push sequences.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: ESLint
+        run: npm run lint
+
+      - name: TypeScript type check
+        run: npx tsc --noEmit
+
+      - name: Production build
+        run: npm run build
+        env:
+          # Minimum env so build does not fail on required-at-build-time
+          # vars. These are ALL public or fake-for-build values; no
+          # secrets needed at compile time.
+          NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: fake-anon-for-build-only
+          NEXT_PUBLIC_SITE_URL: https://resumebuildz.tech

@@ -1,0 +1,49 @@
+# Normalise line endings across Windows / macOS / Linux contributors.
+#
+# Without this, every git commit on Windows emits a wall of "LF will
+# be replaced by CRLF" warnings. With `* text=auto eol=lf` the repo
+# stores LF internally, Windows contributors keep CRLF in their
+# working tree (via core.autocrlf=true), and macOS/Linux stays as-is.
+#
+# Binary files are marked so git does not try to diff them as text.
+
+* text=auto eol=lf
+
+# Source code — always LF
+*.ts    text eol=lf
+*.tsx   text eol=lf
+*.js    text eol=lf
+*.jsx   text eol=lf
+*.json  text eol=lf
+*.mjs   text eol=lf
+*.cjs   text eol=lf
+
+# Styles + markup — always LF
+*.css   text eol=lf
+*.scss  text eol=lf
+*.html  text eol=lf
+*.md    text eol=lf
+
+# Config — always LF
+*.yml   text eol=lf
+*.yaml  text eol=lf
+*.toml  text eol=lf
+*.sh    text eol=lf eol=lf
+
+# Batch + PowerShell stay CRLF (Windows expects it)
+*.bat   text eol=crlf
+*.cmd   text eol=crlf
+*.ps1   text eol=crlf
+
+# Binary — do not touch
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.webp  binary
+*.ico   binary
+*.pdf   binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.eot   binary

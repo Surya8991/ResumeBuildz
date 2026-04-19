@@ -82,6 +82,11 @@ export default function RootLayout({
     >
       <head>
         <meta name="theme-color" content="#2563eb" />
+        {/* Modern + Apple-specific PWA install hints. Chrome/Android uses
+            `mobile-web-app-capable`; Safari still needs the `apple-`
+            prefix for legacy parity. Keeping both silences the console
+            deprecation warning without dropping iOS support. */}
+        <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="ResumeBuildz" />

@@ -57,3 +57,9 @@ app/login-preview/
 # tooling state (not for commit)
 .claude/
 supabase/.temp/
+
+# Playwright test artifacts
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

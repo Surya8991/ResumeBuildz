@@ -11,6 +11,7 @@ import { useLoginGateway } from '@/components/LoginGateway';
 // that UI and clutter the header.
 const NAV_LINKS = [
   { href: '/templates', label: 'Templates' },
+  { href: '/cover-letter', label: 'Cover Letter' },
   { href: '/blog', label: 'Blog' },
   { href: '/about', label: 'About' },
   { href: '/pricing', label: 'Pricing' },

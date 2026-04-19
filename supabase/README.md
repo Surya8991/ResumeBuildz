@@ -86,3 +86,30 @@ if (!data.allowed) openUpgradeModal();
 
 Until these are deployed, the client-side fallback remains active
 (localStorage counter + client-only profile delete).
+
+## Secret rotation schedule
+
+Secrets age. A leaked token eight months old can still be an
+attacker's foothold. Rotate on a calendar, not only on incidents.
+
+| Secret | Rotation cadence | Why |
+| --- | --- | --- |
+| `SUPABASE_SERVICE_ROLE_KEY` | **Yearly** (or on staff turnover) | Auto-injected into Edge Functions. Regenerate in Supabase dashboard → Settings → API → service_role → regenerate. Then re-deploy Edge Functions. |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Only on RLS policy change | Anon key is public by design. Rotation mainly needed if leaked alongside weak RLS. |
+| `RESEND_API_KEY` | **Quarterly** | Controls outbound email from your domain. Regenerate at resend.com → API Keys → rotate. Update `supabase secrets set RESEND_API_KEY=...`. |
+| `WELCOME_HOOK_SECRET` | **Quarterly** (aligned with Resend) | Shared secret between Postgres trigger and the send-welcome Edge Function. Generate via `openssl rand -hex 32`. Update BOTH the `supabase secrets set` value AND the `app.welcome_hook_secret` DB setting (see `welcome_email_trigger.sql`). |
+| `STRIPE_SECRET_KEY` | On staff turnover or incident | Regenerate in Stripe dashboard → Developers → API keys. Never rotate during an active checkout flow without warning. |
+| `STRIPE_WEBHOOK_SECRET` | On webhook-URL change | Regenerate in Stripe dashboard → Developers → Webhooks → your endpoint → "roll signing secret". |
+
+### How to rotate safely
+
+1. Generate new secret (UI or `openssl rand`).
+2. Add new secret under a temp env var name alongside the old one.
+3. Deploy code that accepts EITHER old or new for 24 hrs.
+4. Swap env var to the new value.
+5. Remove the old value + temp fallback.
+
+For non-critical secrets (Resend, WELCOME_HOOK_SECRET) you can skip
+the dual-accept window and do a direct swap during a quiet hour —
+worst case, a few welcome emails fail for < 60 seconds until the new
+secret propagates.
