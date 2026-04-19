@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verify resumebuildz.tech in Resend - Namecheap Guide</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --border: #e5e7eb;
+    --text: #0f172a;
+    --muted: #6b7280;
+    --subtle: #9ca3af;
+    --brand: #2563eb;
+    --brand-dark: #1d4ed8;
+    --ok: #059669;
+    --warn: #b45309;
+    --danger: #dc2626;
+    --code-bg: #f3f4f6;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 48px 24px 80px; }
+  header.hero {
+    background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+    color: #fff;
+    border-radius: 16px;
+    padding: 40px 32px;
+    margin-bottom: 32px;
+  }
+  header.hero h1 { margin: 0 0 8px; font-size: 28px; font-weight: 800; letter-spacing: -0.01em; }
+  header.hero p { margin: 0; opacity: 0.9; font-size: 15px; }
+  header.hero .meta {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 6px 12px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  section.step {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 20px;
+  }
+  .step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px; height: 32px;
+    background: var(--brand);
+    color: #fff;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 14px;
+    margin-right: 12px;
+    vertical-align: middle;
+  }
+  h2 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 16px;
+    display: flex;
+    align-items: center;
+  }
+  h3 { font-size: 15px; font-weight: 700; margin: 20px 0 8px; color: var(--text); }
+  p { margin: 0 0 12px; color: #374151; }
+  ol, ul { margin: 0 0 12px; padding-left: 22px; color: #374151; }
+  li { margin-bottom: 6px; }
+  strong { color: var(--text); font-weight: 600; }
+  code {
+    font-family: 'SF Mono', Menlo, Consolas, monospace;
+    background: var(--code-bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #111827;
+  }
+  pre {
+    background: #0f172a;
+    color: #e2e8f0;
+    padding: 16px 20px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 0 0 16px;
+  }
+  pre code { background: transparent; color: inherit; padding: 0; font-size: inherit; }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 0 0 16px;
+    font-size: 14px;
+    background: #fff;
+  }
+  th, td {
+    border: 1px solid var(--border);
+    padding: 10px 12px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background: #f9fafb;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  td code { font-size: 12.5px; }
+  .callout {
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin: 12px 0 16px;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+  .callout.info  { background: #eff6ff; border-left: 3px solid var(--brand); color: #1e3a8a; }
+  .callout.warn  { background: #fffbeb; border-left: 3px solid #f59e0b; color: #78350f; }
+  .callout.danger{ background: #fef2f2; border-left: 3px solid var(--danger); color: #7f1d1d; }
+  .callout.ok    { background: #ecfdf5; border-left: 3px solid var(--ok); color: #064e3b; }
+  .callout strong { color: inherit; }
+  .record-card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+    background: #fafbfc;
+  }
+  .record-card h4 {
+    margin: 0 0 10px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--brand);
+  }
+  .record-card table { margin: 0; }
+  .record-card th { width: 120px; }
+  .cheat th:first-child { width: 45%; }
+  footer {
+    margin-top: 40px;
+    text-align: center;
+    color: var(--subtle);
+    font-size: 13px;
+  }
+  hr { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
+  @media (max-width: 640px) {
+    .wrap { padding: 24px 16px 48px; }
+    section.step { padding: 20px 18px; }
+    header.hero { padding: 28px 20px; }
+    header.hero h1 { font-size: 22px; }
+    table, th, td { font-size: 12.5px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <h1>Verify resumebuildz.tech in Resend</h1>
+  <p>Full step-by-step guide using Namecheap DNS + Supabase Auth.</p>
+  <span class="meta">~20 min work + 5-30 min DNS wait</span>
+</header>
+
+<!-- Step 1 -->
+<section class="step">
+  <h2><span class="step-num">1</span>Create a Resend account</h2>
+  <ol>
+    <li>Go to <strong>resend.com</strong> and sign up with email or GitHub.</li>
+    <li>Verify your Resend account email.</li>
+    <li>You'll land in the Resend dashboard.</li>
+  </ol>
+</section>
+
+<!-- Step 2 -->
+<section class="step">
+  <h2><span class="step-num">2</span>Add your domain in Resend</h2>
+  <ol>
+    <li>Sidebar: <strong>Domains</strong> &rarr; <strong>Add Domain</strong>.</li>
+    <li>Enter <code>resumebuildz.tech</code> (apex, no <code>www.</code>).</li>
+    <li>Region: <strong>us-east-1</strong> (default, fine globally).</li>
+    <li>Click <strong>Add</strong>.</li>
+  </ol>
+  <p>Resend shows a table of DNS records. Keep this tab open. Values look roughly like:</p>
+  <table>
+    <thead><tr><th>Type</th><th>Host / Name</th><th>Value</th><th>Priority</th></tr></thead>
+    <tbody>
+      <tr><td>MX</td><td><code>send</code></td><td><code>feedback-smtp.us-east-1.amazonses.com</code></td><td>10</td></tr>
+      <tr><td>TXT</td><td><code>send</code></td><td><code>v=spf1 include:amazonses.com ~all</code></td><td>&mdash;</td></tr>
+      <tr><td>TXT</td><td><code>resend._domainkey</code></td><td><code>p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNAD...</code> (long)</td><td>&mdash;</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- Step 3 -->
+<section class="step">
+  <h2><span class="step-num">3</span>Open Namecheap DNS</h2>
+  <ol>
+    <li>Sign in at <strong>namecheap.com</strong>.</li>
+    <li>Top-right: <strong>Account</strong> &rarr; <strong>Dashboard</strong>.</li>
+    <li>Find <code>resumebuildz.tech</code> in Domain List &rarr; click <strong>Manage</strong>.</li>
+    <li>Top tabs: <strong>Advanced DNS</strong>.</li>
+  </ol>
+  <p>You'll see two sections: <strong>Host Records</strong> (top) and <strong>Mail Settings</strong> (bottom).</p>
+</section>
+
+<!-- Step 4 -->
+<section class="step">
+  <h2><span class="step-num">4</span>Switch Mail Settings to Custom MX</h2>
+  <p>Scroll down to <strong>Mail Settings</strong> &rarr; change the dropdown to <strong>Custom MX</strong>. Required before Namecheap will accept your MX record.</p>
+</section>
+
+<!-- Step 5 -->
+<section class="step">
+  <h2><span class="step-num">5</span>Add each Resend record in Host Records</h2>
+  <p>Scroll back up to <strong>Host Records</strong>. Click <strong>Add New Record</strong> for each row below.</p>
+  <div class="callout warn">
+    <strong>Namecheap quirk:</strong> in the Host field, enter <em>just</em> the subdomain (<code>send</code>, not <code>send.resumebuildz.tech</code>). Namecheap appends the domain automatically.
+  </div>
+
+  <div class="record-card">
+    <h4>Record A - MX (bounce routing)</h4>
+    <table>
+      <tr><th>Type</th><td>MX Record</td></tr>
+      <tr><th>Host</th><td><code>send</code></td></tr>
+      <tr><th>Value</th><td><code>feedback-smtp.us-east-1.amazonses.com</code></td></tr>
+      <tr><th>Priority</th><td><code>10</code></td></tr>
+      <tr><th>TTL</th><td>Automatic</td></tr>
+    </table>
+  </div>
+
+  <div class="record-card">
+    <h4>Record B - TXT (SPF on <code>send</code>)</h4>
+    <table>
+      <tr><th>Type</th><td>TXT Record</td></tr>
+      <tr><th>Host</th><td><code>send</code></td></tr>
+      <tr><th>Value</th><td><code>v=spf1 include:amazonses.com ~all</code></td></tr>
+      <tr><th>TTL</th><td>Automatic</td></tr>
+    </table>
+  </div>
+
+  <div class="record-card">
+    <h4>Record C - TXT (DKIM)</h4>
+    <table>
+      <tr><th>Type</th><td>TXT Record</td></tr>
+      <tr><th>Host</th><td><code>resend._domainkey</code></td></tr>
+      <tr><th>Value</th><td>paste the full <code>p=MIGf...</code> string from Resend</td></tr>
+      <tr><th>TTL</th><td>Automatic</td></tr>
+    </table>
+    <div class="callout danger" style="margin-top: 12px;">
+      <strong>DKIM rules:</strong> one continuous line, no line breaks, no surrounding quotes. If Namecheap warns "value too long" it's lying, it auto-chunks internally.
+    </div>
+  </div>
+
+  <div class="record-card">
+    <h4>Record D - TXT (DMARC, optional but recommended)</h4>
+    <table>
+      <tr><th>Type</th><td>TXT Record</td></tr>
+      <tr><th>Host</th><td><code>_dmarc</code></td></tr>
+      <tr><th>Value</th><td><code>v=DMARC1; p=none; rua=mailto:your-personal@gmail.com;</code></td></tr>
+      <tr><th>TTL</th><td>Automatic</td></tr>
+    </table>
+    <p style="font-size: 14px; color: var(--muted); margin-top: 8px;">
+      Replace <code>your-personal@gmail.com</code> with any inbox you actually check.
+    </p>
+  </div>
+</section>
+
+<!-- Step 6 -->
+<section class="step">
+  <h2><span class="step-num">6</span>Save each record</h2>
+  <p>Namecheap saves per-row. Click the <strong>green checkmark</strong> next to each new record to commit it. There's no global save.</p>
+  <h3>Scan existing records for conflicts</h3>
+  <ul>
+    <li>An apex SPF on Host <code>@</code> is fine, leave it alone.</li>
+    <li>An apex MX on Host <code>@</code> is fine, ours is on <code>send</code>.</li>
+    <li>Any old <code>resend._domainkey</code> TXT &rarr; delete the duplicate.</li>
+  </ul>
+</section>
+
+<!-- Step 7 -->
+<section class="step">
+  <h2><span class="step-num">7</span>Verify in Resend</h2>
+  <ol>
+    <li>Back in Resend &rarr; <strong>Domains</strong> &rarr; click <code>resumebuildz.tech</code> &rarr; <strong>Verify DNS Records</strong>.</li>
+    <li>Namecheap propagates in <strong>5-15 min</strong> typically, sometimes up to an hour.</li>
+    <li>Rows flip to green individually. When all green &rarr; <strong>Verified</strong>.</li>
+  </ol>
+  <h3>Terminal sanity check while waiting</h3>
+<pre><code>nslookup -type=TXT resend._domainkey.resumebuildz.tech 8.8.8.8
+nslookup -type=TXT send.resumebuildz.tech 8.8.8.8
+nslookup -type=MX  send.resumebuildz.tech 8.8.8.8</code></pre>
+  <p>Each should return the values you entered. Empty output = not yet propagated, wait longer.</p>
+</section>
+
+<!-- Step 8 -->
+<section class="step">
+  <h2><span class="step-num">8</span>Create a Resend API key</h2>
+  <ol>
+    <li>Resend sidebar: <strong>API Keys</strong> &rarr; <strong>Create API Key</strong>.</li>
+    <li>Name: <code>resumebuildz-prod</code>.</li>
+    <li>Permission: <strong>Sending access</strong> (not full access).</li>
+    <li>Domain: restrict to <code>resumebuildz.tech</code>.</li>
+    <li>Copy the <code>re_...</code> key.</li>
+  </ol>
+  <div class="callout danger">
+    <strong>Shown once.</strong> Save the key somewhere safe before closing the dialog.
+  </div>
+</section>
+
+<!-- Step 9 -->
+<section class="step">
+  <h2><span class="step-num">9</span>Save secrets to Supabase</h2>
+  <p>From your project root (<code>D:\Coding\01-products\ResumeBuildz</code>):</p>
+<pre><code># Link CLI to your project (one-time)
+supabase login
+supabase link --project-ref kxfakzfjhnbbkdlwkkke
+
+# Secrets for the Edge Function
+supabase secrets set RESEND_API_KEY=re_your_key_here
+supabase secrets set WELCOME_HOOK_SECRET=$(openssl rand -hex 32)
+supabase secrets set WELCOME_FROM="ResumeBuildz &lt;noreply@resumebuildz.tech&gt;"</code></pre>
+  <div class="callout info">
+    <strong>Save the <code>WELCOME_HOOK_SECRET</code> value somewhere.</strong> You need the exact same string in step 11.
+  </div>
+  <p>If <code>openssl</code> isn't on PATH, use Node instead:</p>
+<pre><code>node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"</code></pre>
+</section>
+
+<!-- Step 10 -->
+<section class="step">
+  <h2><span class="step-num">10</span>Deploy the welcome Edge Function</h2>
+<pre><code>supabase functions deploy send-welcome --no-verify-jwt</code></pre>
+  <p>Expected output: <code>Deployed Function send-welcome on project kxfakzfjhnbbkdlwkkke</code>.</p>
+</section>
+
+<!-- Step 11 -->
+<section class="step">
+  <h2><span class="step-num">11</span>Wire the Postgres trigger</h2>
+  <ol>
+    <li>Open <code>supabase/sql/welcome_email_trigger.sql</code>.</li>
+    <li>Replace placeholders:
+      <ul>
+        <li><code>&lt;project-ref&gt;</code> &rarr; <code>kxfakzfjhnbbkdlwkkke</code></li>
+        <li><code>&lt;same-secret-as-function&gt;</code> &rarr; the exact <code>WELCOME_HOOK_SECRET</code> from step 9.</li>
+      </ul>
+    </li>
+    <li>Supabase dashboard &rarr; <strong>SQL Editor</strong> &rarr; paste the edited file &rarr; <strong>Run</strong>.</li>
+  </ol>
+  <p>Expected: no errors, trigger <code>on_user_email_confirmed</code> exists on <code>auth.users</code>.</p>
+</section>
+
+<!-- Step 12 -->
+<section class="step">
+  <h2><span class="step-num">12</span>Configure Supabase custom SMTP</h2>
+  <p>The Edge Function covers <em>welcome</em>. The 13 auth/notification templates you pasted (Confirm, Reset, Magic Link, Change Email, Reauth, Invite + 7 notifications) are sent by Supabase itself and need their own SMTP.</p>
+  <ol>
+    <li>Supabase dashboard &rarr; <strong>Project Settings &rarr; Auth &rarr; SMTP Settings</strong>.</li>
+    <li>Toggle <strong>Enable Custom SMTP</strong>.</li>
+    <li>Fill in:
+      <table style="margin-top: 8px;">
+        <tr><th>Host</th><td><code>smtp.resend.com</code></td></tr>
+        <tr><th>Port</th><td><code>465</code></td></tr>
+        <tr><th>Username</th><td><code>resend</code></td></tr>
+        <tr><th>Password</th><td>your Resend API key (reuse step 8 or make a second sending-only key)</td></tr>
+        <tr><th>Sender email</th><td><code>noreply@resumebuildz.tech</code></td></tr>
+        <tr><th>Sender name</th><td><code>ResumeBuildz</code></td></tr>
+        <tr><th>Minimum interval</th><td><code>60</code></td></tr>
+      </table>
+    </li>
+    <li>Click <strong>Save changes</strong>.</li>
+  </ol>
+  <div class="callout warn">
+    Without this, signup and reset emails still come from Supabase's shared sandbox sender.
+  </div>
+</section>
+
+<!-- Step 13 -->
+<section class="step">
+  <h2><span class="step-num">13</span>End-to-end test</h2>
+  <ol>
+    <li>Open an incognito window &rarr; <code>https://resumebuildz.tech/login</code> (or local dev).</li>
+    <li>Sign up with a real email you control.</li>
+    <li>You should receive the <strong>Confirm signup</strong> email from <code>noreply@resumebuildz.tech</code>.</li>
+    <li>Click the link &rarr; email confirmed.</li>
+    <li>Within seconds: the <strong>Welcome</strong> email arrives.</li>
+    <li>Try <strong>Reset Password</strong> &rarr; that template arrives.</li>
+    <li>Sign in &rarr; go to <code>/settings/security</code> &rarr; change password &rarr; <strong>Password changed</strong> notification arrives.</li>
+  </ol>
+  <div class="callout ok">
+    <strong>If all 7 checks pass, you're done.</strong> Every user-facing email now ships from your own domain.
+  </div>
+</section>
+
+<!-- Troubleshooting -->
+<section class="step">
+  <h2><span class="step-num">?</span>Troubleshooting cheat sheet</h2>
+  <table class="cheat">
+    <thead><tr><th>Problem</th><th>Where to look</th></tr></thead>
+    <tbody>
+      <tr><td>DNS stays "Pending" past 1 hour</td><td>Namecheap Host field has full domain instead of just <code>send</code></td></tr>
+      <tr><td>DKIM row won't verify</td><td>Accidental quotes or line breaks in the value; re-paste clean</td></tr>
+      <tr><td>No confirm email at all</td><td>Supabase &rarr; Auth &rarr; Logs; SMTP step 12 misconfigured</td></tr>
+      <tr><td>Confirm yes, welcome no</td><td>Resend &rarr; Logs (did POST arrive?); Supabase &rarr; Database &rarr; Logs (trigger fired?)</td></tr>
+      <tr><td>Resend logged but bounced</td><td>Resend &rarr; Logs &rarr; open the send &rarr; read bounce reason</td></tr>
+      <tr><td>Emails land in spam</td><td>DMARC (step 5 Record D) + wait 24-48h for sender reputation</td></tr>
+      <tr><td><code>supabase</code> CLI command not found</td><td><code>npm install -g supabase</code> then re-run</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<hr>
+
+<section class="step" style="background: #f9fafb;">
+  <h2 style="margin-bottom: 8px;">End state</h2>
+  <ul>
+    <li><code>resumebuildz.tech</code> verified in Resend</li>
+    <li>All 13 Supabase templates sending from <code>noreply@resumebuildz.tech</code></li>
+    <li>Welcome email firing automatically on email confirmation</li>
+    <li>No mailbox to manage</li>
+    <li>Ready to scale to real users</li>
+  </ul>
+</section>
+
+<footer>
+  ResumeBuildz internal setup guide &middot; resumebuildz.tech
+</footer>
+
+</div>
+</body>
+</html>

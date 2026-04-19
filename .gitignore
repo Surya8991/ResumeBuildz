@@ -53,3 +53,7 @@ app/login-preview/
 /MARKETING_REVIEW.html
 /MARKETING_REVIEW_V2.html
 /FEATURES_PLAN.html
+
+# tooling state (not for commit)
+.claude/
+supabase/.temp/
