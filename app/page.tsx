@@ -69,7 +69,7 @@ export default function HomePage() {
                 Your resume shouldn&apos;t be the reason you don&apos;t get hired.
               </h1>
               <p className="text-lg text-gray-300 mb-8 max-w-lg animate-fade-in-up delay-100">
-                75% of resumes get filtered by ATS before a human sees them<sup className="ml-0.5"><Link href="/ats-guide#ats-stats" className="text-gray-500 hover:text-gray-300 text-xs" title="Source: Jobscan, 2024">[1]</Link></sup><span className="sr-only"> (Source: Jobscan, 2024)</span>. ResumeBuildz gives you 20 templates, AI writing help, and 12 ATS checks. Free to start, no sign-up needed.
+                75% of resumes get filtered by ATS before a human sees them<sup className="ml-0.5"><Link href="/ats-guide#ats-stats" className="text-gray-500 hover:text-gray-300 text-xs" title="Source: Jobscan, 2024" aria-label="Source: Jobscan 2024 ATS statistics">[1]</Link></sup>. ResumeBuildz gives you 20 templates, AI writing help, and 12 ATS checks. Free to start, no sign-up needed.
               </p>
               <div className="flex items-center justify-center gap-6 mb-6 animate-fade-in-up delay-200">
                 <div className="flex items-center gap-2">

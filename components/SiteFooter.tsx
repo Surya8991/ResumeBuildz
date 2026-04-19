@@ -91,7 +91,7 @@ export default function SiteFooter() {
             Get hired sooner.
           </span>
         </h2>
-        <p className="text-gray-400 max-w-xl mx-auto mb-8">
+        <p className="text-gray-300 max-w-xl mx-auto mb-8">
           One email a month. Changelog highlights + hiring trends. No spam, unsubscribe anytime.
         </p>
 
@@ -126,7 +126,7 @@ export default function SiteFooter() {
             bottom without signing up. Goes through the gateway for auth. */}
         <button
           onClick={() => openGateway('/builder')}
-          className="mt-8 inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-white transition-colors"
+          className="mt-8 inline-flex items-center gap-1.5 text-sm text-gray-300 hover:text-white transition-colors"
         >
           Or skip the email and build now <ArrowRight className="h-3.5 w-3.5" />
         </button>
@@ -137,16 +137,16 @@ export default function SiteFooter() {
         <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
           {COLUMNS.map((col) => (
             <div key={col.heading}>
-              <h4 className="text-[11px] font-semibold uppercase tracking-wider text-gray-500 mb-4">
+              <h3 className="text-[11px] font-semibold uppercase tracking-wider text-gray-300 mb-4">
                 {col.heading}
-              </h4>
+              </h3>
               <ul className="space-y-2 text-sm">
                 {col.links.map((l) => (
                   <li key={l.label}>
                     {l.kind === 'gateway' && (
                       <button
                         onClick={() => openGateway(l.target)}
-                        className={`block text-left w-full transition-colors hover:text-white ${l.highlight ? 'text-blue-400 font-semibold' : 'text-gray-400'}`}
+                        className={`block text-left w-full transition-colors hover:text-white ${l.highlight ? 'text-blue-400 font-semibold' : 'text-gray-300'}`}
                       >
                         {l.label}
                       </button>
@@ -154,7 +154,7 @@ export default function SiteFooter() {
                     {l.kind === 'link' && (
                       <Link
                         href={l.href}
-                        className={`inline-flex items-center gap-1.5 transition-colors hover:text-white ${l.highlight ? 'text-blue-400 font-semibold' : 'text-gray-400'}`}
+                        className={`inline-flex items-center gap-1.5 transition-colors hover:text-white ${l.highlight ? 'text-blue-400 font-semibold' : 'text-gray-300'}`}
                       >
                         {l.label}
                       </Link>
@@ -164,7 +164,7 @@ export default function SiteFooter() {
                         href={l.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors"
+                        className="inline-flex items-center gap-1.5 text-gray-300 hover:text-white transition-colors"
                       >
                         {l.label}
                         <ExternalLink className="h-3 w-3 opacity-60" />
@@ -181,7 +181,7 @@ export default function SiteFooter() {
       {/* Bottom bar */}
       <div className="border-t border-white/10 px-6 md:px-10 py-6">
         <div className="max-w-6xl mx-auto text-center">
-          <p className="text-xs text-gray-500 inline-flex items-center gap-1.5">
+          <p className="text-xs text-gray-400 inline-flex items-center gap-1.5">
             Designed with <Heart className="h-3 w-3 text-red-500 fill-red-500" /> by Surya L · &copy; {new Date().getFullYear()} ResumeBuildz
           </p>
         </div>
