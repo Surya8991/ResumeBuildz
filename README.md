@@ -93,10 +93,28 @@ For the optional Edge Functions (GDPR-compliant delete-account + server-side rat
 
 ```bash
 npm run dev       # dev server (Turbopack)
-npm run build     # production build
+npm run build     # production build (also runs on pre-push)
 npm run start     # serve production build
-npm run lint      # ESLint
+npm run lint      # ESLint (also runs on pre-commit)
+npx tsc --noEmit  # TypeScript type-check (also runs on pre-commit)
 ```
+
+### Pre-commit + pre-push checks
+
+Husky is wired so the mandatory pre-commit checklist cannot be
+skipped. On every `git commit`:
+
+1. `npm run lint`
+2. `npx tsc --noEmit`
+
+On every `git push`:
+
+1. `npm run build`
+
+Hooks auto-install on `npm install` via the `prepare` script. To
+bypass in a genuine emergency use `git commit --no-verify`, but
+this should be rare and followed by a manual fix on the next
+commit.
 
 ## Project structure
 
@@ -105,8 +123,10 @@ app/                Next.js App Router pages
   builder/          The main resume builder
   account/          Tabbed user settings (post-login)
   blog/             Blog hub + dynamic company guides
+  resume/[role]/    10 role-based SEO guides (software-engineer, PM, etc.)
   login/            Auth flow with Supabase OAuth/email
   pricing/          4-tier pricing page
+  global-error.tsx  Top-level error boundary, forwards to Sentry
   api/              Edge routes (share links, etc.)
 components/
   templates/        20 resume templates, lazy-loaded via next/dynamic
@@ -120,6 +140,8 @@ store/              Zustand store for resume data with undo history
 types/              TypeScript types + TEMPLATES registry
 docs/               Supabase migration doc, blog post template, other reference docs
 supabase/           Edge function source + deploy notes
+instrumentation*.ts Sentry entry points (dormant until DSN is set)
+.husky/             Pre-commit (lint + tsc) + pre-push (build) hooks
 ```
 
 ## Architecture notes

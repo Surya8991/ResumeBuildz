@@ -25,9 +25,14 @@ const TOC = [
   { id: 'intro', label: 'Introduction' },
   { id: 'why', label: 'Why cover letters matter' },
   { id: 'structure', label: 'The 4-part structure' },
+  { id: 'full-example', label: 'Complete example' },
+  { id: 'length', label: 'Length and formatting' },
+  { id: 'email-vs-attached', label: 'Email vs attached' },
   { id: 'dos-donts', label: 'Do\'s and don\'ts' },
+  { id: 'mistakes', label: 'Mistakes explained' },
   { id: 'templates', label: 'Templates by industry' },
   { id: 'ai', label: 'AI-powered cover letters' },
+  { id: 'faq', label: 'FAQ' },
 ];
 
 const RELATED = [
@@ -107,6 +112,88 @@ export default function CoverLetterGuidePage() {
         </div>
       </section>
 
+      <section id="full-example" className="mt-10 scroll-mt-6">
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">A complete cover letter example</h2>
+        <p className="mb-5">A full cover letter for a mid-level product manager role. Hand-written in 14 minutes; not AI-generated. Annotations in blue after each paragraph show what each section does.</p>
+        <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 font-serif text-[15px] leading-relaxed text-gray-800">
+          <p className="mb-4">Dear Priya Menon,</p>
+          <p className="mb-4">
+            When I read your team&apos;s retro post about Zaggle Spend Card&apos;s re-architecture last month, I knew I wanted to apply. I&apos;ve been at this exact intersection of B2B SaaS + Indian fintech for 5 years at Razorpay and Cred, and the problem you described (reconciling approvals across finance, IT, and employees) is the one I worked on through all of 2024.
+          </p>
+          <p className="text-xs text-indigo-600 mb-5 not-italic font-sans">
+            ↑ Opening (hook): specific, shows research, positions experience. No &quot;I am writing to express my interest&quot;.
+          </p>
+          <p className="mb-4">
+            At Cred Business (2022-2024), I owned the spend-management product through its first Rs 340 Cr of ARR. I shipped the three-way-match feature your post discussed wanting. Metrics: 87% of customers activated within 14 days of signup, expense-report time down from 34 min to 8 min, Finance team approval SLA cut in half. The hardest part was aligning finance and IT on a single approval workflow. I spent six weeks running paired customer calls before writing the spec.
+          </p>
+          <p className="text-xs text-indigo-600 mb-5 not-italic font-sans">
+            ↑ Value paragraph: one specific feature, three concrete metrics, one sentence on the hard part. No resume repetition.
+          </p>
+          <p className="mb-4">
+            Zaggle&apos;s focus on the mid-market (Rs 50 Cr to Rs 500 Cr revenue) customers is where I want to work next. The customers who need this most are the ones under-served by both Ramp (US-focused) and Razorpay X (too SMB-heavy). I would love to talk about the re-architecture goals for 2026 and how my background with Indian finance team workflows could accelerate them.
+          </p>
+          <p className="text-xs text-indigo-600 mb-5 not-italic font-sans">
+            ↑ Why-this-company: demonstrates market understanding. Positions fit without flattery.
+          </p>
+          <p className="mb-4">
+            I am available any afternoon this week for a 30-minute conversation. Thank you for considering my application.
+          </p>
+          <p className="text-xs text-indigo-600 mb-5 not-italic font-sans">
+            ↑ Close: concrete next step, polite, no &quot;humbly request&quot; or overuse of apologies.
+          </p>
+          <p>Best,<br/>Arjun Iyer</p>
+        </div>
+        <p className="mt-5 text-sm text-gray-600">
+          Total: 266 words. 4 paragraphs. Under 1 page. Specifics not findable on LinkedIn. Zero generic phrases. This is the bar.
+        </p>
+      </section>
+
+      <section id="length" className="mt-10 scroll-mt-6">
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">Length and formatting rules</h2>
+        <div className="grid md:grid-cols-2 gap-4">
+          <div className="border border-gray-200 rounded-lg p-5">
+            <h3 className="font-semibold text-gray-900 mb-3">Length</h3>
+            <ul className="space-y-2 text-sm text-gray-700 list-disc pl-5">
+              <li><strong>250 to 400 words</strong> total, across 3 to 4 paragraphs.</li>
+              <li>Never longer than 1 page.</li>
+              <li>Under 200 words reads low-effort; over 500 reads self-indulgent.</li>
+              <li>Each paragraph 3 to 5 sentences max.</li>
+            </ul>
+          </div>
+          <div className="border border-gray-200 rounded-lg p-5">
+            <h3 className="font-semibold text-gray-900 mb-3">Formatting</h3>
+            <ul className="space-y-2 text-sm text-gray-700 list-disc pl-5">
+              <li>Same font and header as your resume.</li>
+              <li>10 to 11 pt body text, 1.1 line-height.</li>
+              <li>0.5 to 0.75 inch margins.</li>
+              <li>Left-aligned text, not justified.</li>
+              <li>Save as PDF with your name in the filename.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="email-vs-attached" className="mt-10 scroll-mt-6">
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">Email body vs attached file</h2>
+        <p>
+          When you are emailing the application directly (increasingly common for executive searches, startups, and internal referrals), you have a choice: put the cover letter in the email body, attach it as a separate PDF, or both.
+        </p>
+        <ul className="mt-5 space-y-3">
+          <li className="border-l-4 border-indigo-500 bg-gray-50 p-4 rounded-r-lg">
+            <p className="font-semibold text-gray-900 mb-1">Email body (recommended for direct contact)</p>
+            <p className="text-sm text-gray-700">Most hiring managers read the email first. Put the full cover letter in the body. Attach the resume as a PDF. Skip the separate cover-letter file.</p>
+          </li>
+          <li className="border-l-4 border-indigo-500 bg-gray-50 p-4 rounded-r-lg">
+            <p className="font-semibold text-gray-900 mb-1">Attached PDF (recommended for ATS upload)</p>
+            <p className="text-sm text-gray-700">When submitting via a careers portal with a &quot;cover letter&quot; field, attach a PDF. Match formatting to your resume for a polished set.</p>
+          </li>
+          <li className="border-l-4 border-indigo-500 bg-gray-50 p-4 rounded-r-lg">
+            <p className="font-semibold text-gray-900 mb-1">Both (over-engineering)</p>
+            <p className="text-sm text-gray-700">Pasting in email AND attaching the same letter is redundant and slightly annoying. Pick one.</p>
+          </li>
+        </ul>
+      </section>
+
       <section id="dos-donts" className="mt-10 scroll-mt-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-5">Do&apos;s and don&apos;ts</h2>
         <div className="grid sm:grid-cols-2 gap-4">
@@ -135,6 +222,27 @@ export default function CoverLetterGuidePage() {
         </div>
       </section>
 
+      <section id="mistakes" className="mt-10 scroll-mt-6">
+        <h2 className="text-2xl font-bold text-gray-900 mb-5">The 8 mistakes that kill cover letters</h2>
+        <div className="space-y-4">
+          {[
+            { title: 'Starting with "I am writing to express my interest"', why: 'The most-overused cover letter opener in history. Recruiters skim the first sentence; if it matches this pattern they mentally file it with the generic pile. Open with a specific hook: a product insight, a mutual connection, a post you read from the team.' },
+            { title: 'Repeating the resume in prose', why: 'The cover letter exists to add context, not duplicate. If your letter could be copy-pasted onto a generic resume and still work, you are repeating instead of supplementing. Include things the resume cannot say: motivation, a story, a pivot explanation.' },
+            { title: 'Generic "To Whom It May Concern"', why: 'Almost always possible to find the hiring manager\'s name via LinkedIn, the company website, or by asking in your referral email. Addressing by name signals effort; generic greetings signal mass-applying.' },
+            { title: 'Six paragraphs of self-promotion', why: 'Each claim without evidence weakens the whole letter. Three concrete paragraphs with proof beat six vague ones.' },
+            { title: 'Apologising for gaps or lack of experience', why: 'Frame neutrally. &quot;My career gap from 2022 to 2024 was time I used to caregive and complete a Reforge course&quot; works. &quot;I apologise for my career gap&quot; puts the reader on the defensive.' },
+            { title: 'Mentioning salary or benefits', why: 'Unless explicitly requested in the JD, never mention compensation. It signals the priority is wrong for a first contact.' },
+            { title: 'Using the same letter for every application', why: 'Paragraphs 1 and 2 must be tailored. Paragraph 3 can be recycled across similar roles with light edits. Paragraph 4 can be boilerplate. If 100% of the letter stays the same, you are not tailoring.' },
+            { title: 'Ignoring the company culture', why: 'A startup letter should feel different from a bank letter. Read 5 company blog posts to absorb the voice; let it influence your writing slightly (not enough to lose your own voice).' },
+          ].map((item, i) => (
+            <div key={i} className="border border-gray-200 rounded-lg p-4">
+              <p className="font-semibold text-gray-900 mb-2">{i + 1}. {item.title}</p>
+              <p className="text-sm text-gray-700 leading-relaxed">{item.why}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <section id="templates" className="mt-10 scroll-mt-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-3">Templates by industry</h2>
         <p className="text-gray-600 mb-5">Sample opening lines tailored to different industries. Use these as inspiration for your own cover letter.</p>
@@ -157,6 +265,30 @@ export default function CoverLetterGuidePage() {
         <div className="flex flex-wrap gap-2">
           {['Groq AI Powered', 'Job-Specific', 'Instant Generation', 'Editable Output'].map((t) => (
             <span key={t} className="text-xs bg-white/10 text-indigo-300 px-2.5 py-1 rounded-full">{t}</span>
+          ))}
+        </div>
+      </section>
+
+      <section id="faq" className="mt-12 scroll-mt-6">
+        <h2 className="text-2xl font-bold text-gray-900 mb-5">Frequently asked questions</h2>
+        <div className="space-y-4">
+          {[
+            { q: 'Do I still need a cover letter in 2026?', a: 'Yes, in most cases. 83% of hiring managers read cover letters when included, and roughly 1 in 4 recruiters treats a missing cover letter as a silent disqualifier even when the posting marked it optional. The 15 minutes to write one is the single best-ROI part of the application.' },
+            { q: 'How long should a cover letter be?', a: '250 to 400 words, 3 to 4 paragraphs, always under 1 page. Shorter looks low-effort; longer looks self-indulgent.' },
+            { q: 'Should I use the same cover letter for multiple applications?', a: 'Paragraphs 1 and 2 must be tailored per application. Paragraph 3 (your strongest achievement tied to the JD) can be recycled across similar roles with minor edits. Paragraph 4 (the close) can be boilerplate. If nothing changes across applications, you are not tailoring.' },
+            { q: 'Can I use AI to write my cover letter?', a: 'Yes, as an editor. Provide the AI with the JD, your resume, and 1 to 2 specific facts you want to lead with; let it draft paragraphs. Then rewrite sentence 1 and sentence 2 in your own voice. See our AI resume tools guide for more on when to trust AI output.' },
+            { q: 'What is the best way to find the hiring manager\'s name?', a: 'Try, in order: the LinkedIn post announcing the role, the careers-page team section, a company email-guess pattern, or asking in your initial referral conversation. If truly unknown, use &quot;Dear Hiring Team&quot; or &quot;Dear [Company] Team&quot;. Never &quot;To Whom It May Concern&quot;.' },
+            { q: 'Should the cover letter be in the email or attached?', a: 'For direct email contact (referrals, executive searches): put it in the email body. For careers-portal uploads: attach as a PDF matching your resume formatting.' },
+            { q: 'Can I mention I am applying to other companies?', a: 'No. It adds nothing and can trigger the "we do not want to be the backup" reaction. Exception: if you are in final rounds elsewhere and want to speed this one up, mention in conversation only, not in the cover letter.' },
+            { q: 'What if the job posting says "no cover letter required"?', a: 'Respect the instruction. Sending one anyway looks like you did not read the posting. Save the effort for postings where it counts.' },
+          ].map((item, i) => (
+            <details key={i} className="border border-gray-200 rounded-lg group">
+              <summary className="cursor-pointer p-4 font-semibold text-gray-900 list-none flex items-center justify-between">
+                {item.q}
+                <span className="text-gray-400 group-open:rotate-45 transition-transform text-xl leading-none">+</span>
+              </summary>
+              <div className="px-4 pb-4 text-gray-700 text-sm leading-relaxed">{item.a}</div>
+            </details>
           ))}
         </div>
       </section>

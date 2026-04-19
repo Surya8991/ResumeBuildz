@@ -136,6 +136,59 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* Principles */}
+      <section className="bg-gray-50 py-20">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl font-bold text-gray-900 text-center mb-3">Our principles</h2>
+          <p className="text-gray-600 text-center max-w-2xl mx-auto mb-12">Five commitments that shape every product decision. If we ever break one, we owe you an explanation.</p>
+          <div className="grid md:grid-cols-2 gap-5">
+            {[
+              { n: '01', t: 'Free to start, forever', b: 'The build + export loop is free. No paywalled downloads, no watermarks, no 14-day trials that renew at Rs 2,000/month. Pro exists for unlimited AI rewrites and heavy-use features; the core tool stays free.' },
+              { n: '02', t: 'Your data stays yours', b: 'Resume content lives in your browser\'s localStorage by default. Sign-in is opt-in, and even then we store the minimum needed to sync across devices. We never sell data, never feed it to third-party recruiter networks, never use it to train models.' },
+              { n: '03', t: 'ATS-first, always', b: 'Every template we ship is parsed and tested against real ATS (Workday, Greenhouse, Lever, iCIMS, Taleo). Pretty designs that fail parsers get rejected in review. Function before flourish.' },
+              { n: '04', t: 'Honest AI', b: 'AI assists writing; it does not invent. Our rewrites use your actual bullet context so they never hallucinate metrics. If we cannot make a feature reliably honest, we do not ship it.' },
+              { n: '05', t: 'Open and inspectable', b: 'Full source code on GitHub. Anyone can audit what runs in your browser, fork the project, contribute templates, or self-host. Transparency is not marketing; it is the default.' },
+            ].map((p) => (
+              <div key={p.n} className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+                <p className="text-xs font-bold text-blue-500 tracking-wider mb-2">{p.n}</p>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">{p.t}</h3>
+                <p className="text-sm text-gray-600 leading-relaxed">{p.b}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* What makes us different */}
+      <section className="bg-white py-20">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl font-bold text-gray-900 text-center mb-3">What makes us different</h2>
+          <p className="text-gray-600 text-center max-w-2xl mx-auto mb-12">A honest comparison with the resume builders most people recognise. We will not pretend to be strictly better than every option; we will explain the tradeoffs.</p>
+          <div className="overflow-x-auto">
+            <table className="w-full border border-gray-200 rounded-lg text-sm">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="text-left p-3 font-semibold text-gray-700 border-b border-gray-200">Feature</th>
+                  <th className="text-left p-3 font-semibold text-blue-600 border-b border-gray-200">ResumeBuildz</th>
+                  <th className="text-left p-3 font-semibold text-gray-700 border-b border-gray-200">Zety / Resume.io</th>
+                  <th className="text-left p-3 font-semibold text-gray-700 border-b border-gray-200">Canva</th>
+                </tr>
+              </thead>
+              <tbody className="text-gray-800">
+                <tr className="border-b border-gray-100"><td className="p-3 font-medium">Free PDF download</td><td className="p-3 text-emerald-700">Yes, unlimited</td><td className="p-3 text-rose-700">Paywalled</td><td className="p-3 text-amber-700">Limited templates</td></tr>
+                <tr className="border-b border-gray-100"><td className="p-3 font-medium">Data privacy</td><td className="p-3 text-emerald-700">localStorage first</td><td className="p-3 text-amber-700">Server-side default</td><td className="p-3 text-amber-700">Server-side</td></tr>
+                <tr className="border-b border-gray-100"><td className="p-3 font-medium">ATS-tested templates</td><td className="p-3 text-emerald-700">All 20</td><td className="p-3 text-amber-700">Claimed, varies</td><td className="p-3 text-rose-700">Most fail ATS</td></tr>
+                <tr className="border-b border-gray-100"><td className="p-3 font-medium">AI bullet rewrites</td><td className="p-3 text-emerald-700">Yes, context-aware</td><td className="p-3 text-emerald-700">Yes, generic</td><td className="p-3 text-rose-700">No</td></tr>
+                <tr className="border-b border-gray-100"><td className="p-3 font-medium">Open source</td><td className="p-3 text-emerald-700">Yes, on GitHub</td><td className="p-3 text-rose-700">Proprietary</td><td className="p-3 text-rose-700">Proprietary</td></tr>
+                <tr className="border-b border-gray-100"><td className="p-3 font-medium">Cover letter builder</td><td className="p-3 text-emerald-700">Matching design</td><td className="p-3 text-emerald-700">Bundled</td><td className="p-3 text-amber-700">Separate</td></tr>
+                <tr><td className="p-3 font-medium">Where paid is better</td><td className="p-3 text-gray-600">Unlimited AI, priority support</td><td className="p-3 text-gray-600">Larger template library</td><td className="p-3 text-gray-600">Rich visual design</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p className="text-center text-sm text-gray-500 mt-6">For a deeper, independent comparison: <a href="/best-free-resume-builder" className="text-blue-600 hover:underline">Free vs paid builders 2026</a>.</p>
+        </div>
+      </section>
+
       {/* Open Source */}
       <section className="bg-gray-50 py-20">
         <div className="max-w-3xl mx-auto px-4 text-center">

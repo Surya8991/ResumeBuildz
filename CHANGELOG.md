@@ -6,6 +6,78 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ---
 
+## [1.21.0] - 2026-04-19
+
+### Added
+
+- **10 SEO-optimised blog posts** targeting combined ~323k/month of
+  search volume, each structured per BLOG_PLAN's uniform template
+  (40-60 word featured-snippet answer, H2-heavy outline, PAA-harvested
+  FAQ accordion, 5 related cross-links, mid + final CTAs):
+  - `/pass-ats-resume-scanning` (33k/mo, KD 28)
+  - `/resume-action-verbs` (40k/mo, KD 22) — 210 verbs across 7 role categories + weak-to-strong swap table
+  - `/resume-length` (27k/mo, KD 25)
+  - `/resume-summary-examples` (60k/mo, KD 32) — 25 before/after examples (15 by stage, 10 by industry)
+  - `/resume-format-guide` (22k/mo, KD 30)
+  - `/quantify-resume-achievements` (12k/mo, KD 18) — XYZ formula + 50+ bullets across 8 roles
+  - `/cover-letter-vs-resume` (33k/mo, KD 24)
+  - `/tailor-resume` (18k/mo, KD 20) — minute-by-minute process
+  - `/best-free-resume-builder` (33k/mo, KD 38)
+  - `/ai-resume-builders-tested` (45k/mo, KD 42)
+- **10 programmatic role-based resume guides** at `/resume/[role]` via
+  `generateStaticParams` over `lib/resumeRoleData.ts`. Hand-written,
+  India + global aware: software-engineer, data-scientist, product-
+  manager, ui-ux-designer, digital-marketer, full-stack-developer,
+  devops-engineer, business-analyst, cybersecurity-analyst, machine-
+  learning-engineer. Each covers must-have sections, ATS keywords,
+  sample bullets, mistakes, India salary benchmarks, related roles.
+  Hub page at `/resume` groups by category.
+- **Sentry error monitoring (dormant)**. `@sentry/nextjs` wired via
+  `instrumentation.ts` (server + edge), `instrumentation-client.ts`
+  (browser), and `app/global-error.tsx`. Gated on
+  `NEXT_PUBLIC_SENTRY_DSN` so zero traffic is sent until activated.
+  Session replays on error, noise filters for RSC-fetch aborts and
+  ResizeObserver warnings.
+- **Typed analytics events** (`lib/analytics.ts`) wrapping
+  `@vercel/analytics` with a compile-checked event-name union.
+  Instrumented: signup_submit / signup_success (email + google),
+  login_success, ai_rewrite_used, upgrade_modal_opened (ai + pdf),
+  resume_exported (pdf/docx/html/markdown).
+- **Husky pre-commit + pre-push hooks** enforce the mandatory
+  checklist. Pre-commit runs `npm run lint && npx tsc --noEmit`;
+  pre-push runs the full `npm run build`. Auto-installed on
+  `npm install` via the `prepare` script.
+
+### Changed
+
+- **/about**: added "Our principles" (5 commitments that shape product
+  decisions) and "What makes us different" (honest comparison table
+  vs Zety, Resume.io, and Canva on download cost, privacy, ATS
+  compatibility, AI, open source).
+- **/ats-guide**: 4 new deep-dive sections — parser step-by-step
+  (text extraction through ranking), per-system tuning (Workday,
+  Greenhouse, Lever, iCIMS, Taleo, SmartRecruiters), manual resume
+  testing workflow, and a 7-question FAQ.
+- **/cover-letter**: 5 new sections — a complete 266-word cover
+  letter example with annotations, length + formatting rules, email
+  body vs attached file guidance, 8 explained mistakes, and an
+  8-question FAQ.
+- **/resume-tips**: 4 new sections — filename + format rules, length
+  discipline with 5-point cut-test, 4-step proofreading workflow,
+  and an 8-question FAQ.
+- **/faq**: expanded from 17 to 26 questions (covers Pro tier,
+  profile limit, AI privacy, keyboard shortcuts, mobile PWA,
+  accessibility, blog/resources, cancellation, and data portability
+  if the app ever shuts down). FAQPage JSON-LD schema now auto-
+  generates from the full array instead of a hardcoded subset of 6.
+
+### Docs
+
+- `CHANGELOG.md` + `lib/changelogData.ts` entry for this release.
+- `.env.example` includes commented `NEXT_PUBLIC_SENTRY_DSN` slot.
+
+---
+
 ## [1.20.1] - 2026-04-19
 
 ### Added

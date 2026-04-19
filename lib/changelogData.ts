@@ -14,6 +14,26 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: 'v1.21.0',
+    date: 'April 19, 2026',
+    isoDate: '2026-04-19',
+    title: 'BLOG_PLAN v1: 10 SEO Posts + 10 Role Pages + Sentry + Analytics + Husky',
+    added: [
+      '10 SEO-optimised blog posts covering combined ~323k/mo search volume: pass-ats-resume-scanning, resume-action-verbs (210 verbs by role), resume-length, resume-summary-examples (25 before/after), resume-format-guide, quantify-resume-achievements (XYZ formula + 50+ bullets), cover-letter-vs-resume, tailor-resume, best-free-resume-builder, ai-resume-builders-tested. Each follows BLOG_PLAN uniform structure: 40-60 word featured-snippet answer, H2-heavy outline, PAA-harvested FAQ accordion, 5 related cross-links, mid + final CTAs.',
+      '10 programmatic role-based resume guides at /resume/[role] via generateStaticParams over lib/resumeRoleData.ts: software-engineer, data-scientist, product-manager, ui-ux-designer, digital-marketer, full-stack-developer, devops-engineer, business-analyst, cybersecurity-analyst, machine-learning-engineer. Hand-written, India + global aware. Hub at /resume groups by category.',
+      'Sentry error monitoring (dormant, DSN-gated). @sentry/nextjs wired via instrumentation.ts (server + edge), instrumentation-client.ts (browser), and app/global-error.tsx. Zero traffic until NEXT_PUBLIC_SENTRY_DSN is set.',
+      'Typed analytics events in lib/analytics.ts wrapping @vercel/analytics with a compile-checked event-name union. Wired at 5 sites: signup, login, ai_rewrite_used, upgrade_modal_opened, resume_exported.',
+      'Husky pre-commit + pre-push hooks enforce the mandatory checklist. Pre-commit runs lint + tsc --noEmit; pre-push runs the full next build.',
+    ],
+    improved: [
+      '/about gains "Our principles" (5 commitments) and "What makes us different" (honest comparison table vs Zety, Resume.io, Canva).',
+      '/ats-guide gains 4 deep-dive sections: parser step-by-step, per-system tuning (Workday, Greenhouse, Lever, iCIMS, Taleo, SmartRecruiters), manual testing workflow, 7-question FAQ.',
+      '/cover-letter gains 5 new sections: complete 266-word example with annotations, length rules, email body vs attached, 8 explained mistakes, 8-question FAQ.',
+      '/resume-tips gains 4 sections: filename + format rules, length discipline cut-test, 4-step proofreading, 8-question FAQ.',
+      '/faq expanded from 17 to 26 questions; FAQPage JSON-LD now auto-generates from the full array (was hardcoded to 6).',
+    ],
+  },
+  {
     version: 'v1.20.1',
     date: 'April 19, 2026',
     isoDate: '2026-04-19',

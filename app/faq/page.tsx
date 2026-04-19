@@ -76,6 +76,42 @@ const faqItems = [
     question: 'How do I share my resume?',
     answer: 'Export your resume in your preferred format: PDF for ATS systems and recruiters, DOCX for Word users, or HTML for online portfolios. You can also export the raw JSON file as a backup or to import on another device.',
   },
+  {
+    question: 'What does the Pro tier unlock?',
+    answer: 'Pro unlocks unlimited AI bullet rewrites (free plan caps at 1 per day), unlimited PDF exports (free plan caps at 3 per day), priority support, and all future Pro-only features. The core build-and-export loop remains free forever. Payments integration is rolling out; see the pricing page for current status.',
+  },
+  {
+    question: 'Why is there a 10-resume profile limit?',
+    answer: 'The limit exists to keep the profile switcher fast and the localStorage footprint under control. 10 profiles covers essentially every job search we have seen. If you genuinely need more, you can export older profiles as JSON and re-import later; nothing is lost.',
+  },
+  {
+    question: 'How does ResumeBuildz handle my privacy with AI features?',
+    answer: 'AI rewrites send only the specific text being rewritten (one bullet, one summary) to Groq via a server-side proxy. Your name, email, and full resume context are never included in the request. For Bring-Your-Own-Key AI users, the request goes directly from your browser to Groq with no server in between.',
+  },
+  {
+    question: 'Are there keyboard shortcuts?',
+    answer: 'Yes. Press Ctrl+/ (or Cmd+/ on Mac) in the builder to see the full list. Ctrl+K opens the command palette. Ctrl+S exports your resume data as a JSON backup. Ctrl+Z and Ctrl+Shift+Z handle undo and redo. Full shortcut reference available in the builder Help menu.',
+  },
+  {
+    question: 'Do you have a mobile app?',
+    answer: 'Not a native app. ResumeBuildz is a Progressive Web App (PWA) that installs to your home screen from Chrome, Safari, or Edge on mobile. You get app-like behaviour (offline support, home-screen icon, no browser chrome) without an App Store download. The editor works on mobile but is optimised for desktop.',
+  },
+  {
+    question: 'Is ResumeBuildz accessible to screen-reader users?',
+    answer: 'Yes. The app targets WCAG 2.1 AA compliance: proper heading order, labelled form controls, keyboard-navigable throughout, sufficient colour contrast on all text, and aria-labels on icon-only buttons. We run Lighthouse accessibility audits on every release; current score is 100/100 on mobile and desktop.',
+  },
+  {
+    question: 'Where are the blog posts and resources?',
+    answer: 'Visit the /blog hub for topic clusters (Resume Writing, ATS & Keywords, Interviews & Cover Letters, India Hiring, AI Resume Tools). We also have 22 company-specific resume guides (Google, Amazon, TCS, Flipkart, Razorpay, and more) under /blog/company-guides, and 10 role-based guides (software engineer, product manager, data scientist, etc.) under /resume.',
+  },
+  {
+    question: 'How do I cancel Pro if I upgrade?',
+    answer: 'Payments are not yet live, but when they launch you will be able to cancel from Settings -> Account at any time. Cancellation takes effect at the end of the current billing period; you keep Pro features through that period. No cancellation fees.',
+  },
+  {
+    question: 'What if ResumeBuildz shuts down?',
+    answer: 'Unlikely, but your safety net: (1) Your resume is in localStorage, so it survives any backend outage. (2) Export JSON at any time using Ctrl+S; the file is a complete, portable backup. (3) The code is open source on GitHub and self-hostable forever, even if we vanish.',
+  },
 ];
 
 function FAQItem({ question, answer }: { question: string; answer: string }) {
@@ -169,56 +205,14 @@ export default function FAQPage() {
           __html: jsonLd({
             "@context": "https://schema.org",
             "@type": "FAQPage",
-            mainEntity: [
-              {
-                "@type": "Question",
-                name: "Is ResumeBuildz free?",
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: "The free tier includes all 20 templates, 12 ATS tools, DOCX/HTML export, and job description matching. AI rewrites and PDF exports have daily limits. Upgrade to Pro for unlimited access.",
-                },
+            mainEntity: faqItems.map((item) => ({
+              "@type": "Question",
+              name: item.question,
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: item.answer,
               },
-              {
-                "@type": "Question",
-                name: "Does ResumeBuildz store my data?",
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: "No. ResumeBuildz is entirely client-side. Your resume data never leaves your browser and is stored only in your device's localStorage. There are no servers, no tracking, and no analytics.",
-                },
-              },
-              {
-                "@type": "Question",
-                name: "Do I need to create an account?",
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: "No account is needed to start building. Creating an account is optional and lets you access Pro features when available.",
-                },
-              },
-              {
-                "@type": "Question",
-                name: "What formats can I export my resume in?",
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: "ResumeBuildz supports PDF export (via browser print), DOCX (Microsoft Word), and HTML. PDF gives the best visual output. DOCX is best for ATS compatibility.",
-                },
-              },
-              {
-                "@type": "Question",
-                name: "How do the AI features work?",
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: "AI features use the Groq API (Llama 3.3 70B model). You bring your own free Groq API key from console.groq.com. It is stored only in your browser and never sent to any ResumeBuildz server.",
-                },
-              },
-              {
-                "@type": "Question",
-                name: "Are the templates ATS-friendly?",
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: "Yes. All 20 templates are tested for ATS compatibility with clean formatting, standard section headings, and no graphics or text boxes that confuse resume parsers.",
-                },
-              },
-            ],
+            })),
           }),
         }}
       />

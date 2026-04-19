@@ -47,6 +47,10 @@ const TOC = [
   { id: 'sections', label: 'Resume sections guide' },
   { id: 'mistakes', label: '8 mistakes to avoid' },
   { id: 'industry', label: 'Industry-specific tips' },
+  { id: 'filename', label: 'File name + format' },
+  { id: 'length-rules', label: 'Length discipline' },
+  { id: 'proofread', label: 'Proofreading workflow' },
+  { id: 'faq', label: 'FAQ' },
 ];
 
 const RELATED = [
@@ -198,6 +202,89 @@ export default function ResumeTipsPage() {
                 ))}
               </ul>
             </div>
+          ))}
+        </div>
+      </section>
+
+      <section id="filename" className="mt-10 scroll-mt-6">
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">File name and format rules</h2>
+        <p>
+          Recruiters see your filename before they open the file. Sloppy names signal sloppy candidates. Use these rules:
+        </p>
+        <div className="mt-5 grid md:grid-cols-2 gap-4">
+          <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
+            <p className="font-semibold text-emerald-900 mb-2">Do name your file</p>
+            <ul className="space-y-1.5 text-sm text-gray-800 list-disc pl-5">
+              <li><code className="bg-white px-1.5 rounded">Arjun-Iyer-Resume.pdf</code></li>
+              <li><code className="bg-white px-1.5 rounded">Arjun-Iyer-Resume-ProductManager.pdf</code></li>
+              <li><code className="bg-white px-1.5 rounded">Arjun-Iyer-CV-2026.pdf</code></li>
+            </ul>
+          </div>
+          <div className="bg-rose-50 border border-rose-200 rounded-lg p-4">
+            <p className="font-semibold text-rose-900 mb-2">Do not name your file</p>
+            <ul className="space-y-1.5 text-sm text-gray-800 list-disc pl-5">
+              <li><code className="bg-white px-1.5 rounded line-through">resume-final-v3.pdf</code></li>
+              <li><code className="bg-white px-1.5 rounded line-through">my-resume.docx</code></li>
+              <li><code className="bg-white px-1.5 rounded line-through">resume-keyword-stuffed.pdf</code></li>
+              <li><code className="bg-white px-1.5 rounded line-through">untitled.pdf</code></li>
+            </ul>
+          </div>
+        </div>
+        <p className="mt-5">
+          <strong>Format:</strong> PDF by default. Save with selectable text (not a scanned image). Save As PDF from Word or export from your resume builder with the PDF option, not Print to PDF (which sometimes rasterises text). Keep file size under 1 MB; a well-formatted text-based PDF is usually 150 to 400 KB.
+        </p>
+      </section>
+
+      <section id="length-rules" className="mt-10 scroll-mt-6">
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">Length discipline: when to cut</h2>
+        <p>
+          Most resumes that feel &quot;thin&quot; are actually too long. Density matters more than page count. Run this cut-test on each of your bullets:
+        </p>
+        <ol className="mt-5 list-decimal pl-5 space-y-3">
+          <li><strong>Can the first 3 words be deleted?</strong> &quot;Was responsible for managing&quot; becomes &quot;Managed&quot;. Do this on every bullet.</li>
+          <li><strong>Does it contain a number?</strong> If not, either find one or cut the bullet. Vague bullets inflate the resume without convincing anyone.</li>
+          <li><strong>Is the verb strong?</strong> &quot;Worked on&quot; is filler. &quot;Built&quot;, &quot;Shipped&quot;, &quot;Owned&quot; are not.</li>
+          <li><strong>Is it role-relevant?</strong> A bullet for a past job that does not relate to your target role can go.</li>
+          <li><strong>Does it repeat another bullet?</strong> Two bullets both saying &quot;led the team&quot; become one.</li>
+        </ol>
+        <p className="mt-5">
+          For deeper guidance on 1-page vs 2-page decisions, see our <Link href="/resume-length" className="text-indigo-600 hover:underline">resume length guide</Link>.
+        </p>
+      </section>
+
+      <section id="proofread" className="mt-10 scroll-mt-6">
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">Proofreading workflow</h2>
+        <p>
+          58% of recruiters reject resumes with typos. Your own eye goes blind to your own writing after about 3 passes. Use this 4-step workflow before any submission:
+        </p>
+        <ol className="mt-5 list-decimal pl-5 space-y-3">
+          <li><strong>Read aloud.</strong> Your mouth catches awkward phrasing your eye glosses over.</li>
+          <li><strong>Read backwards.</strong> Start from the last bullet and read each one in reverse order. This breaks the narrative flow and surfaces typos.</li>
+          <li><strong>Run through a grammar tool.</strong> Grammarly, LanguageTool, or Claude/ChatGPT with &quot;find typos only, do not rewrite&quot;.</li>
+          <li><strong>Have someone else read it.</strong> Fresh eyes catch everything the previous 3 steps missed. If no friend is available, print the resume and wait 24 hours before re-reading.</li>
+        </ol>
+      </section>
+
+      <section id="faq" className="mt-10 scroll-mt-6">
+        <h2 className="text-2xl font-bold text-gray-900 mb-5">Frequently asked questions</h2>
+        <div className="space-y-4">
+          {[
+            { q: 'How often should I update my resume?', a: 'At minimum, every 6 months even when not actively job searching. Record new wins while they are fresh. A resume updated quarterly reads sharper than one rewritten in panic the week you start looking.' },
+            { q: 'Should I include my photo?', a: 'In India: only if the role is customer-facing (hospitality, sales). In the US / UK / Canada: never. Many ATS systems flag photos; some companies discard photo-containing resumes to avoid bias-hiring complaints.' },
+            { q: 'Do I need a references section?', a: 'No. "References available on request" is also unnecessary. The recruiter will ask if they need them. Use that space for a stronger section.' },
+            { q: 'How important is the resume summary for mid-career candidates?', a: 'Very. A strong 3-sentence summary is the only section read in the 6-second first scan. For 5+ years of experience, the summary compresses your career story into something scannable.' },
+            { q: 'Should I put my LinkedIn URL?', a: 'Yes, if your LinkedIn is up to date and matches your resume. Use a custom URL (linkedin.com/in/firstname-lastname) not the default numeric one.' },
+            { q: 'What if I have skills from hobbies?', a: 'Include them only if they are job-relevant. A photographer who learned Photoshop from wedding shoots can list Photoshop. A software engineer with a wedding-photography hobby should skip it.' },
+            { q: 'Is using Canva for my resume okay?', a: 'For visual / creative roles, yes. For everything else, no. Canva templates often use multi-column layouts and image-based text that break ATS parsers.' },
+            { q: 'Should I tailor bullet order to the job?', a: 'Yes. The first bullet of each role is the most-read. Put the most job-relevant one first. Reorder per application.' },
+          ].map((item, i) => (
+            <details key={i} className="border border-gray-200 rounded-lg group">
+              <summary className="cursor-pointer p-4 font-semibold text-gray-900 list-none flex items-center justify-between">
+                {item.q}
+                <span className="text-gray-400 group-open:rotate-45 transition-transform text-xl leading-none">+</span>
+              </summary>
+              <div className="px-4 pb-4 text-gray-700 text-sm leading-relaxed">{item.a}</div>
+            </details>
           ))}
         </div>
       </section>
