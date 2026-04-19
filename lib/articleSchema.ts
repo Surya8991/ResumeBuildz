@@ -17,8 +17,12 @@ const PUBLISHER = {
 const DEFAULT_AUTHOR = {
   '@type': 'Person',
   name: 'Surya L',
-  url: `${SITE_URL}/about`,
+  url: `${SITE_URL}/author/surya-l`,
   jobTitle: 'Founder, ResumeBuildz',
+  sameAs: [
+    'https://github.com/Surya8991',
+    'https://linkedin.com/in/surya-l',
+  ],
 };
 
 export interface ArticleInput {
