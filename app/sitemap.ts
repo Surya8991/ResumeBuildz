@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { COMPANIES } from '@/lib/resumeCompanyData';
+import { ROLES } from '@/lib/resumeRoleData';
 import { BLOG_CATEGORIES } from '@/lib/blogCategories';
 import { BLOG_POSTS } from '@/lib/blogPosts';
 import { SITE_URL } from '@/lib/siteConfig';
@@ -29,6 +30,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
     // Resources hub + situation pages
     { url: `${base}/blog/company-guides`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${base}/resume`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
     { url: `${base}/fresher-resume`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${base}/campus-placement-resume`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${base}/naukri-resume-tips`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
@@ -58,6 +60,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
+  // Role-based resume guides.
+  const roleEntries: MetadataRoute.Sitemap = ROLES.map((r) => ({
+    url: `${base}/resume/${r.slug}`,
+    lastModified: now,
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
+  }));
+
   // Blog posts — auto-discovered from registry so new posts hit the sitemap
   // without manual edits. Slugs point to top-level routes (e.g. /fresher-resume).
   const staticSlugs = new Set(staticEntries.map((e) => e.url));
@@ -70,5 +80,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }))
     .filter((e) => !staticSlugs.has(e.url));
 
-  return [...staticEntries, ...companyEntries, ...blogFilterEntries, ...blogPostEntries];
+  return [...staticEntries, ...companyEntries, ...roleEntries, ...blogFilterEntries, ...blogPostEntries];
 }
