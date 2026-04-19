@@ -9,6 +9,7 @@ const eslintConfig = defineConfig([
   globalIgnores([
     // Default ignores of eslint-config-next:
     ".next/**",
+    "**/.next/**",
     "out/**",
     "build/**",
     "next-env.d.ts",
@@ -16,6 +17,12 @@ const eslintConfig = defineConfig([
     "public/**",
     // Deno-runtime Edge Functions (TS config excludes them too).
     "supabase/functions/**",
+    // Claude Code tooling state (worktrees, caches). Not ours, not for commit.
+    ".claude/**",
+    // Supabase CLI temp state.
+    "supabase/.temp/**",
+    // Standalone HTML reference docs at repo root (RESEND_SETUP, README.html, etc).
+    "*.html",
   ]),
   // Resume template files render the user's resume in the print preview.
   // next.config.ts sets `images.unoptimized: true`, so `<img>` is no worse

@@ -33,6 +33,10 @@ export default function GlobalError({
             Try again
           </button>
           <div style={{ marginTop: 16 }}>
+            {/* global-error.tsx renders outside the Next.js App Router tree,
+                so next/link is not usable here — the router context is gone.
+                A plain anchor is the correct choice. */}
+            {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
             <a href="/" style={{ fontSize: 13, color: '#6b7280', textDecoration: 'none' }}>
               Back to home
             </a>
