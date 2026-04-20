@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ResumeBuildz Marketing Strategy - 12 Month Plan (2026-2027)</title>
+<style>
+  :root {
+    --ink:#0b1220; --muted:#64748b; --border:#e5e7eb; --bg:#f8fafc;
+    --brand:#2563eb; --brand-dark:#1e40af; --accent:#10b981;
+    --warn:#f59e0b; --danger:#dc2626;
+    --q1:#3b82f6; --q2:#8b5cf6; --q3:#10b981; --q4:#f59e0b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:var(--ink);line-height:1.6;background:var(--bg)}
+  .wrap{max-width:1200px;margin:0 auto;padding:40px 24px 120px}
+  header.hero{background:linear-gradient(135deg,#1e40af 0%,#3b82f6 60%,#0ea5e9 100%);color:#fff;padding:64px 32px;border-radius:16px;margin-bottom:32px;position:relative;overflow:hidden}
+  header.hero h1{font-size:40px;margin:0 0 8px;font-weight:800;letter-spacing:-0.5px}
+  header.hero .sub{font-size:18px;opacity:0.9;margin:0 0 24px;max-width:820px}
+  header.hero .meta{display:flex;gap:24px;font-size:14px;opacity:0.85;flex-wrap:wrap}
+  header.hero .meta b{font-weight:600}
+  nav.toc{background:#fff;border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:32px}
+  nav.toc h3{margin:0 0 12px;font-size:14px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:700}
+  nav.toc ol{margin:0;padding-left:20px;columns:2;column-gap:32px}
+  nav.toc li{margin-bottom:6px}
+  nav.toc a{color:var(--brand);text-decoration:none;font-weight:500}
+  nav.toc a:hover{text-decoration:underline}
+  section{background:#fff;border:1px solid var(--border);border-radius:12px;padding:32px;margin-bottom:24px}
+  section > h2{font-size:26px;margin:0 0 6px;color:var(--ink);letter-spacing:-0.3px;scroll-margin-top:20px}
+  section > .section-label{color:var(--brand);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px}
+  section > p.lead{color:var(--muted);font-size:16px;margin:0 0 24px;max-width:900px}
+  h3{font-size:19px;margin:28px 0 12px;color:var(--ink);font-weight:700}
+  h4{font-size:16px;margin:20px 0 8px;color:var(--ink);font-weight:600}
+  p{margin:0 0 12px}
+  ul,ol{margin:0 0 16px;padding-left:22px}
+  li{margin-bottom:6px}
+  table{width:100%;border-collapse:collapse;margin:12px 0 20px;font-size:14px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+  th{background:#f1f5f9;font-weight:600;color:var(--ink)}
+  tbody tr:hover{background:#fafbfc}
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  @media (max-width:900px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}nav.toc ol{columns:1}}
+  .card{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:16px 18px}
+  .card h4{margin-top:0}
+  .card p{font-size:14px;color:var(--muted);margin:0}
+  .kpi{background:linear-gradient(135deg,#eff6ff 0%,#ecfeff 100%);border:1px solid #bfdbfe;border-radius:10px;padding:16px 18px;text-align:center}
+  .kpi .num{font-size:26px;font-weight:800;color:var(--brand-dark);display:block;line-height:1.1}
+  .kpi .lbl{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-top:4px}
+  .tag{display:inline-block;padding:2px 10px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-right:6px}
+  .tag.q1{background:#dbeafe;color:#1e40af}
+  .tag.q2{background:#ede9fe;color:#6d28d9}
+  .tag.q3{background:#d1fae5;color:#065f46}
+  .tag.q4{background:#fef3c7;color:#92400e}
+  .tag.high{background:#fee2e2;color:#991b1b}
+  .tag.med{background:#fef3c7;color:#92400e}
+  .tag.low{background:#d1fae5;color:#065f46}
+  .tag.org{background:#e0e7ff;color:#3730a3}
+  .tag.paid{background:#fce7f3;color:#9d174d}
+  .tag.free{background:#d1fae5;color:#065f46}
+  .persona{background:#fff;border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:16px;border-left:5px solid var(--brand)}
+  .persona.p2{border-left-color:var(--q2)}
+  .persona.p3{border-left-color:var(--q3)}
+  .persona.p4{border-left-color:var(--q4)}
+  .persona h3{margin:0 0 4px}
+  .persona .who{color:var(--muted);font-size:14px;margin-bottom:14px}
+  .persona dl{margin:0;display:grid;grid-template-columns:170px 1fr;gap:8px 16px;font-size:14px}
+  .persona dt{font-weight:600;color:var(--muted)}
+  .persona dd{margin:0}
+  .quarter-block{background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px}
+  .quarter-block .hdr{padding:18px 22px;color:#fff;font-weight:700;font-size:15px;letter-spacing:0.3px}
+  .quarter-block.q1 .hdr{background:var(--q1)}
+  .quarter-block.q2 .hdr{background:var(--q2)}
+  .quarter-block.q3 .hdr{background:var(--q3)}
+  .quarter-block.q4 .hdr{background:var(--q4)}
+  .quarter-block .body{padding:20px 22px}
+  .callout{border-left:4px solid var(--brand);background:#eff6ff;padding:16px 20px;border-radius:0 10px 10px 0;margin:16px 0}
+  .callout.warn{border-color:var(--warn);background:#fffbeb}
+  .callout.danger{border-color:var(--danger);background:#fef2f2}
+  .callout.success{border-color:var(--accent);background:#ecfdf5}
+  .callout p:last-child{margin-bottom:0}
+  code{background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:0.9em;font-family:Consolas,Monaco,monospace}
+  footer{text-align:center;color:var(--muted);font-size:14px;padding:40px 0 0}
+  .checkline{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px}
+  .checkline::before{content:"✓";color:var(--accent);font-weight:700;flex-shrink:0;margin-top:2px}
+  .crossline{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px}
+  .crossline::before{content:"✗";color:var(--danger);font-weight:700;flex-shrink:0;margin-top:2px}
+  .progress{background:#e5e7eb;height:8px;border-radius:4px;overflow:hidden;margin:6px 0 10px}
+  .progress .bar{height:100%;background:var(--brand)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div style="font-size:13px;opacity:0.9;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px">Marketing Strategy · Year 1 · 2026-2027</div>
+  <h1>ResumeBuildz Go-to-Market Playbook</h1>
+  <p class="sub">A 12-month, multi-channel strategy for turning a free ATS-friendly resume builder into the default choice for Indian job seekers, with a clear secondary expansion into the global tech market.</p>
+  <div class="meta">
+    <span><b>Author:</b> Surya L</span>
+    <span><b>Author:</b> Founder, ResumeBuildz</span>
+    <span><b>Horizon:</b> Apr 2026 to Apr 2027</span>
+    <span><b>Budget:</b> Solo founder · time-first · <span style="opacity:0.7">up to Rs 50,000/mo discretionary</span></span>
+    <span><b>Status:</b> Draft v1</span>
+  </div>
+</header>
+
+<nav class="toc">
+  <h3>Contents</h3>
+  <ol>
+    <li><a href="#summary">Executive summary</a></li>
+    <li><a href="#context">Brand context & positioning</a></li>
+    <li><a href="#audience">Target audience (4 personas)</a></li>
+    <li><a href="#competition">Competitive landscape</a></li>
+    <li><a href="#pillars">4 strategic pillars</a></li>
+    <li><a href="#channels">Channel strategy (10 platforms)</a></li>
+    <li><a href="#content">Content engine + editorial calendar</a></li>
+    <li><a href="#growth">Growth loops</a></li>
+    <li><a href="#cro">CRO & funnel metrics</a></li>
+    <li><a href="#quarters">Quarterly roadmap (Q1 to Q4)</a></li>
+    <li><a href="#kpis">KPI tree + North Star</a></li>
+    <li><a href="#budget">Budget, stack, ops</a></li>
+    <li><a href="#risks">Risks & contingencies</a></li>
+    <li><a href="#90day">First 90 days (week by week)</a></li>
+  </ol>
+</nav>
+
+<!-- 1. EXECUTIVE SUMMARY -->
+<section id="summary">
+  <div class="section-label">1</div>
+  <h2>Executive summary</h2>
+  <p class="lead">Compound India-hiring SEO for 6 months, layer LinkedIn + community distribution in month 7 onwards, monetise Pro features from month 9 once Razorpay is live. North Star: 100k monthly organic visits by month 12.</p>
+
+  <div class="grid-4" style="margin-bottom:20px">
+    <div class="kpi"><span class="num">100k</span><span class="lbl">Monthly organic visits by M12</span></div>
+    <div class="kpi"><span class="num">15k</span><span class="lbl">Registered users by M12</span></div>
+    <div class="kpi"><span class="num">500</span><span class="lbl">Pro subscribers by M12</span></div>
+    <div class="kpi"><span class="num">&#8377;3L</span><span class="lbl">MRR by M12 (base case)</span></div>
+  </div>
+
+  <h3>The single biggest bet</h3>
+  <p>Indian job seekers are the world largest under-served resume-building market: 1.5 million B.Tech freshers graduate annually, 2 million campus placements happen each cycle, and none of the global resume builders (Zety, Novoresume, Resume.io) are optimised for NQT / InfyTQ / NTH / Naukri. ResumeBuildz is already shipping 13 India-specific guides. Doubling down on this category for 6 months gives us a durable, search-driven moat before we broaden.</p>
+
+  <h3>Why now</h3>
+  <ul>
+    <li><strong>SEO pipeline primed:</strong> 51 posts scheduled through Aug 2026 + 100 V3 ideas queued. Google crawl kicks in over the next 4-6 weeks.</li>
+    <li><strong>Product-market signal:</strong> 5.5 pages/visitor already (industry avg 2-3) means those who land, explore.</li>
+    <li><strong>Zero auth friction:</strong> "No sign-up required" positioning is a genuine moat vs Zety (paywall on download).</li>
+    <li><strong>AI tailwind:</strong> ChatGPT + Claude prompts queries are growing 60% YoY; we rank for them.</li>
+  </ul>
+
+  <h3>The three numbers to track weekly</h3>
+  <ol>
+    <li><strong>Organic sessions</strong> (Vercel + Plausible) — measures SEO engine health.</li>
+    <li><strong>Builder starts</strong> (resume-created event) — measures product funnel.</li>
+    <li><strong>Pro conversions</strong> (upgrade_modal_opened to upgrade_success) — measures monetisation.</li>
+  </ol>
+</section>
+
+<!-- 2. CONTEXT -->
+<section id="context">
+  <div class="section-label">2</div>
+  <h2>Brand context & positioning</h2>
+  <p class="lead">ResumeBuildz is the honest, free-first, India-rooted resume builder. Positioning is built on three commitments, not on feature parity with Zety.</p>
+
+  <h3>Positioning statement</h3>
+  <div class="callout">
+    <p><strong>For</strong> Indian students and early-career professionals drafting their first 3 resumes,</p>
+    <p><strong>who</strong> are underserved by Western resume builders that paywall the download,</p>
+    <p><strong>ResumeBuildz is</strong> a free ATS-friendly resume builder with AI rewrites, 20 templates, and deep India-hiring content (TCS NQT, Infosys InfyTQ, Wipro NTH, Naukri),</p>
+    <p><strong>unlike</strong> Zety and Resume.io which charge at export, <strong>our product</strong> keeps the core free forever and adds Pro features only for power users.</p>
+  </div>
+
+  <h3>Three non-negotiable brand commitments</h3>
+  <div class="grid-3">
+    <div class="card">
+      <h4>1. Free at the download</h4>
+      <p>Every global competitor charges to export. We never will. This is the hook and the anti-moat against Zety.</p>
+    </div>
+    <div class="card">
+      <h4>2. ATS-first, design-second</h4>
+      <p>Every template is parse-tested against Workday, Greenhouse, Taleo, iCIMS. Beauty is secondary to passing the filter.</p>
+    </div>
+    <div class="card">
+      <h4>3. Honest content</h4>
+      <p>No fake testimonials, no rigged comparisons, no SEO-spam blog. Posts name brands (competitors included) honestly.</p>
+    </div>
+  </div>
+
+  <h3>Voice & tone guide</h3>
+  <table>
+    <thead><tr><th>Dimension</th><th>What we do</th><th>What we avoid</th></tr></thead>
+    <tbody>
+      <tr><td>Tone</td><td>Direct, specific, numeric. "Callback rate 8 to 14 percent on tailored resumes."</td><td>Marketing-speak. "Unlock your dream career with our revolutionary platform."</td></tr>
+      <tr><td>Authority</td><td>Named sources, real data, honest caveats.</td><td>Vague "studies show" claims.</td></tr>
+      <tr><td>Voice</td><td>Like a senior engineer who also writes. First-person sometimes; always second-person when giving instructions.</td><td>Third-person corporate ("ResumeBuildz helps you...").</td></tr>
+      <tr><td>Formatting</td><td>Numbers, tables, lists, code blocks, concrete examples.</td><td>Wall-of-text, vague adjectives, em-dashes, double hyphens.</td></tr>
+      <tr><td>Length</td><td>As long as needed. 1500 words for guides, 60 words for CTAs.</td><td>Padding. Filler sentences that do not earn their place.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 3. AUDIENCE -->
+<section id="audience">
+  <div class="section-label">3</div>
+  <h2>Target audience: 4 personas</h2>
+  <p class="lead">60% of marketing effort goes to Personas 1 + 2 (Indian hiring); 30% to Persona 3 (global tech); 10% to Persona 4 (career transitions). Revisit allocation at Q3 review.</p>
+
+  <div class="persona">
+    <h3>Persona 1 — Campus Ashwin</h3>
+    <p class="who">Primary. 50% of attention.</p>
+    <dl>
+      <dt>Who</dt><dd>Final-year B.Tech / M.Tech student at Tier-2 or Tier-3 engineering college in India. CSE, IT, or ECE branch. CGPA 7.5 to 8.8.</dd>
+      <dt>Age + stage</dt><dd>21 to 23. Final year, placement season in full swing.</dd>
+      <dt>Location</dt><dd>Tier-2 cities primarily: Pune, Coimbatore, Bhubaneswar, Jaipur, Lucknow, Vijayawada. Studying at VIT, SRM, Amity, Manipal, NIT-tier colleges.</dd>
+      <dt>Current state</dt><dd>TCS NQT coming up. Drafted a resume in Word from a senior's template. Feels stuck. Scared of the on-campus filter.</dd>
+      <dt>Jobs-to-be-done</dt><dd>Clear TCS / Infosys / Wipro / Accenture / Cognizant campus filter. Look professional in under an hour. Understand the process.</dd>
+      <dt>Primary channels</dt><dd>Google search (NQT resume, InfyTQ preparation), YouTube, Instagram Reels, WhatsApp college groups, Telegram channels.</dd>
+      <dt>Willingness to pay</dt><dd>Low. 0 to Rs 299 one-time for a polished template. Expects core tool free.</dd>
+      <dt>Acquisition CAC cap</dt><dd>Rs 40. Organic or referral only; paid ads not viable at LTV.</dd>
+      <dt>Biggest objection</dt><dd>"Is this site even legitimate? Will my data be safe?"</dd>
+      <dt>Our unique draw</dt><dd>The only builder with a dedicated TCS iON section, InfyTQ keyword match, Wipro NTH syllabus integrated into guides.</dd>
+    </dl>
+  </div>
+
+  <div class="persona p2">
+    <h3>Persona 2 — Lateral Lakshmi</h3>
+    <p class="who">Primary. 30% of attention.</p>
+    <dl>
+      <dt>Who</dt><dd>Early to mid-career engineer, 2 to 6 years in Indian IT services (TCS, Infosys, Wipro, Accenture). Looking to switch to product-scale companies (Razorpay, PhonePe, Swiggy, Flipkart).</dd>
+      <dt>Age + stage</dt><dd>24 to 30. Wants 30 to 70% hike via switch.</dd>
+      <dt>Location</dt><dd>Bangalore, Hyderabad, Pune, Chennai, NCR. Remote curious.</dd>
+      <dt>Current state</dt><dd>Has a 3-page resume from 2022. Has never actually tested it against an ATS. Is applying to 50+ companies with same file. Gets 3 callbacks per 50 apps.</dd>
+      <dt>Jobs-to-be-done</dt><dd>Compress to 1 page. Tailor to each JD in under 10 minutes. Get past Razorpay / PhonePe ATS. Negotiate a strong offer.</dd>
+      <dt>Primary channels</dt><dd>Google search (resume for Razorpay, Swiggy interview prep), LinkedIn, Leetcode Discuss, Reddit r/developersIndia, Blind India.</dd>
+      <dt>Willingness to pay</dt><dd>Medium. Rs 500 to Rs 1500 for Pro annual. Will pay if AI tailoring saves them 3 hours per application.</dd>
+      <dt>Acquisition CAC cap</dt><dd>Rs 200. Tolerable for LTV Rs 1200+ Pro annual.</dd>
+      <dt>Biggest objection</dt><dd>"I already have a LinkedIn profile. Why do I need a separate resume builder?"</dd>
+      <dt>Our unique draw</dt><dd>Only builder that has per-company guides for 22 Indian employers + JD keyword matcher.</dd>
+    </dl>
+  </div>
+
+  <div class="persona p3">
+    <h3>Persona 3 — Pivot Priya</h3>
+    <p class="who">Secondary. 15% of attention, growing.</p>
+    <dl>
+      <dt>Who</dt><dd>Global professional in career transition: laid-off FAANG engineer, consultant leaving Big 4, MBA wanting to enter PM, PhD leaving academia.</dd>
+      <dt>Age + stage</dt><dd>28 to 42. High stakes moment; careful about every signal.</dd>
+      <dt>Location</dt><dd>US (40%), UK (15%), Canada (15%), Singapore (10%), India remote-first cohort (20%).</dd>
+      <dt>Current state</dt><dd>Existing resume is from their previous vertical. Needs full rewrite for the new industry.</dd>
+      <dt>Jobs-to-be-done</dt><dd>Translate past experience for a new industry. Write a summary that reads as "native" in the new role. Address gap or layoff tactfully.</dd>
+      <dt>Primary channels</dt><dd>Google (resume after layoff, career change resume), LinkedIn, HackerNews, Blind, Substack newsletters (Lenny, Stratechery readers).</dd>
+      <dt>Willingness to pay</dt><dd>High. USD 20 to 50 for Pro annual. Values time and polish.</dd>
+      <dt>Acquisition CAC cap</dt><dd>Rs 800 / USD 10.</dd>
+      <dt>Biggest objection</dt><dd>"Does this support US + European resume formats?"</dd>
+      <dt>Our unique draw</dt><dd>Layoff + career gap + career change deep dives that most builders ignore.</dd>
+    </dl>
+  </div>
+
+  <div class="persona p4">
+    <h3>Persona 4 — Returnship Radhika</h3>
+    <p class="who">Long-tail. 5% of attention; high NPS.</p>
+    <dl>
+      <dt>Who</dt><dd>Woman returning to tech/product/design/ops after a 1 to 3 year caregiving or health break. Pre-break role was mid-to-senior.</dd>
+      <dt>Age + stage</dt><dd>30 to 45. Returning via Tata 2nd Career, Infosys Restart, Returnship.org.</dd>
+      <dt>Location</dt><dd>India primarily, plus returning NRIs in the US.</dd>
+      <dt>Current state</dt><dd>Has a stale 2022 resume. Unsure how to address the gap. Feels imposter syndrome.</dd>
+      <dt>Jobs-to-be-done</dt><dd>Update resume with post-break skills. Frame the gap confidently. Find returnship programs.</dd>
+      <dt>Primary channels</dt><dd>LinkedIn, Naukri mom-returner groups, SheThePeople, Returnship.org, specific Slack/Discord (Women in Tech India).</dd>
+      <dt>Willingness to pay</dt><dd>Medium. Rs 499 one-time; will also refer 2 to 3 others in her cohort.</dd>
+      <dt>Our unique draw</dt><dd>Dedicated resume-after-parental-leave guide with returnship program map.</dd>
+    </dl>
+  </div>
+</section>
+
+<!-- 4. COMPETITION -->
+<section id="competition">
+  <div class="section-label">4</div>
+  <h2>Competitive landscape</h2>
+  <p class="lead">No single competitor wins both "India-specific guidance" and "free download". The gap is the position. Defend it.</p>
+
+  <table>
+    <thead><tr>
+      <th>Competitor</th><th>Strength</th><th>Weakness</th><th>Their price</th><th>Where we win</th>
+    </tr></thead>
+    <tbody>
+      <tr><td><strong>Zety</strong></td><td>SEO dominance, 20+ templates, brand recognition</td><td>USD 5.95 paywall at export; US-centric; weak India content</td><td>USD 5.95 / 14-day</td><td>Free download + India guides</td></tr>
+      <tr><td><strong>Resume.io</strong></td><td>Strong UX, payment funnel tuned</td><td>Same paywall trick; thin content</td><td>USD 2.95 trial then USD 23.95/mo</td><td>Free + transparency about pricing</td></tr>
+      <tr><td><strong>Novoresume</strong></td><td>Modern design templates</td><td>Paid templates; limited AI</td><td>USD 15.99/mo</td><td>AI included free</td></tr>
+      <tr><td><strong>Canva Resume</strong></td><td>Design range, brand trust</td><td>Design-first (fails ATS on multi-column); no ATS tuning</td><td>Free + Pro USD 12.99/mo</td><td>ATS-first positioning</td></tr>
+      <tr><td><strong>Kickresume</strong></td><td>AI generation, 35+ templates</td><td>Limited India content, export paywall</td><td>USD 19/mo</td><td>India + Pro affordability</td></tr>
+      <tr><td><strong>Enhancv</strong></td><td>Storytelling angle, strong designers</td><td>Steep pricing, Western focus</td><td>USD 24.99/mo</td><td>Pricing + India niche</td></tr>
+      <tr><td><strong>Hiration</strong></td><td>Indian-origin, free tier, chat support</td><td>Complex UX; dated UI; mixed free/paid signals</td><td>USD 7.99/mo</td><td>Cleaner UX + more content</td></tr>
+      <tr><td><strong>Reziline / Teal</strong></td><td>Chrome extension for JD match</td><td>Workflow-first not resume-first; niche</td><td>USD 9/mo</td><td>Full stack (resume + tailoring)</td></tr>
+      <tr><td><strong>Naukri FastForward</strong></td><td>Distribution via Naukri</td><td>Templates stuck in 2015; no AI</td><td>Rs 199 to 799 one-time</td><td>Modern AI + design</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Market positioning map</h3>
+  <p>X-axis: Free at download → Paywalled. Y-axis: Generic → India-specialised.</p>
+  <ul>
+    <li><strong>Lower-right (paywalled, generic):</strong> Zety, Resume.io, Novoresume, Enhancv, Kickresume.</li>
+    <li><strong>Upper-right (paywalled, India-tinted):</strong> Naukri FastForward, Hiration.</li>
+    <li><strong>Lower-left (free-ish, generic):</strong> Canva, Google Docs templates.</li>
+    <li><strong>Upper-left (free, India-specialised):</strong> <em>ResumeBuildz</em>. Empty quadrant. Own it.</li>
+  </ul>
+
+  <div class="callout">
+    <p><strong>Competitive moat thesis</strong> — 24-month horizon. The global incumbents will not build dedicated India-hiring content because their US audience produces higher ARPU. Indian competitors will not improve UX + AI fast enough. The gap we are running into is real and defensible if we keep shipping content weekly for the next 18 months.</p>
+  </div>
+</section>
+
+<!-- 5. PILLARS -->
+<section id="pillars">
+  <div class="section-label">5</div>
+  <h2>Four strategic pillars</h2>
+  <p class="lead">Every piece of work across the year maps to one of these four pillars. If it does not, do not do it.</p>
+
+  <div class="grid-2">
+    <div class="card" style="background:#eff6ff;border-color:#bfdbfe">
+      <h4 style="color:var(--brand-dark)">Pillar 1 — Own Indian hiring SEO</h4>
+      <p style="color:var(--ink)">Rank #1 for 30 India-hiring queries (TCS NQT resume, InfyTQ, Wipro NTH, Naukri, campus placement, PSU jobs). Expand to 50 by M12. Core growth engine; compounds monthly.</p>
+    </div>
+    <div class="card" style="background:#f5f3ff;border-color:#ddd6fe">
+      <h4 style="color:#5b21b6">Pillar 2 — Build the product-led loop</h4>
+      <p style="color:var(--ink)">Every visitor that lands on a blog post can try the builder in one click. Every user that saves a resume is prompted (gently) to share their success. Every Pro user gets a referral code. The loop needs to turn once per visitor.</p>
+    </div>
+    <div class="card" style="background:#ecfdf5;border-color:#a7f3d0">
+      <h4 style="color:#065f46">Pillar 3 — Community as distribution</h4>
+      <p style="color:var(--ink)">Own 3 communities, participate in 10. LinkedIn thought leadership, Reddit r/developersIndia presence, Discord for Pro users. Not ads; relationships.</p>
+    </div>
+    <div class="card" style="background:#fffbeb;border-color:#fde68a">
+      <h4 style="color:#92400e">Pillar 4 — Monetise without paywalling the core</h4>
+      <p style="color:var(--ink)">Free tier stays free forever. Pro (Rs 199/mo, Rs 1499/year) adds unlimited AI rewrites, premium templates, JD-match scorecard, Notion/Figma export, priority cover letter generation.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 6. CHANNELS -->
+<section id="channels">
+  <div class="section-label">6</div>
+  <h2>Channel strategy across 10 platforms</h2>
+  <p class="lead">Channels ordered by expected contribution to North Star traffic in Year 1.</p>
+
+  <table>
+    <thead><tr><th>Channel</th><th>Role</th><th>Priority</th><th>Effort</th><th>Cost</th><th>M12 target contribution</th></tr></thead>
+    <tbody>
+      <tr><td>SEO (blog + pillar pages)</td><td>Primary acquisition engine</td><td><span class="tag high">P0</span></td><td>High (content ongoing)</td><td><span class="tag free">Free</span></td><td>65%</td></tr>
+      <tr><td>LinkedIn (personal brand + product page)</td><td>Direct acquisition + authority</td><td><span class="tag high">P0</span></td><td>Medium (15 min/day)</td><td><span class="tag free">Free</span></td><td>12%</td></tr>
+      <tr><td>Reddit (r/developersIndia, r/resumes)</td><td>Community distribution</td><td><span class="tag med">P1</span></td><td>Low (2 hrs/week)</td><td><span class="tag free">Free</span></td><td>6%</td></tr>
+      <tr><td>YouTube Shorts + long-form</td><td>Long-tail SEO + authority</td><td><span class="tag med">P1</span></td><td>Medium (1 video/wk)</td><td>Rs 2k/mo (editor)</td><td>5%</td></tr>
+      <tr><td>Twitter / X (builder-in-public)</td><td>Network building + launch amplification</td><td><span class="tag med">P1</span></td><td>Low (10 min/day)</td><td><span class="tag free">Free</span></td><td>4%</td></tr>
+      <tr><td>Email (newsletter + nurture)</td><td>Retention + re-activation</td><td><span class="tag med">P1</span></td><td>Low (1 send/wk)</td><td>Rs 1k/mo (Resend)</td><td>3%</td></tr>
+      <tr><td>Product Hunt / Peerlist / BetaList</td><td>Launch bursts</td><td><span class="tag low">P2</span></td><td>Low (1 day per launch)</td><td><span class="tag free">Free</span></td><td>2%</td></tr>
+      <tr><td>College campus ambassadors</td><td>On-the-ground trust + UGC</td><td><span class="tag low">P2</span></td><td>Medium (10 ambassadors × 2 hr/wk mgmt)</td><td>Rs 5k/mo swag</td><td>2%</td></tr>
+      <tr><td>Partnerships (placement cells, coaches)</td><td>Bulk distribution</td><td><span class="tag low">P2</span></td><td>Medium (outreach heavy)</td><td><span class="tag free">Free</span></td><td>1%</td></tr>
+      <tr><td>Paid (Google + Meta ads)</td><td>Emergency channel only</td><td><span class="tag low">P3</span></td><td>Low if paused; high if on</td><td>Rs 20k/mo test budget</td><td>&lt;1%, test only</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Per-channel playbook</h3>
+
+  <h4>SEO (primary engine)</h4>
+  <ul>
+    <li><strong>Content cadence:</strong> 3 posts/week (Tue/Thu/Sun) for 6 months from Apr 2026, then review. 51 posts shipping now; next 100 from V3 queue.</li>
+    <li><strong>Pillar pages:</strong> Build 4 pillar pages (ATS, Campus Placement India, AI Resume Tools, Career Change). Each ~4,000 words, interlinks to 15 spoke posts.</li>
+    <li><strong>Topical clusters:</strong> 20 blog categories already live. Fill each to 8-15 posts.</li>
+    <li><strong>Technical SEO:</strong> HowTo + Article + FAQ + Breadcrumb schema on every post. Core Web Vitals > 90. /api/og dynamic social cards. Sitemap auto-discoverable.</li>
+    <li><strong>Link building:</strong> Month 4 onwards. Target 15 high-DR guest posts + resource-page links per quarter.</li>
+    <li><strong>M12 targets:</strong> 120 posts live, 60 ranking in top 10, 40 top 3.</li>
+  </ul>
+
+  <h4>LinkedIn (distribution + authority)</h4>
+  <ul>
+    <li><strong>Personal brand:</strong> Surya L posts 5x/week — 3 short insights (career, ATS myths, screenshots of AI output), 1 carousel/week, 1 long-form essay/month.</li>
+    <li><strong>Company page:</strong> Posts 3x/week — repost Surya's hits, share new blog posts, celebrate user wins with permission.</li>
+    <li><strong>Comments engine:</strong> 10 thoughtful comments/day on HR/recruiting/career influencer posts. Goal: visibility via ambient exposure.</li>
+    <li><strong>LinkedIn Premium:</strong> Yes for year 1. InMail credits + Recruiter Lite for outreach to placement cells.</li>
+    <li><strong>M12 targets:</strong> 10k followers Surya; 2k followers company; 200k monthly impressions.</li>
+  </ul>
+
+  <h4>Reddit</h4>
+  <ul>
+    <li><strong>Subs to own presence in:</strong> r/developersIndia (340k), r/Indian_Academia (95k), r/resumes (240k), r/cscareerquestions (950k), r/jobs (1.5M), r/leetcode (520k), r/IndiaCareers (60k), r/btech_tricks (95k).</li>
+    <li><strong>Participation rule:</strong> 80% value (answer questions, share data), 20% link-drops that come from context.</li>
+    <li><strong>Do not:</strong> self-promote in bio. Do not brigade. Do not create alt accounts. Mods ban fast.</li>
+    <li><strong>Do:</strong> Name the tool once per month per sub, in response to a direct "what did you use" question.</li>
+    <li><strong>M12 target:</strong> 500 quality comments, 5 viral threads (500+ upvotes each), 10k sessions driven.</li>
+  </ul>
+
+  <h4>YouTube</h4>
+  <ul>
+    <li><strong>Shorts (daily):</strong> 60-sec clips of resume mistakes, tips, before/after. AI voice-over + stock b-roll + your resume on screen.</li>
+    <li><strong>Long-form (weekly):</strong> 10-15 min tutorials. "How to fill out TCS NQT application 2026 step by step", "Resume review Live: 5 viewer resumes roasted and fixed".</li>
+    <li><strong>Launch with SEO keyword research:</strong> use vidIQ / Tubics to target low-competition placements like "TCS interview process 2026".</li>
+    <li><strong>Posting cadence:</strong> 5 Shorts/week, 1 long-form/week.</li>
+    <li><strong>M12 target:</strong> 10k subscribers, 2M total views.</li>
+  </ul>
+
+  <h4>Twitter / X</h4>
+  <ul>
+    <li><strong>Strategy:</strong> Builder-in-public. Share metrics, shipping moments, candid reflections.</li>
+    <li><strong>Cadence:</strong> 3 posts/day: 1 build update, 1 insight, 1 engage-with-reply.</li>
+    <li><strong>Communities:</strong> #buildinpublic, indie hackers, Indian tech Twitter (follow 50 accounts, engage daily).</li>
+    <li><strong>M12 target:</strong> 5k followers, consistent 10-15k impressions/post.</li>
+  </ul>
+
+  <h4>Email</h4>
+  <ul>
+    <li><strong>List build:</strong> Every new user opts in during signup (double opt-in). Optional newsletter-only signup via homepage footer.</li>
+    <li><strong>Two lists:</strong> "Weekly hiring intel" (all users, every Friday, 400 words digest), "Pro-only tips" (paid users, every other Wednesday).</li>
+    <li><strong>Lifecycle automations:</strong> Welcome (day 0), first-resume tips (day 3), AI assistant intro (day 7), JD match tool (day 14), upgrade prompt (day 30).</li>
+    <li><strong>Transactional:</strong> Resend once unblocked. Open rate target 40%, click rate 8%.</li>
+    <li><strong>M12 target:</strong> 10k list, 4k active openers.</li>
+  </ul>
+
+  <h4>Product Hunt + launch bursts</h4>
+  <ul>
+    <li><strong>Product Hunt launch:</strong> Month 3, after 100k cumulative visitors. Aim Top 5 Product of the Day.</li>
+    <li><strong>Peerlist launch:</strong> Month 4. Indian audience. Often easier to top-3 than Product Hunt.</li>
+    <li><strong>BetaList:</strong> Month 1. Easy early signal.</li>
+    <li><strong>Hacker News Show HN:</strong> Month 6 or 9 once a notable feature lands (multilingual export, or open-sourcing the templates).</li>
+  </ul>
+
+  <h4>College campus ambassadors</h4>
+  <ul>
+    <li><strong>Goal:</strong> 20 ambassadors across 10 Tier-2 colleges by M6.</li>
+    <li><strong>Deal:</strong> Free Pro for their first year + Rs 500/month stipend + swag + a listing on the ambassador wall of the site.</li>
+    <li><strong>Their work:</strong> 1 campus workshop/month + WhatsApp/Telegram group seeding + collecting testimonial videos.</li>
+    <li><strong>M12 target:</strong> 2k driven sign-ups through ambassadors.</li>
+  </ul>
+
+  <h4>Partnerships</h4>
+  <ul>
+    <li><strong>Target partners:</strong> Placement cells at Tier-2 colleges (share free bulk account); career coaches (affiliate Rs 500/Pro signup); Naukri FastForward (cross-promote); returnship programs (resource partner).</li>
+    <li><strong>Approach:</strong> Warm intros via LinkedIn; never cold sales emails.</li>
+    <li><strong>M12 target:</strong> 15 active partnerships, 3k driven signups.</li>
+  </ul>
+
+  <h4>Paid (deprioritised)</h4>
+  <ul>
+    <li><strong>Why last:</strong> LTV-to-CAC math for Persona 1 (low WTP) makes paid non-viable. Only for Persona 2/3 testing.</li>
+    <li><strong>Google Ads experiment:</strong> Rs 20k/mo in Q3. Target keywords: "resume builder India", "TCS NQT resume". Measure CAC strictly.</li>
+    <li><strong>Meta Ads experiment:</strong> Rs 10k/mo in Q4. Target lookalikes of existing Pro users. Use UGC testimonial videos only.</li>
+    <li><strong>If CAC &gt; LTV:</strong> stop immediately. Do not let paid become a habit.</li>
+  </ul>
+</section>
+
+<!-- 7. CONTENT -->
+<section id="content">
+  <div class="section-label">7</div>
+  <h2>Content engine + editorial calendar</h2>
+  <p class="lead">Content is the product. The blog is not "marketing"; it is the pre-sell for every visitor. Treat every post as the first impression a potential user has of us.</p>
+
+  <h3>Content pipeline structure</h3>
+  <ol>
+    <li><strong>V2 already shipped:</strong> 51 posts over Weeks 1-17 (Apr-Aug 2026). Auto-publishes via Vercel cron.</li>
+    <li><strong>V3 queued:</strong> 100 new post ideas, planned for Sept 2026 to Jun 2027. Allocated 2 posts/week pace (slightly lower than V2 to leave room for pillar pages + seasonal).</li>
+    <li><strong>Pillar pages:</strong> 4 over Year 1. Each 4,000+ words; authoritative, definitive. Built in Q2 after spoke posts drive internal links.</li>
+    <li><strong>Seasonal content:</strong> NQT season (Aug-Oct), campus placement (Sep-Dec), new year career change (Jan), off-cycle hiring (Feb-Apr). Pre-build and publish 2 weeks before peak search.</li>
+    <li><strong>Content upgrades:</strong> Every top-10-post adds a downloadable PDF template ("TCS NQT Resume PDF Template") in exchange for email opt-in.</li>
+  </ol>
+
+  <h3>Quarterly content themes</h3>
+  <table>
+    <thead><tr><th>Quarter</th><th>Theme</th><th>Volume</th><th>Channel focus</th></tr></thead>
+    <tbody>
+      <tr><td><span class="tag q1">Q1: Apr-Jun</span></td><td>Campus placement readiness (NQT, InfyTQ, NTH, campus drives)</td><td>V2 ships; 36 posts live</td><td>SEO + Reddit r/Indian_Academia</td></tr>
+      <tr><td><span class="tag q2">Q2: Jul-Sep</span></td><td>Interview prep + AI tools (STAR, ChatGPT prompts, salary negotiation)</td><td>V2 completes; 51 total. Pillar #1 (ATS) launches</td><td>LinkedIn thought leadership + YouTube tutorials</td></tr>
+      <tr><td><span class="tag q3">Q3: Oct-Dec</span></td><td>Global tech hiring (FAANG, H1B, LinkedIn optimisation, layoff recovery)</td><td>V3 starts; +26 posts. Pillar #2 (Interviews)</td><td>Twitter / X + global SEO</td></tr>
+      <tr><td><span class="tag q4">Q4: Jan-Mar</span></td><td>Career transitions + emerging roles (AI careers, remote, board seats, freelance)</td><td>+26 more. Pillar #3 (Career Change) + #4 (AI Resume)</td><td>Newsletter + partnership co-content</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Content quality bar (ratings card for every post before publish)</h3>
+  <ul>
+    <li>1500-2500 words, featured-snippet answer box up top</li>
+    <li>1 primary keyword, 2-5 secondary, 6+ long-tail</li>
+    <li>Keyword density &lt; 2%</li>
+    <li>5 internal cross-links to related posts</li>
+    <li>3 nofollow external links to authoritative sources</li>
+    <li>5-7 FAQ questions (PAA-harvested)</li>
+    <li>TOC with 6-10 sections</li>
+    <li>Unique OG image via /api/og</li>
+    <li>JSON-LD: Article + FAQPage + Breadcrumb (HowTo for procedural)</li>
+    <li>No em-dashes, no double hyphens, no AI-speak</li>
+  </ul>
+
+  <h3>Content repurposing flow</h3>
+  <ol>
+    <li>Publish blog post Tuesday 10am IST.</li>
+    <li>LinkedIn carousel version (8-10 slides) Tuesday 3pm.</li>
+    <li>Twitter/X thread (10 tweets) Wednesday 10am.</li>
+    <li>YouTube Short (60 sec) Thursday.</li>
+    <li>YouTube long-form tutorial (10-15 min) following Sunday.</li>
+    <li>Newsletter mention in Friday send.</li>
+    <li>Reddit answer with link (when a question comes up organically) any time in next 30 days.</li>
+  </ol>
+</section>
+
+<!-- 8. GROWTH -->
+<section id="growth">
+  <div class="section-label">8</div>
+  <h2>Growth loops</h2>
+  <p class="lead">Three loops that compound traffic back into itself. Each needs to fire once per user session to be healthy.</p>
+
+  <h3>Loop 1 — SEO content compounding</h3>
+  <p>Visitor lands on post → clicks 2-3 RELATED cross-links → saves one to read later → shares on LinkedIn or sends WhatsApp link to a friend → that new visitor repeats. Requires: dense internal linking (done), share buttons (need to verify), OG images (shipped).</p>
+  <div class="progress"><div class="bar" style="width:70%"></div></div>
+  <p style="font-size:13px;color:var(--muted)">70% built. Remaining: prominent share CTAs on every post, newsletter capture mid-post, "email this to yourself" bookmark feature.</p>
+
+  <h3>Loop 2 — Product virality (referral-based)</h3>
+  <p>User builds resume → receives Pro-trial link to share with friends → friend signs up via referral → referrer gets 30 days Pro free → referrer shares more. Requires: referral system (not built), in-app referral prompt, email follow-up post-signup.</p>
+  <div class="progress"><div class="bar" style="width:15%"></div></div>
+  <p style="font-size:13px;color:var(--muted)">15% built. Big Q3 project: ship referrals with unique codes, landing page per code, dashboard for tracking.</p>
+
+  <h3>Loop 3 — UGC + testimonials</h3>
+  <p>User gets interview / offer → we email at the 14-day mark asking about outcomes → 1 in 10 share a testimonial → testimonial becomes Twitter/LinkedIn/site content → new visitors see proof → trust increases → more signups. Requires: outcome tracking, testimonial collection form, public wall page.</p>
+  <div class="progress"><div class="bar" style="width:5%"></div></div>
+  <p style="font-size:13px;color:var(--muted)">5% built. Q2 project: outcome tracking via self-report email + Twitter wall page at /wins.</p>
+
+  <h3>Free-tool flywheel (bonus)</h3>
+  <p>Ship 3 free mini-tools in Year 1, each ranks for its own keyword family:</p>
+  <ul>
+    <li><strong>ATS Score Checker</strong> — paste resume + JD, get score + suggestions. Targets "ATS score checker" (24k/mo). Q2.</li>
+    <li><strong>Resume Keywords Extractor</strong> — paste JD, extract ATS keywords. Targets "resume keyword extractor" (8k/mo). Q3.</li>
+    <li><strong>Cover Letter Generator</strong> — paste resume + JD, generate cover letter. Targets "cover letter generator" (35k/mo). Q4.</li>
+  </ul>
+  <p>Each tool drives signups + creates a new SEO doorway. Each is a week of work. Total: 3 weeks of dev for potentially 50k+/mo additional traffic.</p>
+</section>
+
+<!-- 9. CRO -->
+<section id="cro">
+  <div class="section-label">9</div>
+  <h2>CRO & funnel metrics</h2>
+  <p class="lead">Every visitor moves through 5 stages. Identify the largest drop at each review cycle and fix the single biggest leak. Never optimise more than 2 stages at a time.</p>
+
+  <table>
+    <thead><tr><th>Stage</th><th>Metric</th><th>Current (M0)</th><th>M6 target</th><th>M12 target</th><th>Lever</th></tr></thead>
+    <tbody>
+      <tr><td>1. Visit</td><td>Unique visitors / month</td><td>~240 (extrapolated)</td><td>25k</td><td>100k</td><td>SEO + community</td></tr>
+      <tr><td>2. Engage</td><td>Pages per visitor</td><td>5.5</td><td>4.0 (natural dilution)</td><td>3.5</td><td>RELATED cross-links, OG images</td></tr>
+      <tr><td>3. Start builder</td><td>% visitors who hit /builder</td><td>14%</td><td>25%</td><td>35%</td><td>Homepage CTA, blog in-post CTAs</td></tr>
+      <tr><td>4. Save / sign up</td><td>% of builder users who save</td><td>0% (no Resend)</td><td>20%</td><td>35%</td><td>Resend live, soft auth gate on export</td></tr>
+      <tr><td>5. Pro upgrade</td><td>% of registered users who upgrade</td><td>0% (payments off)</td><td>2%</td><td>5%</td><td>Razorpay + upgrade modal + email nurture</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Funnel fixes by order of impact</h3>
+  <ol>
+    <li><strong>Connect Resend (week 1):</strong> Auth unblocks. Expect 20% of visitors to signup once magic links arrive reliably.</li>
+    <li><strong>Homepage CTA audit (week 2):</strong> Verify "Start Building" above-the-fold on mobile. Track click-through per placement.</li>
+    <li><strong>In-post builder CTA (week 3):</strong> Every blog post ends with dark-CTA block. Already shipped. Verify click-through via Plausible.</li>
+    <li><strong>Post-export save prompt (month 2):</strong> When anonymous user clicks Export, modal offers "Save for later? Free account in 20 sec." Convert intent moment.</li>
+    <li><strong>Razorpay integration (month 3):</strong> Then Pro upgrade funnel. Until payments live, Pro features locked.</li>
+    <li><strong>In-app referral (month 4):</strong> Referral code per user, unlocks 30-day Pro for both.</li>
+  </ol>
+
+  <h3>Landing page tests to run (A/B via Vercel)</h3>
+  <ul>
+    <li>Homepage hero headline: "Free ATS Resume Builder" vs "Beat TCS NQT in 10 minutes" (India-first targeting test).</li>
+    <li>Homepage primary CTA: "Start building free" vs "Build my resume" vs "Try the builder" (verb test).</li>
+    <li>Pricing page hero: "Free forever" vs "Rs 0/mo no credit card" (concrete number test).</li>
+    <li>Sign-up field count: name + email vs email-only (friction test).</li>
+  </ul>
+</section>
+
+<!-- 10. QUARTERS -->
+<section id="quarters">
+  <div class="section-label">10</div>
+  <h2>Quarterly roadmap</h2>
+
+  <div class="quarter-block q1">
+    <div class="hdr">Q1 · Apr-Jun 2026 · Foundation Quarter</div>
+    <div class="body">
+      <p><strong>Theme:</strong> Ship the content engine, unblock auth, establish daily rhythm.</p>
+      <p><strong>Major milestones:</strong></p>
+      <ul>
+        <li>Weeks 1-11 of V2 blog posts publish (33 posts)</li>
+        <li>Resend unblocked + Supabase SMTP wired</li>
+        <li>Razorpay integration started (dev complete by end Q1)</li>
+        <li>LinkedIn personal brand bootstrapped: 200 → 1,000 followers</li>
+        <li>Product Hunt and BetaList launches (soft)</li>
+        <li>First ATS Score Checker free tool shipped by M3</li>
+      </ul>
+      <p><strong>Targets:</strong> 10k monthly visitors, 1k registered users, 50 blog posts ranking (even page 2-3).</p>
+      <p><strong>Don't do:</strong> Start paid ads. Hire help. Over-engineer Pro.</p>
+    </div>
+  </div>
+
+  <div class="quarter-block q2">
+    <div class="hdr">Q2 · Jul-Sep 2026 · Launch Quarter</div>
+    <div class="body">
+      <p><strong>Theme:</strong> Monetise. Product Hunt. Pillar content. Community push.</p>
+      <p><strong>Major milestones:</strong></p>
+      <ul>
+        <li>Weeks 12-17 of V2 complete (full 51 posts live)</li>
+        <li>V3 planning + first 20 posts of Q2 shipped</li>
+        <li>Pillar #1 (ATS definitive guide) + Pillar #2 (Interviews) published</li>
+        <li>Razorpay live; Pro tier opens at Rs 199/mo, Rs 1499/year</li>
+        <li>Product Hunt main launch (target top 5 PotD)</li>
+        <li>Peerlist launch (target top 3 PotD)</li>
+        <li>Referral system ships</li>
+        <li>Free Tool #2 (keyword extractor) ships</li>
+        <li>Reddit engagement campaign: 200 comments, 2-3 viral threads</li>
+      </ul>
+      <p><strong>Targets:</strong> 30k monthly visitors, 4k registered users, 100 Pro subscribers, Rs 30k MRR.</p>
+    </div>
+  </div>
+
+  <div class="quarter-block q3">
+    <div class="hdr">Q3 · Oct-Dec 2026 · Scale Quarter</div>
+    <div class="body">
+      <p><strong>Theme:</strong> Compound. Partnerships. Global expansion.</p>
+      <p><strong>Major milestones:</strong></p>
+      <ul>
+        <li>V3 posts continue; 40+ V3 posts live by end Q3</li>
+        <li>Pillar #3 (Career Change) + #4 (AI Resume) published</li>
+        <li>College ambassadors program launched (target 10 ambassadors)</li>
+        <li>Placement cell partnerships: 5 Tier-2 colleges onboarded</li>
+        <li>US/UK landing pages with currency-appropriate pricing</li>
+        <li>YouTube hits 5k subscribers</li>
+        <li>Newsletter hits 5k opt-ins</li>
+        <li>First paid ads experiment (Rs 20k/mo)</li>
+        <li>Free Tool #3 (cover letter generator) ships</li>
+      </ul>
+      <p><strong>Targets:</strong> 60k monthly visitors, 8k registered users, 250 Pro subscribers, Rs 1.2L MRR.</p>
+    </div>
+  </div>
+
+  <div class="quarter-block q4">
+    <div class="hdr">Q4 · Jan-Mar 2027 · Harvest Quarter</div>
+    <div class="body">
+      <p><strong>Theme:</strong> Double down on what works. Kill what doesn't. Prepare Year 2.</p>
+      <p><strong>Major milestones:</strong></p>
+      <ul>
+        <li>V3 completes (100+ posts live)</li>
+        <li>Annual Pro plan marketing push</li>
+        <li>First user conference (virtual): "Campus Placement 2027"</li>
+        <li>Podcast guest circuit: 6 appearances on India tech / career podcasts</li>
+        <li>Industry research report: "State of Indian IT Hiring 2027" - gated, generates email signups</li>
+        <li>Year 1 retrospective + Year 2 plan</li>
+        <li>Hire first part-time writer if MRR &gt; Rs 3L</li>
+      </ul>
+      <p><strong>Targets:</strong> 100k monthly visitors, 15k registered users, 500 Pro subscribers, Rs 3L MRR.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 11. KPIS -->
+<section id="kpis">
+  <div class="section-label">11</div>
+  <h2>KPI tree + North Star</h2>
+
+  <h3>North Star metric</h3>
+  <div class="callout success">
+    <p><strong>Weekly Active Resume Builders (WARB)</strong> — users who opened the builder and made at least 3 edits in the past 7 days.</p>
+    <p>This is the single metric that predicts both SEO traffic (output of good content) and Pro revenue (output of good product). Tracks true value delivered, not vanity.</p>
+  </div>
+
+  <h3>Supporting metrics tree</h3>
+  <table>
+    <thead><tr><th>Tier</th><th>Metric</th><th>Cadence</th><th>M6 target</th><th>M12 target</th></tr></thead>
+    <tbody>
+      <tr><td>Tier 1 (NSM)</td><td>Weekly Active Resume Builders</td><td>Weekly</td><td>2k</td><td>8k</td></tr>
+      <tr><td>Tier 2 (input)</td><td>Monthly organic visitors</td><td>Weekly</td><td>25k</td><td>100k</td></tr>
+      <tr><td>Tier 2 (input)</td><td>New registered users / month</td><td>Weekly</td><td>800</td><td>3k</td></tr>
+      <tr><td>Tier 2 (input)</td><td>Posts ranking top 10 (GSC)</td><td>Weekly</td><td>30</td><td>60</td></tr>
+      <tr><td>Tier 3 (output)</td><td>Pro subscribers (active)</td><td>Weekly</td><td>100</td><td>500</td></tr>
+      <tr><td>Tier 3 (output)</td><td>MRR (Rs)</td><td>Weekly</td><td>Rs 30k</td><td>Rs 3L</td></tr>
+      <tr><td>Tier 3 (output)</td><td>Churn (monthly)</td><td>Monthly</td><td>&lt; 6%</td><td>&lt; 4%</td></tr>
+      <tr><td>Guardrail</td><td>Customer support inbox (median response)</td><td>Daily</td><td>&lt; 4 hr</td><td>&lt; 2 hr</td></tr>
+      <tr><td>Guardrail</td><td>Core Web Vitals LCP</td><td>Monthly</td><td>&lt; 2.5s</td><td>&lt; 2.0s</td></tr>
+      <tr><td>Guardrail</td><td>Deploy failure rate</td><td>Weekly</td><td>&lt; 5%</td><td>&lt; 2%</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Weekly review ritual (Mondays, 30 min)</h3>
+  <ol>
+    <li>Read top 3 metrics from dashboard (WARB, visits, new users).</li>
+    <li>Scan GSC for new queries in top 10.</li>
+    <li>Review last week's blog posts: traffic in first 7 days.</li>
+    <li>Check Pro funnel: new trials, conversions, churn events.</li>
+    <li>Identify the single biggest leak. Pick one thing to fix this week.</li>
+    <li>Write 100-word memo in shared doc. Future self reads this at quarter review.</li>
+  </ol>
+</section>
+
+<!-- 12. BUDGET -->
+<section id="budget">
+  <div class="section-label">12</div>
+  <h2>Budget, stack, ops</h2>
+
+  <h3>Year 1 budget allocation (solo founder, low-cash, time-rich)</h3>
+  <table>
+    <thead><tr><th>Category</th><th>Monthly (Rs)</th><th>Annual (Rs)</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>Infrastructure (Vercel, Supabase, domain, DNS)</td><td>1,500</td><td>18,000</td><td>Hobby plan fine until M6</td></tr>
+      <tr><td>Email (Resend)</td><td>1,700</td><td>20,400</td><td>Upgrade to Pro at 3k+ sends/mo</td></tr>
+      <tr><td>AI (Groq, OpenAI, Anthropic)</td><td>4,000</td><td>48,000</td><td>Scales with Pro usage</td></tr>
+      <tr><td>Analytics + monitoring (Plausible, Sentry)</td><td>1,200</td><td>14,400</td><td>Sentry team plan at 50k events</td></tr>
+      <tr><td>Tools (Figma, Notion, Claude Pro, etc)</td><td>3,500</td><td>42,000</td><td>Founder productivity stack</td></tr>
+      <tr><td>Paid experiments (Q3-Q4 only, 6 months)</td><td>30,000 × 6 = 1.8L</td><td>1,80,000</td><td>Kill if CAC &gt; LTV</td></tr>
+      <tr><td>Campus ambassadors (swag + stipends)</td><td>5,000</td><td>60,000</td><td>Q3 onwards</td></tr>
+      <tr><td>Video editor (freelance)</td><td>8,000</td><td>96,000</td><td>Q2 onwards</td></tr>
+      <tr><td>YouTube SEO tool (vidIQ)</td><td>900</td><td>10,800</td><td>Q2 onwards</td></tr>
+      <tr><td>Contingency / opportunities</td><td>5,000</td><td>60,000</td><td>Conferences, guest-post fees, design outsource</td></tr>
+      <tr style="background:#eff6ff;font-weight:700"><td>Total</td><td>~31k baseline, ~55k peak</td><td>5,50,000 for Year 1</td><td>~USD 6,500</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Tech + tool stack</h3>
+  <table>
+    <thead><tr><th>Function</th><th>Tool</th><th>Cost/mo</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td>Hosting</td><td>Vercel</td><td>Rs 0 (Hobby)</td><td>Already using</td></tr>
+      <tr><td>Database + Auth</td><td>Supabase</td><td>Rs 0 (Free)</td><td>Already using</td></tr>
+      <tr><td>Email</td><td>Resend</td><td>Rs 0 (free 3k/mo)</td><td>Already starting</td></tr>
+      <tr><td>Analytics (privacy-first)</td><td>Plausible</td><td>Rs 900</td><td>Lighter than GA4, GDPR-safe, own dashboard</td></tr>
+      <tr><td>Error tracking</td><td>Sentry</td><td>Rs 0 dev, scale to Rs 2k/mo</td><td>Already wired</td></tr>
+      <tr><td>SEO research</td><td>Ahrefs Webmaster Tools (free) + Ubersuggest Lite</td><td>Rs 0-900</td><td>Full Ahrefs is Rs 7k, not yet justified</td></tr>
+      <tr><td>Search Console</td><td>GSC + Bing Webmaster</td><td>Rs 0</td><td>Essential, free</td></tr>
+      <tr><td>Social scheduling</td><td>Buffer (free) or manual</td><td>Rs 0</td><td>5 posts/platform justifies free tier</td></tr>
+      <tr><td>Newsletter</td><td>Resend Broadcasts</td><td>Included</td><td>No separate tool needed at this scale</td></tr>
+      <tr><td>AI</td><td>Groq (free tier) + Claude + ChatGPT</td><td>Rs 2k-4k</td><td>Groq for product, Claude for content, ChatGPT for research</td></tr>
+      <tr><td>Design</td><td>Figma (free) + Canva Pro</td><td>Rs 1,200</td><td>Canva for LinkedIn carousels</td></tr>
+      <tr><td>Video editing</td><td>CapCut (free) + freelance editor from Q2</td><td>Rs 0-8k</td><td>Shorts DIY, long-form outsourced</td></tr>
+      <tr><td>Community</td><td>Discord (free)</td><td>Rs 0</td><td>Pro user community + ambassador ops</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Time budget (solo founder, 40 hrs/week capacity)</h3>
+  <ul>
+    <li>Product engineering: 18 hrs/week</li>
+    <li>Content writing + editing: 10 hrs/week</li>
+    <li>Distribution (LinkedIn, Twitter, Reddit, comments): 5 hrs/week</li>
+    <li>Email + newsletter: 2 hrs/week</li>
+    <li>Analytics + planning: 2 hrs/week</li>
+    <li>Customer support: 2 hrs/week</li>
+    <li>Opportunity slack: 1 hr/week</li>
+  </ul>
+  <p>Revisit this allocation monthly. If product shipping slows SEO, rebalance.</p>
+</section>
+
+<!-- 13. RISKS -->
+<section id="risks">
+  <div class="section-label">13</div>
+  <h2>Risks & contingencies</h2>
+
+  <table>
+    <thead><tr><th>Risk</th><th>Likelihood</th><th>Impact</th><th>Mitigation</th></tr></thead>
+    <tbody>
+      <tr><td>Google algorithm update tanks traffic</td><td><span class="tag med">Med</span></td><td><span class="tag high">High</span></td><td>Diversify channels early. Do not build single-pillar reliance on SEO.</td></tr>
+      <tr><td>Resend stays blocked &gt; 1 week</td><td><span class="tag low">Low</span></td><td><span class="tag med">Med</span></td><td>Fallback to SendGrid or Mailgun during block.</td></tr>
+      <tr><td>Zety clones our India content</td><td><span class="tag med">Med</span></td><td><span class="tag med">Med</span></td><td>Keep content dense, specific, frequently updated. Brand from Surya = harder to copy.</td></tr>
+      <tr><td>AI provider API cost explosion</td><td><span class="tag med">Med</span></td><td><span class="tag med">Med</span></td><td>Stay on Groq (free + cheap) primary. Cap AI per-user/day.</td></tr>
+      <tr><td>Supabase / Vercel outage during a launch</td><td><span class="tag low">Low</span></td><td><span class="tag high">High</span></td><td>Migration plan to Cloudflare Pages / Neon ready in a doc; do not execute pre-emptively.</td></tr>
+      <tr><td>Founder burnout (solo)</td><td><span class="tag high">High</span></td><td><span class="tag high">High</span></td><td>One day off/week, hard. Vacation 1 week/quarter. Ask for help in #buildinpublic when stuck.</td></tr>
+      <tr><td>Spam attack on builder (free tier abuse)</td><td><span class="tag med">Med</span></td><td><span class="tag low">Low</span></td><td>Supabase RLS + rate limits already in place.</td></tr>
+      <tr><td>Razorpay KYC / onboarding delay</td><td><span class="tag med">Med</span></td><td><span class="tag med">Med</span></td><td>Apply 4 weeks before Q2 launch. Have Stripe IN as backup.</td></tr>
+      <tr><td>Competitor undercuts pricing aggressively</td><td><span class="tag low">Low</span></td><td><span class="tag med">Med</span></td><td>Compete on value (India content + AI + free core) not on price.</td></tr>
+      <tr><td>Legal: templates or content IP claim</td><td><span class="tag low">Low</span></td><td><span class="tag high">High</span></td><td>All templates original; all content cites sources. Hold a template design audit quarterly.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 14. 90-DAY PLAN -->
+<section id="90day">
+  <div class="section-label">14</div>
+  <h2>First 90 days (week by week)</h2>
+  <p class="lead">Execution detail for Weeks 1-13. After Week 13, re-plan Q2 based on actual data.</p>
+
+  <h3>Weeks 1-4 (Apr 21 to May 18)</h3>
+  <table>
+    <thead><tr><th>Week</th><th>Priority #1</th><th>Priority #2</th><th>Priority #3</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Resend unblock + Supabase SMTP live</td><td>GSC + Bing submit sitemap + IndexNow</td><td>Plausible install + Surya LinkedIn warm-up (5 posts)</td></tr>
+      <tr><td>2</td><td>Verify cron is revealing scheduled posts weekly</td><td>First LinkedIn carousel (repurposed from blog)</td><td>BetaList submission</td></tr>
+      <tr><td>3</td><td>Fix broken funnel: builder to sign up path</td><td>Start Razorpay merchant application</td><td>First Reddit answer thread</td></tr>
+      <tr><td>4</td><td>Ship ATS Score Checker v1 (MVP)</td><td>Newsletter welcome sequence (3 emails)</td><td>First YouTube Short recorded</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Weeks 5-8 (May 19 to Jun 15)</h3>
+  <table>
+    <thead><tr><th>Week</th><th>Priority #1</th><th>Priority #2</th><th>Priority #3</th></tr></thead>
+    <tbody>
+      <tr><td>5</td><td>ATS Score Checker launch (Twitter + LinkedIn)</td><td>Pillar page #1 outline (ATS guide)</td><td>Cold outreach: 10 Tier-2 placement cells</td></tr>
+      <tr><td>6</td><td>Pillar page #1 draft (4k words)</td><td>YouTube long-form: "TCS NQT 2026 application walkthrough"</td><td>First newsletter issue</td></tr>
+      <tr><td>7</td><td>Pillar page #1 publish + internal link from 15 spoke posts</td><td>Reddit week: 10 substantive answers</td><td>First LinkedIn essay</td></tr>
+      <tr><td>8</td><td>Razorpay integration dev starts</td><td>Second YouTube long-form</td><td>Product Hunt teaser page (coming soon)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Weeks 9-13 (Jun 16 to Jul 20)</h3>
+  <table>
+    <thead><tr><th>Week</th><th>Priority #1</th><th>Priority #2</th><th>Priority #3</th></tr></thead>
+    <tbody>
+      <tr><td>9</td><td>Razorpay integration testing</td><td>Content review of V2 posts 1-12 (freshness pass)</td><td>LinkedIn Premium subscribe + Recruiter Lite warmup</td></tr>
+      <tr><td>10</td><td>Peerlist launch prep (assets, screenshots)</td><td>First guest-post outreach (3 high-DR blogs)</td><td>User interview with 5 Pro-curious users</td></tr>
+      <tr><td>11</td><td>Ship Pro tier (Rs 199/mo + Rs 1499/yr)</td><td>Peerlist launch</td><td>Email to waitlist: Pro is live</td></tr>
+      <tr><td>12</td><td>Product Hunt launch day</td><td>Pillar #2 (Interviews) draft</td><td>Twitter: share PH launch results publicly</td></tr>
+      <tr><td>13</td><td>Q1 retrospective + Q2 plan</td><td>Reset weekly metrics dashboard</td><td>Public KPI page: /stats</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout warn">
+    <p><strong>Guardrail:</strong> At end of Week 6, if WARB &lt; 200 or builder signups &lt; 100, pause all non-essential work. Run a 1-week diagnostic to find the #1 funnel break. Do not keep shipping content while the funnel leaks.</p>
+  </div>
+</section>
+
+<footer>
+  <p>Marketing Strategy v1 · Built for ResumeBuildz · Author: Surya L · Last updated: Apr 2026</p>
+  <p>Revise this document at: end of Q1 (Jun), end of Q2 (Sep), end of Q3 (Dec), end of Q4 (Mar).</p>
+</footer>
+
+</div>
+</body>
+</html>
