@@ -496,7 +496,6 @@ export const BLOG_SEO: Record<string, BlogSeo> = {
     primaryKeyword: 'common interview questions',
     secondaryKeywords: ["interview questions and answers","top interview questions 2026","behavioural interview questions"],
     longTailKeywords: ["100 common interview questions with answers","behavioural interview questions STAR","technical interview questions","tricky interview questions","interview questions to expect"],
-    publishAt: '2026-04-21T04:47:00Z',
     faqs: [
       { q: 'Should I memorise answers word-for-word?', a: 'No. Memorise structure (STAR) and your 6 to 8 stories. Variations in wording make you sound human; rehearsed scripts sound robotic.' },
       { q: 'How long should my answers be?', a: '60 to 120 seconds for behavioural, 2 to 4 minutes for technical deep dives. If you are over 2 minutes on a behavioural, you are padding.' },

@@ -21,7 +21,8 @@ export interface BlogPost {
    * immediately on deploy (current behaviour for every post committed
    * before scheduling shipped).
    *
-   * Format: ISO 8601 UTC, e.g. '2026-04-21T04:47:00Z' (09:30 IST).
+   * Format: ISO 8601 UTC, e.g. '2026-04-21T04:47:00Z' (10:17 IST).
+   * Keep scheduled posts in the 09:00-12:00 IST publishing window.
    */
   publishAt?: string;
 }
@@ -391,7 +392,6 @@ export const BLOG_POSTS: BlogPost[] = [
     dateModified: '2026-04-21',
     readingTime: 16,
     featured: true,
-    publishAt: '2026-04-21T04:47:00Z',
   },
   {
     slug: 'resume-skills-list',
