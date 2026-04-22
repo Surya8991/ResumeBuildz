@@ -222,6 +222,158 @@ function cleanBullet(line: string): string {
 }
 
 const CURRENT_RE = /\b(present|current|now|ongoing|to\s*date)\b/i;
+type LanguageProficiency = ResumeData['languages'][number]['proficiency'];
+
+const PROFICIENCY_MAP: Record<string, Exclude<LanguageProficiency, ''>> = {
+  native: 'Native',
+  fluent: 'Fluent',
+  advanced: 'Advanced',
+  intermediate: 'Intermediate',
+  basic: 'Basic',
+  beginner: 'Basic',
+  proficient: 'Advanced',
+  conversational: 'Intermediate',
+  bilingual: 'Fluent',
+  'mother tongue': 'Native',
+  'mother-tongue': 'Native',
+  'full professional': 'Fluent',
+  'professional working': 'Advanced',
+  'limited working': 'Intermediate',
+  elementary: 'Basic',
+};
+
+const SPOKEN_LANGUAGE_ALIASES: { canonical: string; aliases: string[] }[] = [
+  { canonical: 'Mandarin', aliases: ['mandarin chinese', 'mandarin'] },
+  { canonical: 'Portuguese', aliases: ['brazilian portuguese', 'portuguese'] },
+  { canonical: 'English', aliases: ['english'] },
+  { canonical: 'Hindi', aliases: ['hindi'] },
+  { canonical: 'Marathi', aliases: ['marathi'] },
+  { canonical: 'Tamil', aliases: ['tamil'] },
+  { canonical: 'Telugu', aliases: ['telugu'] },
+  { canonical: 'Kannada', aliases: ['kannada'] },
+  { canonical: 'Malayalam', aliases: ['malayalam'] },
+  { canonical: 'Bengali', aliases: ['bengali', 'bangla'] },
+  { canonical: 'Gujarati', aliases: ['gujarati'] },
+  { canonical: 'Punjabi', aliases: ['punjabi'] },
+  { canonical: 'Urdu', aliases: ['urdu'] },
+  { canonical: 'Odia', aliases: ['odia', 'oriya'] },
+  { canonical: 'Assamese', aliases: ['assamese'] },
+  { canonical: 'Sanskrit', aliases: ['sanskrit'] },
+  { canonical: 'Konkani', aliases: ['konkani'] },
+  { canonical: 'Nepali', aliases: ['nepali'] },
+  { canonical: 'French', aliases: ['french'] },
+  { canonical: 'Spanish', aliases: ['spanish'] },
+  { canonical: 'German', aliases: ['german'] },
+  { canonical: 'Chinese', aliases: ['chinese'] },
+  { canonical: 'Arabic', aliases: ['arabic'] },
+  { canonical: 'Japanese', aliases: ['japanese'] },
+  { canonical: 'Korean', aliases: ['korean'] },
+  { canonical: 'Russian', aliases: ['russian'] },
+  { canonical: 'Italian', aliases: ['italian'] },
+  { canonical: 'Dutch', aliases: ['dutch'] },
+  { canonical: 'Swedish', aliases: ['swedish'] },
+  { canonical: 'Norwegian', aliases: ['norwegian'] },
+  { canonical: 'Danish', aliases: ['danish'] },
+  { canonical: 'Finnish', aliases: ['finnish'] },
+  { canonical: 'Turkish', aliases: ['turkish'] },
+  { canonical: 'Greek', aliases: ['greek'] },
+  { canonical: 'Thai', aliases: ['thai'] },
+  { canonical: 'Vietnamese', aliases: ['vietnamese'] },
+  { canonical: 'Indonesian', aliases: ['indonesian', 'bahasa indonesia'] },
+  { canonical: 'Malay', aliases: ['malay', 'bahasa malaysia'] },
+  { canonical: 'Sinhala', aliases: ['sinhala', 'sinhalese'] },
+];
+
+const LANGUAGE_ALIAS_PATTERNS = SPOKEN_LANGUAGE_ALIASES.flatMap(({ canonical, aliases }) =>
+  aliases.map((alias) => ({
+    canonical,
+    alias,
+    re: new RegExp(`(^|[^A-Za-z])(${escapeRegExp(alias).replace(/\\ /g, '\\s+')})(?=$|[^A-Za-z])`, 'gi'),
+  })),
+).sort((a, b) => b.alias.length - a.alias.length);
+
+const PROFICIENCY_RE = new RegExp(
+  `\\b(${Object.keys(PROFICIENCY_MAP).map(escapeRegExp).join('|')})\\b`,
+  'i',
+);
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function languageProficiencyFrom(text: string): LanguageProficiency {
+  const match = text.match(PROFICIENCY_RE);
+  return match ? PROFICIENCY_MAP[match[1].toLowerCase()] || '' : '';
+}
+
+function cleanLanguageName(text: string): string {
+  return text
+    .replace(/\b(?:languages?|known|proficiency|skills|speak|read|write|spoken|written)\b/gi, ' ')
+    .replace(PROFICIENCY_RE, ' ')
+    .replace(/^[\s:()[\]\-–—]+|[\s:()[\]\-–—]+$/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function findKnownLanguages(text: string): { canonical: string; index: number; end: number }[] {
+  const matches: { canonical: string; index: number; end: number }[] = [];
+  for (const { canonical, re } of LANGUAGE_ALIAS_PATTERNS) {
+    re.lastIndex = 0;
+    let match: RegExpExecArray | null;
+    while ((match = re.exec(text)) !== null) {
+      const index = match.index + match[1].length;
+      const end = index + match[2].length;
+      if (!matches.some((item) => index < item.end && end > item.index)) {
+        matches.push({ canonical, index, end });
+      }
+    }
+  }
+  return matches.sort((a, b) => a.index - b.index);
+}
+
+export function parseLanguageLines(lines: string[]): ResumeData['languages'] {
+  const languages = new Map<string, { name: string; proficiency: LanguageProficiency }>();
+  const chunks = lines
+    .flatMap((line) =>
+      cleanBullet(line)
+        .replace(/^(?:languages?|language\s*(?:known|proficiency|skills))\s*[:\-–—]\s*/i, '')
+        .split(/[,;•|/]+|\s+(?:and|&)\s+/i),
+    )
+    .map((item) => item.trim())
+    .filter((item) => item.length > 1 && item.length < 120);
+
+  const addLanguage = (name: string, proficiency: LanguageProficiency) => {
+    const cleanedName = cleanLanguageName(name);
+    if (!cleanedName || cleanedName.length > 40) return;
+    const key = cleanedName.toLowerCase();
+    const existing = languages.get(key);
+    languages.set(key, {
+      name: existing?.name || cleanedName,
+      proficiency: existing?.proficiency || proficiency,
+    });
+  };
+
+  for (const chunk of chunks) {
+    const known = findKnownLanguages(chunk);
+    if (known.length > 0) {
+      known.forEach((match, index) => {
+        const next = known[index + 1];
+        const segment = chunk.slice(match.index, next?.index ?? chunk.length);
+        addLanguage(match.canonical, languageProficiencyFrom(segment));
+      });
+      continue;
+    }
+
+    const m = chunk.match(/^(.+?)\s*[(\-–:]\s*(.+?)\)?\s*$/);
+    addLanguage(m ? m[1] : chunk, languageProficiencyFrom(m?.[2] || chunk));
+  }
+
+  return Array.from(languages.values()).map((language) => ({
+    id: generateId(),
+    name: language.name,
+    proficiency: language.proficiency,
+  }));
+}
 
 function parseDateRange(text: string): { start: string; end: string; current: boolean } {
   const match = text.match(DATE_RANGE_RE);
@@ -405,15 +557,7 @@ function parseResumeText(rawText: string): ResumeData {
   }
 
   if (sections.languages) {
-    const profMap: Record<string, 'Native' | 'Fluent' | 'Advanced' | 'Intermediate' | 'Basic'> = {
-      native: 'Native', fluent: 'Fluent', advanced: 'Advanced', intermediate: 'Intermediate',
-      basic: 'Basic', beginner: 'Basic', proficient: 'Advanced', conversational: 'Intermediate',
-    };
-    const all = sections.languages.flatMap(l => cleanBullet(l).split(/[,;•|]/).map(s => s.trim())).filter(l => l.length > 1 && l.length < 50);
-    data.languages = all.map(l => {
-      const m = l.match(/^(.+?)\s*[(\-–:]\s*(.+?)\)?\s*$/);
-      return { id: generateId(), name: m ? m[1].trim() : l, proficiency: profMap[(m?.[2] || '').trim().toLowerCase()] || '' };
-    });
+    data.languages = parseLanguageLines(sections.languages);
   }
 
   return data;

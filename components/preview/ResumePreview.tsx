@@ -4,6 +4,7 @@ import { createElement, forwardRef, memo, useId, useMemo, useState, useCallback 
 import { useResumeStore } from '@/store/useResumeStore';
 import { getTemplateComponent } from '@/components/templates';
 import { DEFAULT_STYLE_OPTIONS, FONT_OPTIONS, safePhotoSrc, safePrimaryColor } from '@/components/templates/TemplateWrapper';
+import type { ResumeData } from '@/types/resume';
 
 // Whitelist of allowed font families to prevent CSS injection
 const ALLOWED_FONTS = new Set(FONT_OPTIONS.map(f => f.value));
@@ -46,8 +47,13 @@ function sanitizeCSS(css: string): string {
     .replace(/\bbehavior\s*:/gi, 'x-behavior:');
 }
 
-const ResumePreview = forwardRef<HTMLDivElement>((_, ref) => {
-  const { resumeData, selectedTemplate, primaryColor, styleOptions } = useResumeStore();
+interface ResumePreviewProps {
+  data?: ResumeData;
+}
+
+const ResumePreview = forwardRef<HTMLDivElement, ResumePreviewProps>(({ data }, ref) => {
+  const { resumeData: storeResumeData, selectedTemplate, primaryColor, styleOptions } = useResumeStore();
+  const resumeData = data || storeResumeData;
   const TemplateComponent = getTemplateComponent(selectedTemplate);
   const scopeId = useId().replace(/:/g, '');
 

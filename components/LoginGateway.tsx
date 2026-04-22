@@ -49,7 +49,12 @@ export function LoginGatewayProvider({ children }: { children: React.ReactNode }
     <GatewayContext.Provider value={{ openGateway }}>
       {children}
       {open && !loading && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-in fade-in duration-200">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="gateway-title"
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-in fade-in duration-200"
+        >
           {/* Backdrop */}
           <div
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
@@ -61,62 +66,61 @@ export function LoginGatewayProvider({ children }: { children: React.ReactNode }
             {/* Close button */}
             <button
               onClick={() => setOpen(false)}
-              className="absolute top-4 right-4 p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors"
+              className="absolute top-4 right-4 h-11 w-11 flex items-center justify-center text-gray-500 hover:text-gray-800 rounded-lg hover:bg-gray-100 transition-colors"
               aria-label="Close"
             >
               <X className="h-5 w-5" />
             </button>
 
             {/* Icon */}
-            <div className="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-blue-50 text-blue-500 mb-4">
-              <Sparkles className="h-6 w-6" />
+            <div className="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-emerald-50 text-emerald-600 mb-4">
+              <ArrowRight className="h-6 w-6" />
             </div>
 
             {/* Title */}
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              Sign in for the best experience
+            <h2 id="gateway-title" className="text-2xl font-bold text-gray-900 mb-2">
+              Start building. No sign-up required.
             </h2>
-            <p className="text-sm text-gray-500 mb-6">
-              Create a free account to save your progress, sync across devices, and unlock Pro features when they launch.
+            <p className="text-sm text-gray-600 mb-6">
+              The builder works fully anonymous. Your resume stays on this device. Sign in only if you want to save across devices or unlock Pro later.
             </p>
 
-            {/* Benefits */}
-            <ul className="space-y-3 mb-6">
-              <li className="flex items-start gap-3 text-sm">
-                <Cloud className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
-                <span className="text-gray-700">Save resumes across devices (Pro feature)</span>
-              </li>
-              <li className="flex items-start gap-3 text-sm">
-                <Sparkles className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
-                <span className="text-gray-700">Unlimited AI rewrites with Pro</span>
-              </li>
-              <li className="flex items-start gap-3 text-sm">
-                <Shield className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
-                <span className="text-gray-700">Your data still stays private and secure</span>
-              </li>
-            </ul>
+            {/* Primary CTA: guest */}
+            <Link
+              href={destination}
+              onClick={() => setOpen(false)}
+              className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold transition-colors mb-3"
+            >
+              Continue free, no account <ArrowRight className="h-4 w-4" />
+            </Link>
 
-            {/* CTAs */}
-            <div className="space-y-2">
-              <Link
-                href={`/login?next=${encodeURIComponent(destination)}`}
-                onClick={() => setOpen(false)}
-                className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-sm font-semibold transition-colors"
-              >
-                <User className="h-4 w-4" /> Sign in or Sign up
-              </Link>
-              <Link
-                href={destination}
-                onClick={() => setOpen(false)}
-                className="flex items-center justify-center gap-2 w-full px-4 py-3 border border-gray-200 hover:bg-gray-50 text-gray-700 rounded-xl text-sm font-semibold transition-colors"
-              >
-                Continue as Guest <ArrowRight className="h-4 w-4" />
-              </Link>
+            {/* Secondary CTA: sign in */}
+            <Link
+              href={`/login?next=${encodeURIComponent(destination)}`}
+              onClick={() => setOpen(false)}
+              className="flex items-center justify-center gap-2 w-full px-4 py-3 border border-gray-200 hover:bg-gray-50 text-gray-700 rounded-xl text-sm font-semibold transition-colors mb-5"
+            >
+              <User className="h-4 w-4" /> Sign in to save across devices
+            </Link>
+
+            {/* Benefits of signing in (optional reveal) */}
+            <div className="bg-gray-50 rounded-xl p-4">
+              <p className="text-xs font-semibold text-gray-700 uppercase tracking-wide mb-2">What you get when signed in</p>
+              <ul className="space-y-2">
+                <li className="flex items-start gap-2 text-xs text-gray-700">
+                  <Cloud className="h-3.5 w-3.5 text-gray-500 mt-0.5 shrink-0" />
+                  <span>Cloud save, sync across phone + laptop</span>
+                </li>
+                <li className="flex items-start gap-2 text-xs text-gray-700">
+                  <Sparkles className="h-3.5 w-3.5 text-gray-500 mt-0.5 shrink-0" />
+                  <span>Unlimited AI rewrites on Pro</span>
+                </li>
+                <li className="flex items-start gap-2 text-xs text-gray-700">
+                  <Shield className="h-3.5 w-3.5 text-gray-500 mt-0.5 shrink-0" />
+                  <span>Your data is yours. No selling, no tracking beyond analytics.</span>
+                </li>
+              </ul>
             </div>
-
-            <p className="text-xs text-gray-400 text-center mt-4">
-              No account? No problem. The free tier works without sign-in.
-            </p>
           </div>
         </div>
       )}

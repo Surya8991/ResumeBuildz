@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TodoWeek - Deferred audit items from 6-role review</title>
+<style>
+  :root { --ink:#0b1220; --muted:#64748b; --border:#e5e7eb; --bg:#f8fafc; --brand:#2563eb; --danger:#dc2626; --warn:#f59e0b; --ok:#10b981; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:var(--ink);line-height:1.55;background:var(--bg)}
+  .wrap{max-width:1000px;margin:0 auto;padding:32px 20px 80px}
+  header{background:linear-gradient(135deg,#0f172a 0%,#1e40af 100%);color:#fff;padding:36px 32px;border-radius:12px;margin-bottom:24px}
+  header h1{font-size:28px;margin:0 0 4px;font-weight:800}
+  header .sub{opacity:0.85;font-size:14px;margin:0}
+  .sum{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+  @media(max-width:700px){.sum{grid-template-columns:1fr}}
+  .sumcard{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px 18px}
+  .sumcard .num{font-size:26px;font-weight:800;line-height:1}
+  .sumcard .lbl{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+  section{background:#fff;border:1px solid var(--border);border-radius:12px;padding:22px 26px;margin-bottom:18px}
+  section h2{margin:0 0 6px;font-size:20px}
+  section .meta{color:var(--muted);font-size:13px;margin-bottom:14px}
+  .item{border-left:3px solid var(--border);padding:12px 16px;margin-bottom:12px;background:#fafbfc;border-radius:0 8px 8px 0}
+  .item.p0{border-left-color:var(--danger)}
+  .item.p1{border-left-color:var(--warn)}
+  .item.p2{border-left-color:var(--brand)}
+  .item.p3{border-left-color:var(--muted)}
+  .item h3{margin:0 0 4px;font-size:15px;font-weight:700}
+  .item .tags{font-size:11px;color:var(--muted);margin-bottom:8px}
+  .item .tag{display:inline-block;background:#eef2ff;color:#3730a3;padding:2px 8px;border-radius:999px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-right:4px}
+  .item .tag.p0{background:#fee2e2;color:#991b1b}
+  .item .tag.p1{background:#fef3c7;color:#92400e}
+  .item .tag.p2{background:#dbeafe;color:#1e40af}
+  .item .tag.p3{background:#f1f5f9;color:#475569}
+  .item .tag.src{background:#f3e8ff;color:#6b21a8}
+  .item p{margin:0 0 6px;font-size:14px}
+  .item .why{font-size:13px;color:var(--muted)}
+  .item .eff{display:inline-block;margin-left:6px;font-size:11px;color:var(--muted)}
+  .done{background:#ecfdf5;border:1px solid #a7f3d0;padding:18px 22px;border-radius:10px;margin-bottom:24px}
+  .done h3{margin:0 0 8px;color:#065f46;font-size:16px}
+  .done ul{margin:0;padding-left:18px}
+  .done li{margin-bottom:4px;font-size:14px;color:#065f46}
+  footer{text-align:center;color:var(--muted);font-size:12px;margin-top:40px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>TodoWeek</h1>
+  <p class="sub">Deferred items from the 6-role audit (SEO / Tech / Security / Product / QA / CMO). Ship this week. Ordered by priority × effort.</p>
+</header>
+
+<div class="sum">
+  <div class="sumcard"><div class="num">14</div><div class="lbl">Open items</div></div>
+  <div class="sumcard"><div class="num" style="color:var(--danger)">5</div><div class="lbl">High priority (P0 / P1)</div></div>
+  <div class="sumcard"><div class="num" style="color:var(--ok)">4</div><div class="lbl">Already fixed this session</div></div>
+</div>
+
+<div class="done">
+  <h3>✓ Fixed this session (commit pending)</h3>
+  <ul>
+    <li>Removed fake avatars (Sarah Mitchell et al) from homepage hero → replaced with honest founder card (Surya L + tagline)</li>
+    <li>Removed fake "230+ candidates signed in today" counter from /login</li>
+    <li>LoginGateway: flipped guest path to primary CTA, added <code>role="dialog"</code> + <code>aria-modal</code> + <code>aria-labelledby</code>, enlarged close button hit target to 44×44</li>
+    <li>Cleaned unused <code>Users</code> + <code>Star</code> lucide imports</li>
+  </ul>
+</div>
+
+<!-- SECURITY -->
+<section>
+  <h2>Security</h2>
+  <p class="meta">Findings from Head of Security audit. Grade: C+ → B+ after these.</p>
+
+  <div class="item p0">
+    <h3>Drop 'unsafe-eval' from CSP</h3>
+    <div class="tags"><span class="tag p0">P0</span><span class="tag src">Security</span><span class="tag src">Tech</span><span class="eff">~2 hrs</span></div>
+    <p>Remove <code>lib/lazyStripe.ts</code> (the <code>new Function(...)</code> dodge). Make <code>stripe</code> a real dependency in <code>package.json</code>. Replace <code>loadStripeNode()</code> with direct <code>await import('stripe')</code>. Update CSP in <code>next.config.ts</code> to drop <code>'unsafe-eval'</code> from <code>script-src</code>.</p>
+    <p class="why">Blocks the single biggest XSS amplifier. Do before Razorpay goes live (touches Stripe webhook / checkout files).</p>
+  </div>
+
+  <div class="item p0">
+    <h3>Wire Stripe webhook handlers (currently TODO stubs)</h3>
+    <div class="tags"><span class="tag p0">P0</span><span class="tag src">Security</span><span class="eff">~4 hrs</span></div>
+    <p>In <code>app/api/stripe/webhook/route.ts</code>: implement <code>checkout.session.completed</code>, <code>customer.subscription.updated/deleted</code>, <code>invoice.payment_failed</code>. Add idempotency via Stripe event ID stored in Supabase (unique constraint). Returns 200 on duplicate.</p>
+    <p class="why">Must ship before Razorpay / Stripe live. Users who pay today would never get upgraded because handlers silently no-op.</p>
+  </div>
+
+  <div class="item p1">
+    <h3>Replace in-memory rate limiter with Upstash Redis</h3>
+    <div class="tags"><span class="tag p1">P1</span><span class="tag src">Security</span><span class="eff">~3 hrs</span></div>
+    <p>Current <code>lib/rateLimit.ts</code> uses module-level <code>Map</code>, useless across Vercel cold starts. Swap for <code>@upstash/ratelimit</code> + Upstash REST Redis (free tier fine). Apply to <code>/api/checkout</code>, <code>/auth/callback</code>, <code>/api/og</code>.</p>
+    <p class="why">In prod today, attackers can bypass rate limits by hitting cold instances. Real DDoS / brute-force vector.</p>
+  </div>
+
+  <div class="item p1">
+    <h3>Checkout: derive userId + email from server session, not request body</h3>
+    <div class="tags"><span class="tag p1">P1</span><span class="tag src">Security</span><span class="eff">~30 min</span></div>
+    <p><code>app/api/checkout/route.ts</code> currently trusts body <code>userId</code> + <code>email</code>. Replace with <code>createServerClient</code> + <code>supabase.auth.getUser()</code>. Reject unauthenticated requests with 401.</p>
+    <p class="why">Prevents attackers from creating checkout sessions tagged with victim userId.</p>
+  </div>
+
+  <div class="item p1">
+    <h3>Commit RLS migrations to <code>supabase/sql/</code></h3>
+    <div class="tags"><span class="tag p1">P1</span><span class="tag src">Security</span><span class="eff">~1 hr</span></div>
+    <p>Only <code>welcome_email_trigger.sql</code> is in the repo today. Export RLS policies for <code>profiles</code>, <code>resumes</code>, <code>contact_messages</code> using <code>supabase db dump --schema public</code>. Verifies that RLS is actually enforced, not assumed.</p>
+    <p class="why">Auditability + disaster recovery. A missing RLS policy on <code>profiles.plan</code> would let any auth client set <code>plan='pro'</code> for free.</p>
+  </div>
+
+  <div class="item p2">
+    <h3>CORS: drop localhost from prod allowlist in Edge Functions</h3>
+    <div class="tags"><span class="tag p2">P2</span><span class="tag src">Security</span><span class="eff">~15 min</span></div>
+    <p>In <code>supabase/functions/*/index.ts</code>, current allowlist includes <code>http://localhost:3000</code>. Branch by <code>Deno.env.get('SUPABASE_PROJECT_REF')</code> or hard-code prod allowlist, use <code>.env.local</code> for dev.</p>
+  </div>
+
+  <div class="item p2">
+    <h3>Tighten CSP <code>img-src</code></h3>
+    <div class="tags"><span class="tag p2">P2</span><span class="tag src">Security</span><span class="eff">~15 min</span></div>
+    <p>Replace <code>img-src 'self' data: blob: https:</code> with explicit list: <code>'self' data: blob: https://*.supabase.co https://resumebuildz.tech</code>. Blocks image-tag-based data exfiltration.</p>
+  </div>
+</section>
+
+<!-- SEO -->
+<section>
+  <h2>SEO</h2>
+  <p class="meta">Findings from Head of SEO audit. Grade: C+ → B+ after these.</p>
+
+  <div class="item p0">
+    <h3>Remove <code>/blog?cat=</code> query URLs from sitemap</h3>
+    <div class="tags"><span class="tag p0">P0</span><span class="tag src">SEO</span><span class="eff">~30 min</span></div>
+    <p>In <code>app/sitemap.ts</code>, delete <code>blogFilterEntries</code> (lines 48-53). Instead, create 20 real category hub pages at <code>app/blog/category/[slug]/page.tsx</code> with unique <code>&lt;h1&gt;</code> + canonical + description sourced from <code>lib/blogCategories.ts</code>.</p>
+    <p class="why">Query-string URLs in sitemap dilute crawl budget + trigger duplicate-content filter. Real routes rank; <code>?cat=</code> URLs do not.</p>
+  </div>
+
+  <div class="item p1">
+    <h3>Enable image optimisation for marketing/blog routes only</h3>
+    <div class="tags"><span class="tag p1">P1</span><span class="tag src">SEO</span><span class="tag src">Tech</span><span class="eff">~1 hr</span></div>
+    <p>Remove <code>images.unoptimized: true</code> from <code>next.config.ts</code>. Add <code>unoptimized</code> prop on individual <code>&lt;Image&gt;</code>s in resume templates + builder preview. Migrate blog/marketing to <code>next/image</code> for LCP win.</p>
+  </div>
+
+  <div class="item p1">
+    <h3>Migrate blog post URLs from <code>/&lt;slug&gt;</code> to <code>/blog/&lt;slug&gt;</code></h3>
+    <div class="tags"><span class="tag p1">P1</span><span class="tag src">SEO</span><span class="eff">~3 hrs + 301s</span></div>
+    <p>Current URLs collide namespace with future marketing routes. Move post pages under <code>app/blog/[slug]/page.tsx</code>. Add 301 redirects in <code>next.config.ts</code> from old to new. Update every internal <code>RELATED</code> link + <code>Link href</code> in codebase.</p>
+    <p class="why">Architectural SEO debt. Easier to fix now (at 51 posts) than later (at 150).</p>
+  </div>
+
+  <div class="item p1">
+    <h3>Add <code>noindex</code> meta to /login, /account, /forgot-password</h3>
+    <div class="tags"><span class="tag p1">P1</span><span class="tag src">SEO</span><span class="eff">~15 min</span></div>
+    <p>Robots disallow alone does not prevent indexing if backlinks exist. Add <code>export const metadata = { robots: { index: false, follow: false } }</code> to these routes.</p>
+  </div>
+
+  <div class="item p2">
+    <h3>Fix Article vs BlogPosting schema mismatch</h3>
+    <div class="tags"><span class="tag p2">P2</span><span class="tag src">SEO</span><span class="eff">~20 min</span></div>
+    <p>Blog hub uses <code>@type: Blog</code>; individual posts use <code>Article</code>. Change <code>articleSchema()</code> to emit <code>BlogPosting</code> for entity linkage.</p>
+  </div>
+
+  <div class="item p2">
+    <h3>Reconcile publisher logo paths</h3>
+    <div class="tags"><span class="tag p2">P2</span><span class="tag src">SEO</span><span class="eff">~10 min</span></div>
+    <p><code>app/layout.tsx</code> Organization uses one logo path; <code>lib/articleSchema.ts</code> PUBLISHER uses another. Align both to <code>/icon-512.svg</code>.</p>
+  </div>
+
+  <div class="item p2">
+    <h3>Add ItemList schema to <code>/blog</code> hub</h3>
+    <div class="tags"><span class="tag p2">P2</span><span class="tag src">SEO</span><span class="eff">~30 min</span></div>
+    <p>51 posts listed but no <code>ItemList</code> JSON-LD. Rich result opportunity.</p>
+  </div>
+</section>
+
+<!-- TECH -->
+<section>
+  <h2>Tech / Performance</h2>
+  <p class="meta">Findings from Senior EM audit. Grade: C+ → B+ after these.</p>
+
+  <div class="item p0">
+    <h3>Add <code>middleware.ts</code> for Supabase SSR auth refresh</h3>
+    <div class="tags"><span class="tag p0">P0</span><span class="tag src">Tech</span><span class="eff">~45 min</span></div>
+    <p><code>@supabase/ssr</code> is in package.json but no middleware exists. Follow the pattern at <a href="https://supabase.com/docs/guides/auth/server-side/nextjs">supabase.com/docs/guides/auth/server-side/nextjs</a>. Refreshes session cookies on every request.</p>
+    <p class="why">Users appear intermittently signed-out on navigation today. Cause of churn post-login.</p>
+  </div>
+
+  <div class="item p0">
+    <h3>Verify / pin <code>lucide-react</code> version</h3>
+    <div class="tags"><span class="tag p0">P0</span><span class="tag src">Tech</span><span class="eff">~15 min</span></div>
+    <p>package.json shows <code>^1.8.0</code> — likely wrong (current legit is 0.5xx). Confirm via <code>npm view lucide-react versions</code>. If wrong major, pin to latest 0.x. If correct (new major), verify tree-shaking still works on 168 importers.</p>
+  </div>
+
+  <div class="item p1">
+    <h3>Code-split <code>app/builder/Content.tsx</code></h3>
+    <div class="tags"><span class="tag p1">P1</span><span class="tag src">Tech</span><span class="eff">~4 hrs</span></div>
+    <p>1,243-line monolith imports ATSScoreChecker, JDTailor, AISuggestions, VersionHistoryDialog, LinkedInImportModal, CommandPalette, react-to-print, docx, file-saver statically. Dynamic-import all non-critical components via <code>next/dynamic</code>. Pattern already used in <code>app/account/page.tsx</code>.</p>
+    <p class="why">LCP on /builder is hurt by shipping all feature code to first paint. Meaningful CWV win.</p>
+  </div>
+
+  <div class="item p1">
+    <h3>Sentry config missing</h3>
+    <div class="tags"><span class="tag p1">P1</span><span class="tag src">Tech</span><span class="eff">~30 min</span></div>
+    <p>Sentry listed in package.json but no <code>sentry.{client,server,edge}.config.ts</code> or <code>instrumentation.ts</code>. Run <code>npx @sentry/wizard -i nextjs</code>. Set DSN in Vercel env.</p>
+    <p class="why">Production blind to errors right now. The login 33-views problem would have been diagnosable in 30 seconds if Sentry were wired.</p>
+  </div>
+
+  <div class="item p2">
+    <h3>Add <code>loading.tsx</code> to /builder, /blog, /account</h3>
+    <div class="tags"><span class="tag p2">P2</span><span class="tag src">Tech</span><span class="eff">~1 hr</span></div>
+    <p>Zero <code>loading.tsx</code> files today. Route transitions blank. Add minimal skeleton loaders.</p>
+  </div>
+
+  <div class="item p2">
+    <h3>Add <code>error.tsx</code> to marketing, blog, account, auth segments</h3>
+    <div class="tags"><span class="tag p2">P2</span><span class="tag src">Tech</span><span class="eff">~45 min</span></div>
+    <p>Only <code>app/builder/error.tsx</code> + global-error exist. Segment-level boundaries prevent whole-page blanks.</p>
+  </div>
+
+  <div class="item p3">
+    <h3>Clean up <code>scripts/_*.mjs</code> migration scripts</h3>
+    <div class="tags"><span class="tag p3">P3</span><span class="tag src">Tech</span><span class="eff">~10 min</span></div>
+    <p>_addExternalRefs, _backfillKeywords, _patchPageKeywords, _retrofitRelated, _mergeStaging, _addOgImages, _addHowToSchema, _staging-*.txt — all one-shots, already run. Move to <code>scripts/archive/</code> or delete.</p>
+  </div>
+
+  <div class="item p3">
+    <h3>Consolidate <code>ci.yml</code> + <code>check.yml</code></h3>
+    <div class="tags"><span class="tag p3">P3</span><span class="tag src">Tech</span><span class="eff">~20 min</span></div>
+    <p>Two workflows do nearly identical lint+tsc+build. Merge into one.</p>
+  </div>
+</section>
+
+<!-- PRODUCT + CMO -->
+<section>
+  <h2>Product / CMO</h2>
+  <p class="meta">Merged Product + CMO findings. Biggest conversion wins live here.</p>
+
+  <div class="item p0">
+    <h3>India-first hero variant A/B test</h3>
+    <div class="tags"><span class="tag p0">P0</span><span class="tag src">CMO</span><span class="eff">~1 hr</span></div>
+    <p>Current H1 is generic. 36% of traffic is India. A/B test subhead "Built for TCS NQT, InfyTQ, Naukri and the Indian campus filter" when <code>?utm_source=india</code> or via Vercel Edge Config split.</p>
+  </div>
+
+  <div class="item p0">
+    <h3>Empty-state onboarding on /builder</h3>
+    <div class="tags"><span class="tag p0">P0</span><span class="tag src">Product</span><span class="eff">~2 hrs</span></div>
+    <p>First-time users land on empty form with just a toast. Add above-fold "Load sample resume" button + 3-second welcome sequence highlighting tabs + first field.</p>
+  </div>
+
+  <div class="item p1">
+    <h3>Post-export save prompt</h3>
+    <div class="tags"><span class="tag p1">P1</span><span class="tag src">Product</span><span class="eff">~1 hr</span></div>
+    <p>Anonymous user clicks Export → modal: "Save this resume? Create a free account in 20 seconds." Highest-intent moment.</p>
+  </div>
+
+  <div class="item p1">
+    <h3>Blog post → builder CTA audit</h3>
+    <div class="tags"><span class="tag p1">P1</span><span class="tag src">CMO</span><span class="eff">~30 min</span></div>
+    <p>Verify every post has the dark-CTA block at bottom (shipped) + add one mid-post CTA after section 3 for long posts. Track click-through in Plausible.</p>
+  </div>
+
+  <div class="item p1">
+    <h3>Inline newsletter capture in blog</h3>
+    <div class="tags"><span class="tag p1">P1</span><span class="tag src">CMO</span><span class="eff">~2 hrs</span></div>
+    <p>Add capture form after intro on every post, with content-upgrade offer (free TCS NQT PDF template). Unblock Resend first.</p>
+  </div>
+
+  <div class="item p1">
+    <h3>PDF export usage counter on builder surface</h3>
+    <div class="tags"><span class="tag p1">P1</span><span class="tag src">Product</span><span class="eff">~45 min</span></div>
+    <p>Currently users don't see export quota until modal pops on zero. Show "3 of 5 daily exports left" on workspace. Prevents surprise-paywall at minute 15.</p>
+  </div>
+
+  <div class="item p2">
+    <h3>Social + community links in footer</h3>
+    <div class="tags"><span class="tag p2">P2</span><span class="tag src">CMO</span><span class="eff">~20 min</span></div>
+    <p>Add Twitter/X, Discord (when live), YouTube, Instagram links. Currently only GitHub + LinkedIn personal.</p>
+  </div>
+
+  <div class="item p2">
+    <h3>"Start with your situation" persona router</h3>
+    <div class="tags"><span class="tag p2">P2</span><span class="tag src">CMO</span><span class="eff">~2 hrs</span></div>
+    <p>New homepage section: 6 tiles (Fresher / TCS NQT, Lateral, Layoff, Career gap, Career change, Global). Each deep-links to best blog post + pre-fills builder context.</p>
+  </div>
+</section>
+
+<!-- QA -->
+<section>
+  <h2>QA / Accessibility</h2>
+  <p class="meta">Findings from Lead QA audit. Grade: C- → B after these.</p>
+
+  <div class="item p0">
+    <h3>Replace <code>window.alert()</code> with inline <code>&lt;FieldError&gt;</code> in forms</h3>
+    <div class="tags"><span class="tag p0">P0</span><span class="tag src">QA</span><span class="eff">~3 hrs</span></div>
+    <p><code>PersonalInfoForm.tsx</code>, <code>CoverLetterForm.tsx</code> use native alerts. Build shared <code>&lt;FieldError role="alert" id={fieldId}&gt;</code> wired via <code>aria-describedby</code> + <code>aria-invalid</code> on input. Add ESLint rule <code>no-restricted-globals: ['alert']</code>.</p>
+  </div>
+
+  <div class="item p0">
+    <h3>Modal primitive with role + focus trap</h3>
+    <div class="tags"><span class="tag p0">P0</span><span class="tag src">QA</span><span class="eff">~3 hrs</span></div>
+    <p>LoginGateway already fixed. Apply same pattern to <code>UpgradeModal</code>, <code>VersionHistoryDialog</code>, <code>ShareResumeDialog</code>, <code>LinkedInImportModal</code>. Build shared <code>&lt;Modal&gt;</code> component; migrate all 5 to use it.</p>
+  </div>
+
+  <div class="item p1">
+    <h3>Playwright builder-flow coverage</h3>
+    <div class="tags"><span class="tag p1">P1</span><span class="tag src">QA</span><span class="eff">~6 hrs</span></div>
+    <p>Smoke suite only asserts /builder returns 200. Add 10 tests: fill form, switch template, save, export PDF, export DOCX, login → sync, JD tailor, ATS score, AI rewrite, cover letter. Gate in CI.</p>
+  </div>
+
+  <div class="item p1">
+    <h3>Add @axe-core/playwright gate</h3>
+    <div class="tags"><span class="tag p1">P1</span><span class="tag src">QA</span><span class="eff">~2 hrs</span></div>
+    <p>Run axe against /, /builder, /pricing, /templates, 1 blog post. Fail PR on serious/critical violations. Prevents a11y regressions.</p>
+  </div>
+
+  <div class="item p2">
+    <h3>Touch targets to 44×44 minimum</h3>
+    <div class="tags"><span class="tag p2">P2</span><span class="tag src">QA</span><span class="eff">~1 hr</span></div>
+    <p>Delete buttons in Experience/Education/Certifications forms are <code>h-6</code> to <code>h-8</code>. Scale to <code>h-11 w-11</code>. Apple / Android guideline + WCAG 2.5.5.</p>
+  </div>
+
+  <div class="item p2">
+    <h3>Fix interactive divs missing keyboard handlers</h3>
+    <div class="tags"><span class="tag p2">P2</span><span class="tag src">QA</span><span class="eff">~1 hr</span></div>
+    <p>6 files have <code>&lt;div onClick&gt;</code> without <code>role="button"</code> + <code>onKeyDown</code> Enter/Space. Files: ExperienceForm, PasteImportModal, TemplateSelector, SiteNavbar, OnboardingGuide, CustomSectionForm.</p>
+  </div>
+
+  <div class="item p2">
+    <h3>Remove hardcoded <code>page.waitForTimeout</code> in smoke tests</h3>
+    <div class="tags"><span class="tag p2">P2</span><span class="tag src">QA</span><span class="eff">~15 min</span></div>
+    <p>Flaky under CI load. Replace with <code>await expect(locator).toBeVisible()</code>.</p>
+  </div>
+</section>
+
+<footer>
+  <p>Generated from 6-role internal team audit · Apr 2026 · ResumeBuildz by Surya L</p>
+</footer>
+
+</div>
+</body>
+</html>

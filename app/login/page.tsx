@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useAuthContext as useAuth } from '@/components/Providers';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { FileText, Users } from 'lucide-react';
+import { FileText } from 'lucide-react';
 import { classifyAuthError, authErrorLabel } from '@/lib/authErrors';
 import { track } from '@/lib/analytics';
 
@@ -245,11 +245,6 @@ export default function LoginPage() {
 // Outer shell: dark bg, animated gradient blobs, live activity pill, glass
 // card with hover-glow. Shared so the verification screen matches the login
 // screen exactly.
-// Module-level so it evaluates once per client-side import and never
-// during render. Keeps the "live" counter from flickering while staying
-// React 19 purity-rule compliant.
-const SIGNED_IN_TODAY = 230 + Math.floor(Math.random() * 80);
-
 function GlassShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen relative flex items-center justify-center p-4 overflow-hidden bg-[#0b0a14]">
@@ -270,17 +265,6 @@ function GlassShell({ children }: { children: React.ReactNode }) {
           </div>
           <span className="text-white font-bold text-lg">Resume<span className="text-indigo-300">Buildz</span></span>
         </Link>
-
-        <div className="flex items-center justify-center mb-5">
-          <div className="inline-flex items-center gap-2 bg-white/5 backdrop-blur border border-white/10 rounded-full px-3 py-1.5 text-xs text-white/80">
-            <span className="relative flex h-2 w-2" aria-hidden>
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-300 opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
-            </span>
-            <Users className="h-3 w-3" aria-hidden />
-            <span>{SIGNED_IN_TODAY} candidates signed in today</span>
-          </div>
-        </div>
 
         <div className="group relative">
           <div aria-hidden className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 opacity-30 blur-xl group-hover:opacity-60 transition-opacity duration-500" />

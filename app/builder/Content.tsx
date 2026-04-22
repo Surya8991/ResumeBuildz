@@ -29,7 +29,6 @@ import ATSScoreChecker from '@/components/ats/ATSScoreChecker';
 import AISuggestions from '@/components/ats/AISuggestions';
 import JDTailor from '@/components/JDTailor';
 import UpgradeModal from '@/components/UpgradeModal';
-import PasteImportModal from '@/components/PasteImportModal';
 import ShortcutsDialog from '@/components/ShortcutsDialog';
 import VersionHistoryDialog from '@/components/VersionHistoryDialog';
 import LinkedInImportModal from '@/components/LinkedInImportModal';
@@ -111,7 +110,6 @@ export default function HomePage() {
   const [showMobileSheet, setShowMobileSheet] = useState(false);
   const { importData, resetData, addCustomSection, resumeData, undo, redo, pushHistory, canUndo, canRedo, setSelectedTemplate } = useResumeStore();
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
-  const [showPasteModal, setShowPasteModal] = useState(false);
   const [pdfRemaining, setPdfRemaining] = useState(() => getUsage('pdf').remaining);
   const [lastEdited, setLastEdited] = useState<number | null>(null);
   const [lastEditedLabel, setLastEditedLabel] = useState('');
@@ -246,6 +244,10 @@ export default function HomePage() {
       } else if (!lastVisit) {
         // First-time visitor
         setTimeout(() => showToast('Welcome! Start by filling in your info on the left.', 'info', 5000), 1500);
+      }
+      if (localStorage.getItem('resumebuildz-copy-notice') === '1') {
+        localStorage.removeItem('resumebuildz-copy-notice');
+        setTimeout(() => showToast("Copied. You're editing your own copy.", 'success', 5000), 300);
       }
       localStorage.setItem('resumeforge-last-visit', Date.now().toString());
     } catch {
@@ -716,9 +718,6 @@ export default function HomePage() {
               </Button>
               <Button variant="secondary" size="icon" className="h-8 w-8 bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 lg:hidden" onClick={handleImportFile} title="Import">
                 <Upload className="h-4 w-4" />
-              </Button>
-              <Button variant="secondary" size="sm" className="gap-1.5 shadow-sm bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 hidden lg:flex" onClick={() => setShowPasteModal(true)} title="Paste from LinkedIn or text">
-                <FileText className="h-3.5 w-3.5" /> Paste
               </Button>
               <Button variant="secondary" size="sm" className="gap-1.5 shadow-sm bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 hidden lg:flex" onClick={() => setShowLinkedInImport(true)} title="Import from LinkedIn JSON">
                 <FileText className="h-3.5 w-3.5" /> LinkedIn
@@ -1231,7 +1230,6 @@ export default function HomePage() {
       </footer>
 
       <UpgradeModal feature="pdf" open={showUpgradeModal} onOpenChange={setShowUpgradeModal} />
-      <PasteImportModal open={showPasteModal} onClose={() => setShowPasteModal(false)} />
       <ShortcutsDialog open={showShortcuts} onOpenChange={setShowShortcuts} />
       <VersionHistoryDialog open={showVersionHistory} onOpenChange={setShowVersionHistory} />
       <LinkedInImportModal open={showLinkedInImport} onOpenChange={setShowLinkedInImport} />

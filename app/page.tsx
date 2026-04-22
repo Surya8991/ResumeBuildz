@@ -12,7 +12,6 @@ import {
   Layout,
   CheckCircle,
   ArrowRight,
-  Star,
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import SiteNavbar from '@/components/SiteNavbar';
@@ -84,29 +83,11 @@ export default function HomePage() {
               <p className="text-base text-gray-300 mb-8 max-w-lg animate-fade-in-up delay-100">
                 75% of resumes get filtered by ATS before a human sees them<sup className="ml-0.5"><Link href="/ats-guide#ats-stats" className="text-gray-500 hover:text-gray-300 text-xs" title="Source: Jobscan, 2024" aria-label="Source: Jobscan 2024 ATS statistics">[1]</Link></sup>. ResumeBuildz gives you 12 ATS checks against every template. Free to start, no sign-up needed.
               </p>
-              <div className="flex items-center justify-center gap-6 mb-6 animate-fade-in-up delay-200">
-                <div className="flex items-center gap-2">
-                  <div className="flex -space-x-2">
-                    {[
-                      { color: 'bg-blue-400', initial: 'S', name: 'Sarah Mitchell' },
-                      { color: 'bg-green-400', initial: 'D', name: 'David Chen' },
-                      { color: 'bg-purple-400', initial: 'P', name: 'Priya Sharma' },
-                      { color: 'bg-orange-400', initial: 'M', name: 'Marcus Johnson' },
-                      { color: 'bg-pink-400', initial: 'E', name: 'Emily Rodriguez' },
-                    ].map((user) => (
-                      <div key={user.name} title={user.name} className={`h-8 w-8 rounded-full ${user.color} border-2 border-gray-900 flex items-center justify-center text-white text-xs font-bold`}>
-                        {user.initial}
-                      </div>
-                    ))}
-                  </div>
-                  <div className="text-left">
-                    <div className="flex items-center gap-1">
-                      {[1,2,3,4,5].map(i => (
-                        <Star key={i} className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
-                      ))}
-                    </div>
-                    <p className="text-xs text-gray-400">Built by engineers tired of losing to ATS filters</p>
-                  </div>
+              <div className="flex items-center gap-3 mb-6 animate-fade-in-up delay-200">
+                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold shadow-sm">SL</div>
+                <div className="text-left">
+                  <p className="text-sm text-white font-semibold">Built by <Link href="/author/surya-l" className="underline decoration-indigo-400 underline-offset-4 hover:decoration-indigo-300">Surya L</Link></p>
+                  <p className="text-xs text-gray-400">Solo founder, ex-IT services engineer. Shipping in public.</p>
                 </div>
               </div>
               <div className="flex flex-wrap gap-4 animate-fade-in-up delay-200">
