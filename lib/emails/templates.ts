@@ -105,6 +105,38 @@ export function accountDeletedEmail(name: string): RenderedEmail {
   };
 }
 
+export function inactiveWarningEmail(opts: { name: string; deleteDate: string }): RenderedEmail {
+  return {
+    subject: 'Your ResumeBuildz account will be deleted soon',
+    html: renderEmail({
+      heading: 'Your account is scheduled for deletion',
+      preheader: 'Log in to keep your ResumeBuildz account.',
+      bodyHtml: `<p style="margin:0 0 12px;">${greeting(opts.name)}</p>
+        <p style="margin:0 0 20px;">We haven't seen you on ResumeBuildz in over 6 months, so your account
+        is scheduled for deletion on <strong>${escapeHtml(opts.deleteDate)}</strong>. Just log in before
+        then and we'll keep your account exactly as it is &mdash; no other action needed.</p>`,
+      cta: { label: 'Log in to keep my account', url: `${SITE_URL}/login` },
+      footerNote: 'After deletion your account data is removed permanently. (Your resume lives only in your browser and is unaffected.)',
+    }),
+  };
+}
+
+export function inactiveDeletedEmail(name: string): RenderedEmail {
+  return {
+    subject: 'Your ResumeBuildz account was deleted (inactivity)',
+    html: renderEmail({
+      heading: 'Your account was deleted',
+      preheader: 'Your inactive ResumeBuildz account was removed.',
+      bodyHtml: `<p style="margin:0 0 12px;">${greeting(name)}</p>
+        <p style="margin:0 0 20px;">Because your account was inactive for more than 6 months, we've
+        removed it and its data, as we warned. You're always welcome back &mdash; you can create a fresh
+        account anytime.</p>`,
+      cta: { label: 'Create a new account', url: `${SITE_URL}/login` },
+      footerNote: 'This was an automated cleanup of inactive accounts.',
+    }),
+  };
+}
+
 // ── Operator notification ────────────────────────────────────────────────────
 
 export function contactNotifyEmail(m: {

@@ -134,7 +134,7 @@ function createAuth() {
       user: {
         create: {
           after: async (newUser) => {
-            await db.insert(profiles).values({ id: newUser.id }).onConflictDoNothing();
+            await db.insert(profiles).values({ id: newUser.id, lastSeenAt: new Date() }).onConflictDoNothing();
             // Welcome every new user immediately, regardless of signup method or
             // verification state. (Email/password users may also receive a
             // separate verification email — an acceptable duplicate, far better

@@ -14,6 +14,19 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: 'v1.29.0',
+    date: 'May 24, 2026',
+    isoDate: '2026-05-24',
+    title: 'Inactive-Account Cleanup + Token Hygiene',
+    added: [
+      'Inactivity lifecycle: a daily cron (/api/cron/inactive-cleanup) warns accounts inactive for 6 months by email that they will be deleted in 14 days, then deletes them (and their data) if still inactive after the grace period. Returning users are spared automatically — /api/profile bumps last_seen_at and clears the warning on any authenticated load. New profiles.last_seen_at + inactive_warned_at columns (migration 0001, with backfill so existing users start fresh).',
+      'Token hygiene: the same cron purges expired session and verification rows (spent auth artifacts, no email) to keep the database lean.',
+    ],
+    improved: [
+      'New email templates inactiveWarningEmail + inactiveDeletedEmail; deletion is always preceded by a warning email (the warning timestamp is only stamped once the email actually sends).',
+    ],
+  },
+  {
     version: 'v1.28.0',
     date: 'May 24, 2026',
     isoDate: '2026-05-24',

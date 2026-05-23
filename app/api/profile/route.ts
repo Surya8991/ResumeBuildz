@@ -23,6 +23,18 @@ export async function GET() {
 
   if (!row) return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
 
+  // Activity heartbeat for the inactivity-cleanup cron. Throttled to once/day
+  // to avoid write amplification; also clears any pending deletion warning so a
+  // returning user is never deleted. Best-effort — never block the response.
+  const DAY = 24 * 60 * 60 * 1000;
+  const lastSeen = row.lastSeenAt ? new Date(row.lastSeenAt).getTime() : 0;
+  if (Date.now() - lastSeen > DAY || row.inactiveWarnedAt) {
+    db.update(profiles)
+      .set({ lastSeenAt: new Date(), inactiveWarnedAt: null })
+      .where(eq(profiles.id, authUser.id))
+      .catch(() => {});
+  }
+
   return NextResponse.json({
     id: authUser.id,
     email: authUser.email,

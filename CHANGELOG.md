@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ---
 
+## [1.29.0] - 2026-05-24
+
+### Added
+
+- **Inactive-account cleanup.** Daily cron `/api/cron/inactive-cleanup` warns accounts inactive for 6 months (email: "deleted in 14 days unless you log in"), then deletes them + their data if still inactive after the grace period. Returning users are spared — `/api/profile` bumps `last_seen_at` and clears the warning on any authenticated load. New `profiles.last_seen_at` + `inactive_warned_at` columns (migration `0001_volatile_war_machine.sql`, with backfill so existing users start fresh).
+- **Token hygiene.** The same cron purges expired `session` + `verification` rows (no email — spent tokens) to keep the DB lean.
+- New email templates `inactiveWarningEmail` + `inactiveDeletedEmail`; the warning timestamp is only stamped once the email actually sends, so no one is deleted unwarned.
+
+---
+
 ## [1.28.0] - 2026-05-24
 
 ### Changed

@@ -93,6 +93,11 @@ export const profiles = pgTable('profiles', {
   notifyProduct: boolean('notify_product'),
   invoiceEmail: text('invoice_email'),
   stripeCustomerId: text('stripe_customer_id'),
+  // Inactivity lifecycle: lastSeenAt is bumped (throttled) on authenticated
+  // app load; inactiveWarnedAt is set when a deletion warning is sent and
+  // cleared when the user returns. Drives /api/cron/inactive-cleanup.
+  lastSeenAt: timestamp('last_seen_at'),
+  inactiveWarnedAt: timestamp('inactive_warned_at'),
 });
 
 // Dormant: the table is kept (so it stays in the DB and can be re-enabled
