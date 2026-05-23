@@ -91,6 +91,13 @@ function createAuth() {
         enabled: true,
         maxAge: 5 * 60,
       },
+      // freshAge 0 disables Better Auth's "fresh session" requirement for
+      // sensitive ops. Without this, auth.api.deleteUser (called from the
+      // authenticated /api/account/delete route without a password) throws
+      // SESSION_EXPIRED once the session is older than the default freshAge,
+      // silently breaking account deletion. The account page already requires
+      // an active session, so re-auth freshness adds no real protection here.
+      freshAge: 0,
     },
 
     databaseHooks: {
