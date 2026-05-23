@@ -4,7 +4,8 @@ import { SITE_URL } from '@/lib/siteConfig';
 import { rateLimit, clientId } from '@/lib/rateLimit';
 import { serverEnv } from '@/lib/env';
 import { loadStripe } from '@/lib/lazyStripe';
-import { createClient } from '@/lib/supabase/server';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
 
 // Stripe checkout session creator.
 //
@@ -63,8 +64,8 @@ export async function POST(req: NextRequest) {
   // Extract the authenticated user server-side — never trust userId from the
   // request body, as a caller could supply any user's ID and attribute the
   // payment to a victim's account.
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const session = await auth.api.getSession({ headers: await headers() });
+  const user = session?.user ?? null;
   const userId = user?.id ?? null;
   const email = user?.email ?? undefined;
 

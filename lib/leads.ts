@@ -1,45 +1,11 @@
-// Lead capture. Writes waitlist + contact submissions to Supabase when env
-// vars are configured, falls back to localStorage otherwise so the forms
-// stay useful on a fresh clone without credentials. All operations are
-// best-effort; we never block the UI on a network call.
-//
-// Table shapes expected in Supabase (run these in the SQL editor once):
-//
-//   create table if not exists public.waitlist (
-//     id uuid primary key default gen_random_uuid(),
-//     email text not null unique,
-//     source text,
-//     created_at timestamptz not null default now()
-//   );
-//   alter table public.waitlist enable row level security;
-//   create policy "waitlist insert" on public.waitlist
-//     for insert with check (true);
-//
-//   create table if not exists public.contact_messages (
-//     id uuid primary key default gen_random_uuid(),
-//     name text not null,
-//     email text not null,
-//     subject text,
-//     message text not null,
-//     created_at timestamptz not null default now()
-//   );
-//   alter table public.contact_messages enable row level security;
-//   create policy "contact insert" on public.contact_messages
-//     for insert with check (true);
-
-import { createClient } from '@/lib/supabase/client';
-import { env } from '@/lib/env';
+// Lead capture — now backed by API routes instead of Supabase direct calls.
 
 const WAITLIST_LOCAL_KEY = 'resumeforge-waitlist';
 const CONTACT_LOCAL_KEY = 'resumeforge-contact-pending';
 
-function isSupabaseConfigured(): boolean {
-  return Boolean(env.SUPABASE_URL && env.SUPABASE_ANON_KEY);
-}
-
 export interface WaitlistResult {
   ok: boolean;
-  mode: 'supabase' | 'local';
+  mode: 'api' | 'local';
   error?: string;
 }
 
@@ -47,8 +13,6 @@ export async function joinWaitlist(email: string, source = 'pricing'): Promise<W
   const clean = email.trim().toLowerCase();
   if (!clean) return { ok: false, mode: 'local', error: 'Email is required.' };
 
-  // Always persist locally as a safety net. If Supabase writes succeed,
-  // fine. If they fail or are not configured, the local copy survives.
   try {
     const existing = JSON.parse(localStorage.getItem(WAITLIST_LOCAL_KEY) || '[]') as string[];
     if (!existing.includes(clean)) {
@@ -56,23 +20,23 @@ export async function joinWaitlist(email: string, source = 'pricing'): Promise<W
       localStorage.setItem(WAITLIST_LOCAL_KEY, JSON.stringify(existing));
     }
   } catch {
-    // localStorage can fail in privacy modes. Not fatal.
-  }
-
-  if (!isSupabaseConfigured()) {
-    return { ok: true, mode: 'local' };
+    // ignore
   }
 
   try {
-    const supabase = createClient();
-    const { error } = await supabase.from('waitlist').insert({ email: clean, source });
-    // Unique-violation (user already on the list) is not a real error for us.
-    if (error && !/duplicate key|unique/i.test(error.message)) {
-      return { ok: false, mode: 'supabase', error: error.message };
+    const res = await fetch('/api/leads/waitlist', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: clean, source }),
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      if (/duplicate|unique/i.test(body.error ?? '')) return { ok: true, mode: 'api' };
+      return { ok: false, mode: 'api', error: body.error ?? 'Network error' };
     }
-    return { ok: true, mode: 'supabase' };
+    return { ok: true, mode: 'api' };
   } catch (e) {
-    return { ok: false, mode: 'supabase', error: e instanceof Error ? e.message : 'Network error' };
+    return { ok: true, mode: 'local', error: e instanceof Error ? e.message : 'Network error' };
   }
 }
 
@@ -85,14 +49,10 @@ export interface ContactPayload {
 
 export interface ContactResult {
   ok: boolean;
-  mode: 'supabase' | 'local';
+  mode: 'api' | 'local';
   error?: string;
 }
 
-// Per-field length caps. Match the client <input maxLength> so a tampered
-// form POSTing the raw payload still gets truncated here before reaching
-// Supabase. Defence in depth — Supabase should also have column limits
-// or CHECK constraints; this is belt-and-braces.
 const LIMITS = { name: 100, email: 254, subject: 100, message: 5000 } as const;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -110,14 +70,10 @@ export async function submitContactMessage(payload: ContactPayload): Promise<Con
   if (!EMAIL_RE.test(trimmed.email)) {
     return { ok: false, mode: 'local', error: 'Please enter a valid email address.' };
   }
-  // Minimum message length kills most low-effort spam without hurting
-  // legitimate short messages.
   if (trimmed.message.length < 10) {
     return { ok: false, mode: 'local', error: 'Please provide a few words so we can help.' };
   }
 
-  // Safety-net local persistence so a pending submission is not lost if
-  // Supabase is unavailable.
   try {
     const existing = JSON.parse(localStorage.getItem(CONTACT_LOCAL_KEY) || '[]') as ContactPayload[];
     existing.push(trimmed);
@@ -126,16 +82,18 @@ export async function submitContactMessage(payload: ContactPayload): Promise<Con
     // ignore
   }
 
-  if (!isSupabaseConfigured()) {
-    return { ok: true, mode: 'local' };
-  }
-
   try {
-    const supabase = createClient();
-    const { error } = await supabase.from('contact_messages').insert(trimmed);
-    if (error) return { ok: false, mode: 'supabase', error: error.message };
-    return { ok: true, mode: 'supabase' };
+    const res = await fetch('/api/leads/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(trimmed),
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      return { ok: false, mode: 'api', error: body.error ?? 'Network error' };
+    }
+    return { ok: true, mode: 'api' };
   } catch (e) {
-    return { ok: false, mode: 'supabase', error: e instanceof Error ? e.message : 'Network error' };
+    return { ok: true, mode: 'local', error: e instanceof Error ? e.message : 'Network error' };
   }
 }

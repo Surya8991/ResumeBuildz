@@ -1,11 +1,6 @@
-import { createClient } from '@/lib/supabase/client';
-
 export type GatedFeature = 'ai' | 'pdf';
 
-export const FREE_LIMITS: Record<GatedFeature, number> = {
-  ai: 1,
-  pdf: 3,
-};
+export const FREE_LIMITS: Record<GatedFeature, number> = { ai: 1, pdf: 3 };
 
 const STORAGE_KEYS: Record<GatedFeature, string> = {
   ai: 'resumeforge-usage-ai',
@@ -14,7 +9,7 @@ const STORAGE_KEYS: Record<GatedFeature, string> = {
 
 interface UsageRecord {
   count: number;
-  date: string; // YYYY-MM-DD
+  date: string;
 }
 
 function today(): string {
@@ -30,7 +25,6 @@ function readRecord(feature: GatedFeature): UsageRecord {
     if (parsed.date !== today()) return { count: 0, date: today() };
     return parsed;
   } catch {
-    // On corrupt or missing data, start fresh — localStorage errors are non-fatal.
     return { count: 0, date: today() };
   }
 }
@@ -42,14 +36,9 @@ function writeRecord(feature: GatedFeature, record: UsageRecord) {
 export function getUsage(feature: GatedFeature) {
   const record = readRecord(feature);
   const limit = FREE_LIMITS[feature];
-  return {
-    count: record.count,
-    limit,
-    remaining: Math.max(0, limit - record.count),
-  };
+  return { count: record.count, limit, remaining: Math.max(0, limit - record.count) };
 }
 
-/** Increment usage. Returns true if the action is allowed, false if limit reached. */
 export function incrementUsage(feature: GatedFeature): boolean {
   const record = readRecord(feature);
   const limit = FREE_LIMITS[feature];
@@ -60,22 +49,15 @@ export function incrementUsage(feature: GatedFeature): boolean {
   return true;
 }
 
-/** Check if the feature can be used. Pro users always bypass limits. */
 export function canUse(feature: GatedFeature, isPro = false): boolean {
   if (isPro) return true;
   return getUsage(feature).remaining > 0;
 }
 
-/**
- * Server-enforced pre-check (dryRun). For authenticated users this calls the
- * Edge Function so clearing localStorage cannot bypass daily limits.
- * Falls back to localStorage for anonymous users or when Supabase isn't
- * configured.
- */
-// Sentinel for pro users — large enough to never be a real limit but safe
-// across JSON serialisation (Infinity becomes null in JSON.stringify).
 const UNLIMITED = 9999;
 
+// Server-enforced pre-check — calls /api/usage for authenticated users,
+// falls back to localStorage for anonymous users.
 export async function checkServerUsage(
   feature: GatedFeature,
   isPro = false,
@@ -83,54 +65,33 @@ export async function checkServerUsage(
   if (isPro) return { allowed: true, remaining: UNLIMITED };
   if (typeof window === 'undefined') return { allowed: true, remaining: FREE_LIMITS[feature] };
 
-  const supabase = createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    const u = getUsage(feature);
-    return { allowed: u.remaining > 0, remaining: u.remaining };
-  }
-
   try {
-    const { data, error } = await supabase.functions.invoke('increment-usage', {
-      body: { feature, dryRun: true },
-    });
-    if (error || !data) throw new Error('edge-fn unavailable');
-    return { allowed: data.allowed, remaining: data.remaining };
+    const res = await fetch(`/api/usage?feature=${feature}&dryRun=true`);
+    if (!res.ok) throw new Error('unavailable');
+    return await res.json();
   } catch {
-    // Edge Function not deployed or Supabase not configured; fall back to localStorage.
     const u = getUsage(feature);
     return { allowed: u.remaining > 0, remaining: u.remaining };
   }
 }
 
-/**
- * Server-enforced increment. For authenticated users the Edge Function is the
- * authoritative counter; clearing localStorage no longer resets the limit.
- * Falls back to localStorage for anonymous users or when Supabase isn't
- * configured.
- * Returns { allowed, remaining } after the increment attempt.
- */
+// Server-enforced increment — calls /api/usage for authenticated users,
+// falls back to localStorage for anonymous users.
 export async function incrementServerUsage(
   feature: GatedFeature,
 ): Promise<{ allowed: boolean; remaining: number }> {
   if (typeof window === 'undefined') return { allowed: false, remaining: 0 };
 
-  const supabase = createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    const allowed = incrementUsage(feature);
-    return { allowed, remaining: getUsage(feature).remaining };
-  }
-
   try {
-    const { data, error } = await supabase.functions.invoke('increment-usage', {
-      body: { feature },
+    const res = await fetch('/api/usage', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ feature }),
     });
-    if (error || !data) throw new Error('edge-fn unavailable');
-    // Mirror server count into localStorage so the UI reads consistent values.
+    if (!res.ok) throw new Error('unavailable');
+    const data = await res.json();
     if (data.allowed) {
-      const record: UsageRecord = { count: data.used ?? 1, date: today() };
-      writeRecord(feature, record);
+      writeRecord(feature, { count: data.used ?? 1, date: today() });
     }
     return { allowed: data.allowed, remaining: data.remaining };
   } catch {

@@ -1,9 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
-import { classifyAuthError, authErrorLabel } from '@/lib/authErrors';
 import { SITE_URL } from '@/lib/siteConfig';
 
 export default function ForgotPasswordPage() {
@@ -11,7 +9,6 @@ export default function ForgotPasswordPage() {
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const supabase = createClient();
 
   useEffect(() => {
     document.title = 'Reset Password - ResumeBuildz';
@@ -22,14 +19,20 @@ export default function ForgotPasswordPage() {
     setLoading(true);
     setError('');
 
-    const { error: err } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${SITE_URL}/auth/callback?next=/builder`,
-    });
-
-    if (err) {
-      setError(authErrorLabel(classifyAuthError(err)));
-    } else {
-      setSent(true);
+    try {
+      const res = await fetch('/api/auth/forget-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, redirectTo: `${SITE_URL}/builder` }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        setError(body.message ?? 'Something went wrong. Try again.');
+      } else {
+        setSent(true);
+      }
+    } catch {
+      setError('Network error. Please try again.');
     }
     setLoading(false);
   }

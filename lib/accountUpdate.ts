@@ -1,12 +1,4 @@
-// Single source of truth for profile writes. Every /account form routes
-// through here so we guarantee:
-//  - the request is scoped by auth.uid() (RLS enforces this server-side;
-//    we rely on that rather than trusting the client to pass the right id)
-//  - the payload is whitelisted — only fields this helper knows about can
-//    be sent, so a buggy form cannot smuggle extra columns
-//  - timestamps are never taken from user input
-
-import { createClient } from '@/lib/supabase/client';
+// Profile writes and avatar uploads — now backed by API routes instead of Supabase.
 
 export type ProfilePatch = Partial<{
   full_name: string;
@@ -34,56 +26,21 @@ export type ProfilePatch = Partial<{
   invoice_email: string;
 }>;
 
-const ALLOWED_KEYS: ReadonlyArray<keyof ProfilePatch> = [
-  'full_name',
-  'avatar_url',
-  'headline',
-  'current_role',
-  'years_experience',
-  'timezone',
-  'locale',
-  'target_role',
-  'target_seniority',
-  'target_industry',
-  'target_locations',
-  'open_to_work',
-  'default_template',
-  'default_font',
-  'default_accent',
-  'default_language',
-  'mask_phone_on_share',
-  'linkedin_url',
-  'github_url',
-  'portfolio_url',
-  'notify_ats_tips',
-  'notify_product',
-  'invoice_email',
-];
-
-function sanitise(patch: ProfilePatch): ProfilePatch {
-  const out: ProfilePatch = {};
-  for (const key of ALLOWED_KEYS) {
-    if (key in patch) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (out as any)[key] = (patch as any)[key];
-    }
+export async function updateProfile(_userId: string, patch: ProfilePatch) {
+  if (Object.keys(patch).length === 0) return { error: null };
+  const res = await fetch('/api/profile', {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(patch),
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    return { error: new Error(body.error ?? 'Update failed') };
   }
-  return out;
+  return { error: null };
 }
 
-export async function updateProfile(userId: string, patch: ProfilePatch) {
-  const supabase = createClient();
-  const payload = sanitise(patch);
-  if (Object.keys(payload).length === 0) return { error: null };
-  const { error } = await supabase
-    .from('profiles')
-    .update(payload)
-    .eq('id', userId);
-  return { error };
-}
-
-export async function uploadAvatar(userId: string, file: File) {
-  const supabase = createClient();
+export async function uploadAvatar(_userId: string, file: File) {
   const ext = file.name.split('.').pop()?.toLowerCase() ?? 'jpg';
   if (!['jpg', 'jpeg', 'png', 'webp'].includes(ext)) {
     return { error: new Error('Only JPG, PNG, or WebP allowed'), url: null };
@@ -91,11 +48,15 @@ export async function uploadAvatar(userId: string, file: File) {
   if (file.size > 2 * 1024 * 1024) {
     return { error: new Error('Max file size is 2 MB'), url: null };
   }
-  const path = `${userId}/avatar-${Date.now()}.${ext}`;
-  const { error: upErr } = await supabase.storage
-    .from('avatars')
-    .upload(path, file, { cacheControl: '3600', upsert: false });
-  if (upErr) return { error: upErr, url: null };
-  const { data: pub } = supabase.storage.from('avatars').getPublicUrl(path);
-  return { error: null, url: pub.publicUrl };
+
+  const form = new FormData();
+  form.append('file', file);
+
+  const res = await fetch('/api/upload/avatar', { method: 'POST', body: form });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    return { error: new Error(body.error ?? 'Upload failed'), url: null };
+  }
+  const { url } = await res.json();
+  return { error: null, url };
 }

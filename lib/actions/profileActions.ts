@@ -2,6 +2,8 @@
 
 import { z } from 'zod';
 import { actionWithAuth } from '@/lib/safe-action';
+import { profiles } from '@/lib/db/schema';
+import { eq } from 'drizzle-orm';
 
 const ProfileSchema = z.object({
   full_name: z.string().max(100).optional(),
@@ -23,24 +25,37 @@ const ProfileSchema = z.object({
   years_experience: z.number().int().min(0).max(60).nullable().optional(),
 });
 
-/**
- * Type-safe server action for profile updates.
- * Auth is verified by the actionWithAuth middleware — callers don't pass userId.
- * Input is validated by Zod before the DB write.
- */
 export const updateProfileAction = actionWithAuth
   .schema(ProfileSchema)
-  .action(async ({ parsedInput, ctx: { userId, supabase } }) => {
-    const payload = Object.fromEntries(
-      Object.entries(parsedInput).filter(([, v]) => v !== undefined),
-    );
+  .action(async ({ parsedInput, ctx: { userId, db } }) => {
+    const keyMap: Record<string, string> = {
+      headline: 'headline',
+      current_role: 'currentRole',
+      target_role: 'targetRole',
+      target_industry: 'targetIndustry',
+      target_locations: 'targetLocations',
+      linkedin_url: 'linkedinUrl',
+      github_url: 'githubUrl',
+      portfolio_url: 'portfolioUrl',
+      open_to_work: 'openToWork',
+      default_template: 'defaultTemplate',
+      default_font: 'defaultFont',
+      default_accent: 'defaultAccent',
+      mask_phone_on_share: 'maskPhoneOnShare',
+      notify_ats_tips: 'notifyAtsTips',
+      notify_product: 'notifyProduct',
+      years_experience: 'yearsExperience',
+    };
+
+    const payload: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(parsedInput)) {
+      if (v !== undefined && k !== 'full_name') {
+        payload[keyMap[k] ?? k] = v;
+      }
+    }
+
     if (Object.keys(payload).length === 0) return { updated: false };
 
-    const { error } = await supabase
-      .from('profiles')
-      .update(payload)
-      .eq('id', userId);
-
-    if (error) throw new Error(error.message);
+    await db.update(profiles).set(payload).where(eq(profiles.id, userId));
     return { updated: true };
   });

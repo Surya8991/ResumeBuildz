@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { rateLimit, clientId } from '@/lib/rateLimit';
 import { SITE_URL } from '@/lib/siteConfig';
-import { createClient } from '@/lib/supabase/server';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
 
 export const dynamic = 'force-dynamic';
 
@@ -36,8 +37,8 @@ export async function POST(req: NextRequest) {
 
   // Require an authenticated session — share invites are a signed-in feature
   // and an open endpoint would let anyone send email from our domain.
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const session = await auth.api.getSession({ headers: await headers() });
+  const user = session?.user ?? null;
   if (!user) {
     return NextResponse.json({ emailSent: false, error: 'Authentication required.' }, { status: 401 });
   }

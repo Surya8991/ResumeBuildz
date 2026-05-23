@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { createClient } from '@/lib/supabase/client';
-import type { User, Session, AuthChangeEvent } from '@supabase/supabase-js';
+import { useSession, signIn, signOut, signUp } from '@/lib/auth-client';
 import { logger } from '@/lib/logger';
 import { SITE_URL } from '@/lib/siteConfig';
 
@@ -14,7 +13,6 @@ export type Profile = {
   plan: 'free' | 'starter' | 'pro' | 'team' | 'lifetime';
   ai_rewrites_used: number;
   ai_rewrites_reset_date: string;
-  // Extended fields for /account (all nullable; see docs/SUPABASE_ACCOUNT_SCHEMA.md)
   headline?: string | null;
   current_role?: string | null;
   years_experience?: number | null;
@@ -40,78 +38,43 @@ export type Profile = {
 };
 
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(null);
+  const { data: sessionData, isPending } = useSession();
+  const user = sessionData?.user ?? null;
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
-  const supabase = createClient();
 
-  const fetchProfile = useCallback(
-    async (userId: string) => {
-      try {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', userId)
-          .single();
-        if (error) logger.warn('Profile fetch failed:', error.message);
-        if (data) setProfile(data);
-      } catch (err) {
-        logger.warn('Profile fetch error:', err);
-      }
-    },
-    [supabase]
-  );
+  const fetchProfile = useCallback(async () => {
+    try {
+      const res = await fetch('/api/profile');
+      if (!res.ok) return;
+      const data = await res.json();
+      setProfile(data);
+    } catch (err) {
+      logger.warn('Profile fetch error:', err);
+    }
+  }, []);
 
   useEffect(() => {
-    let isMounted = true;
-
-    (async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (isMounted) {
-          setUser(user);
-          if (user) await fetchProfile(user.id);
-        }
-      } catch {
-        // Auth check failed
-      } finally {
-        if (isMounted) setLoading(false);
-      }
-    })();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
-      if (!isMounted) return;
-      setUser(session?.user ?? null);
-      if (session?.user) fetchProfile(session.user.id);
-      else setProfile(null);
-    });
-
-    return () => {
-      isMounted = false;
-      subscription.unsubscribe();
-    };
-  }, [supabase, fetchProfile]);
+    if (user) {
+      fetchProfile();
+    } else {
+      setProfile(null);
+    }
+  }, [user, fetchProfile]);
 
   const isEmailVerified = useCallback(
-    () => !!user?.email_confirmed_at,
-    [user]
+    () => !!(sessionData?.user as { emailVerified?: boolean } | undefined)?.emailVerified,
+    [sessionData],
   );
 
-  const isPro = useCallback(
-    () => {
-      // Pro features require verified email
-      if (!isEmailVerified()) return false;
-      return (
-        profile?.plan === 'starter' ||
-        profile?.plan === 'pro' ||
-        profile?.plan === 'team' ||
-        profile?.plan === 'lifetime'
-      );
-    },
-    [profile, isEmailVerified]
-  );
+  const isPro = useCallback(() => {
+    if (!isEmailVerified()) return false;
+    return (
+      profile?.plan === 'starter' ||
+      profile?.plan === 'pro' ||
+      profile?.plan === 'team' ||
+      profile?.plan === 'lifetime'
+    );
+  }, [profile, isEmailVerified]);
 
   const canUseAI = useCallback(() => {
     if (isPro()) return true;
@@ -123,55 +86,35 @@ export function useAuth() {
 
   const signInWithGoogle = useCallback(
     () =>
-      supabase.auth.signInWithOAuth({
+      signIn.social({
         provider: 'google',
-        options: {
-          // SITE_URL is the single source of truth — guarantees the redirect
-          // lands on the canonical apex regardless of whether the user is on
-          // www, a preview deployment, or a mobile webview.
-          redirectTo: `${SITE_URL}/auth/callback`,
-        },
+        callbackURL: `${SITE_URL}/builder`,
       }),
-    [supabase]
+    [],
   );
 
   const signInWithEmail = useCallback(
     (email: string, password: string) =>
-      supabase.auth.signInWithPassword({ email, password }),
-    [supabase]
+      signIn.email({ email, password }),
+    [],
   );
 
   const signUpWithEmail = useCallback(
     (email: string, password: string, name: string) =>
-      supabase.auth.signUp({
-        email,
-        password,
-        options: { data: { full_name: name } },
-      }),
-    [supabase]
+      signUp.email({ email, password, name }),
+    [],
   );
 
-  const signOut = useCallback(async () => {
-    await supabase.auth.signOut();
-    setUser(null);
+  const handleSignOut = useCallback(async () => {
+    await signOut();
     setProfile(null);
-  }, [supabase]);
+  }, []);
 
   const exportUserData = useCallback(() => {
     if (!user || !profile) return;
-    const safeProfile = profile ? {
-      id: profile.id,
-      email: profile.email,
-      full_name: profile.full_name,
-      plan: profile.plan,
-    } : null;
     const data = {
-      account: {
-        id: user.id,
-        email: user.email,
-        created_at: user.created_at,
-      },
-      profile: safeProfile,
+      account: { id: user.id, email: user.email, created_at: String((user as { createdAt?: Date }).createdAt ?? '') },
+      profile: { id: profile.id, email: profile.email, full_name: profile.full_name, plan: profile.plan },
       localStorage: {
         resume: typeof window !== 'undefined' ? localStorage.getItem('resumeforge-storage') : null,
         usage_ai: typeof window !== 'undefined' ? localStorage.getItem('resumeforge-usage-ai') : null,
@@ -191,59 +134,38 @@ export function useAuth() {
   const deleteAccount = useCallback(async (): Promise<{ error: Error | null; partialDeletion?: boolean }> => {
     if (!user) return { error: new Error('Not signed in') };
 
-    // Primary path: invoke the delete-user Edge Function which deletes BOTH
-    // the profiles row and the auth.users row (GDPR-compliant). If the
-    // function isn't deployed yet (404 / FunctionsHttpError), fall back to
-    // the legacy profile-only delete so users aren't blocked.
-    let edgeFailed = false;
-    try {
-      const { error: fnError } = await supabase.functions.invoke('delete-user');
-      if (fnError) {
-        logger.warn('delete-user function failed, falling back:', fnError.message);
-        edgeFailed = true;
-      }
-    } catch (err) {
-      logger.warn('delete-user function unavailable, falling back:', err);
-      edgeFailed = true;
+    const res = await fetch('/api/account/delete', { method: 'DELETE' });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      return { error: new Error(body.error ?? 'Deletion failed') };
     }
 
-    if (edgeFailed) {
-      // Fallback: delete only the profiles row. The auth.users row will
-      // persist until the delete-user Edge Function is deployed.
-      const { error: profileError } = await supabase.from('profiles').delete().eq('id', user.id);
-      if (profileError) return { error: profileError as Error };
-    }
-
-    await supabase.auth.signOut();
+    await signOut();
     if (typeof window !== 'undefined') {
       localStorage.removeItem('resumeforge-storage');
       localStorage.removeItem('resumeforge-usage-ai');
       localStorage.removeItem('resumeforge-usage-pdf');
       localStorage.removeItem('resumeforge-last-visit');
     }
-    setUser(null);
     setProfile(null);
-    // partialDeletion: true signals that profile data was removed but the
-    // auth.users record persists (Edge Function unavailable). Callers should
-    // inform the user so they can contact support if needed.
-    return { error: null, partialDeletion: edgeFailed };
-  }, [supabase, user]);
+    return { error: null };
+  }, [user]);
 
   const refreshProfile = useCallback(async () => {
-    if (user) await fetchProfile(user.id);
+    if (user) await fetchProfile();
   }, [user, fetchProfile]);
 
   return {
     user,
     profile,
-    loading,
+    loading: isPending,
     isPro,
     isEmailVerified,
     canUseAI,
     signInWithGoogle,
     signInWithEmail,
     signUpWithEmail,
-    signOut,
+    signOut: handleSignOut,
     exportUserData,
     deleteAccount,
     refreshProfile,
