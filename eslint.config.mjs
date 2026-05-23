@@ -15,12 +15,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Vendored, minified assets served under /public — never our code.
     "public/**",
-    // Deno-runtime Edge Functions (TS config excludes them too).
-    "supabase/functions/**",
     // Claude Code tooling state (worktrees, caches). Not ours, not for commit.
     ".claude/**",
-    // Supabase CLI temp state.
-    "supabase/.temp/**",
     // Standalone HTML reference docs at repo root (RESEND_SETUP, README.html, etc).
     "*.html",
     // Playwright test output

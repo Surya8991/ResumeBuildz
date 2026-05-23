@@ -8,7 +8,7 @@ import type { NextConfig } from "next";
 //                  rely on inline bootstrap scripts. We cannot use nonces without
 //                  reworking every <script dangerouslySetInnerHTML> site. Revisit
 //                  once we migrate marketing pages to server components + nonces.
-//   - connect-src  allows Supabase + Groq + Vercel Analytics (the only outbound
+//   - connect-src  allows Groq + Vercel Analytics (the only outbound
 //                  endpoints the app actually hits).
 //   - img-src      data: for user-uploaded photos (data URLs only per our policy),
 //                  blob: for in-memory previews.

@@ -14,16 +14,16 @@ ResumeBuildz is a free, open-source, client-side ATS resume builder with 20 temp
 
 ## Phase 1: Foundation (Month 1-2)
 
-### 1.1 Authentication System
-- **Tool:** Supabase Auth (free tier: 50K MAU) or Clerk ($0 for 10K MAU)
-- **Implementation:** Google/GitHub OAuth + email/password
-- **Data:** Store user profiles, subscription status, saved resumes in Supabase DB
-- **Effort:** 2-3 days
-- **Files to create:**
-  - `lib/supabase.ts` — Supabase client
-  - `components/AuthProvider.tsx` — Auth context wrapper
-  - `app/login/page.tsx` — Login/signup page
-  - `app/api/` — API routes for subscription management
+### 1.1 Authentication System ✅ DONE
+- **Tool:** Better Auth (open-source, self-hosted) + Neon PostgreSQL + Drizzle ORM
+- **Implementation:** Google OAuth + email/password via Better Auth
+- **Data:** User profiles, subscription status, saved resumes in Neon PostgreSQL
+- **Files:**
+  - `lib/auth.ts` — Better Auth server config
+  - `lib/auth-client.ts` — Client-side auth hooks
+  - `lib/db/schema.ts` — Drizzle ORM schema (8 tables)
+  - `lib/db/index.ts` — Neon serverless DB client
+  - `app/api/auth/[...all]/route.ts` — Better Auth catch-all handler
 
 ### 1.2 Payment Integration
 - **Tool:** Stripe Checkout + Stripe Customer Portal
@@ -51,7 +51,7 @@ ResumeBuildz is a free, open-source, client-side ATS resume builder with 20 temp
   - Industry Keywords (201 roles)
   - Multi-JD Matching
   - Priority support
-- **Implementation:** `useSubscription()` hook checking Supabase user metadata
+- **Implementation:** `isPro()` hook checking profile plan via Better Auth session
 - **Effort:** 1-2 days
 
 ### 1.4 Pricing Page
@@ -264,7 +264,7 @@ ResumeBuildz is a free, open-source, client-side ATS resume builder with 20 temp
 ### Costs
 | Item | Monthly Cost |
 |------|-------------|
-| Supabase (Pro) | $25 |
+| Neon (Free/Pro) | $0-19 |
 | Vercel (Pro) | $20 |
 | Stripe fees | ~3% of revenue |
 | Domain | $12/year |
@@ -277,13 +277,13 @@ ResumeBuildz is a free, open-source, client-side ATS resume builder with 20 temp
 
 ## Technical Roadmap for Monetization
 
-### Sprint 1 (Week 1-2): Auth + Payments
-- [ ] Set up Supabase project
-- [ ] Add Google/GitHub OAuth
-- [ ] Create login/signup pages
-- [ ] Integrate Stripe Checkout
-- [ ] Add webhook handler for subscription events
-- [ ] Create pricing page
+### Sprint 1 (Week 1-2): Auth + Payments ✅ DONE
+- [x] Set up Neon PostgreSQL + Drizzle ORM
+- [x] Add Better Auth with Google OAuth + email/password
+- [x] Create login/signup pages
+- [x] Integrate Stripe Checkout
+- [x] Add webhook handler for subscription events
+- [x] Create pricing page
 
 ### Sprint 2 (Week 3): Feature Gating
 - [ ] Create `useSubscription()` hook
@@ -328,7 +328,7 @@ ResumeBuildz is a free, open-source, client-side ATS resume builder with 20 temp
 
 | Metric | Tool | Target (Month 6) |
 |--------|------|------------------|
-| Monthly Active Users | Supabase/PostHog | 8,000 |
+| Monthly Active Users | Vercel Analytics | 8,000 |
 | Free to Pro conversion | Stripe Dashboard | 3-5% |
 | Monthly Recurring Revenue | Stripe | $2,000 |
 | Organic Traffic | Google Search Console | 10K/month |

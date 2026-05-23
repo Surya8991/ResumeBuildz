@@ -9,11 +9,12 @@ ResumeBuildz is a **hybrid application**: the builder UI runs entirely in the br
 | Layer | Technology | What it handles |
 |---|---|---|
 | Frontend | Next.js 16 (App Router) | Builder UI, ATS tools, templates |
-| Auth | Supabase (GoTrue) | Google OAuth, email/password, TOTP 2FA |
-| Database | Supabase Postgres + RLS | User profiles, cloud sync |
+| Auth | Better Auth | Google OAuth, email/password |
+| Database | Neon PostgreSQL + Drizzle ORM | User profiles, cloud sync |
+| Storage | Cloudflare R2 | Avatar uploads |
 | Billing | Stripe | Subscription management |
-| Email | Resend | Share invite emails |
-| Edge Functions | Supabase Deno runtime | Usage counting, account deletion (GDPR) |
+| Email | Resend | Password reset, share invite emails |
+| API Routes | Next.js Route Handlers | Usage counting, account deletion (GDPR), profile management |
 
 ## Data Storage
 
@@ -22,9 +23,9 @@ ResumeBuildz is a **hybrid application**: the builder UI runs entirely in the br
 - Auto-saves debounce at 1 second; `beforeunload` / `pagehide` flush any pending writes.
 
 ### Cloud (signed-in users, opt-in)
-- Resume data can be synced to Supabase Postgres via cloud save.
-- Every table is protected by **Row-Level Security (RLS)**: `auth.uid() = id` on all rows.
-- Supabase service-role key is only used in `app/api/stripe/webhook` after Stripe signature verification. It is never exposed client-side.
+- Resume data can be synced to Neon PostgreSQL via cloud save.
+- All data access is mediated through authenticated API routes — the client never connects to the database directly.
+- Server-side session verification via `auth.api.getSession()` in every Route Handler and Server Action.
 
 ### Groq API Keys (AI assist)
 - Users supply their own Groq API key for the AI writing assistant.
@@ -33,10 +34,9 @@ ResumeBuildz is a **hybrid application**: the builder UI runs entirely in the br
 
 ## Authentication
 
-- **Google OAuth** and **email/password** are supported via Supabase Auth.
-- TOTP two-factor authentication is available for additional account security.
-- Session cookies are managed by `@supabase/ssr` (HttpOnly, SameSite=Lax).
-- Server-side auth is verified via `supabase.auth.getUser()` in every Route Handler and Server Action — never trusted from request body or headers alone.
+- **Google OAuth** and **email/password** are supported via [Better Auth](https://www.better-auth.com/).
+- Session cookies are managed by Better Auth with cookie caching (5-minute maxAge).
+- Server-side auth is verified via `auth.api.getSession({ headers })` in every Route Handler and Server Action — never trusted from request body or headers alone.
 - The checkout Route Handler extracts `userId` from the server-side session cookie; it is not accepted from the request body to prevent privilege escalation.
 
 ## API Security
@@ -74,7 +74,7 @@ ResumeBuildz is a **hybrid application**: the builder UI runs entirely in the br
 ## GDPR Compliance
 
 - **Export data**: `useAuth.exportUserData()` downloads a JSON bundle of account details and localStorage resume data.
-- **Delete account**: calls the `delete-user` Supabase Edge Function which removes both the `profiles` row and the `auth.users` record. Falls back to profile-only deletion if the Edge Function is unavailable, with a `partialDeletion` flag returned to the UI.
+- **Delete account**: calls the `/api/account/delete` Route Handler which removes the `profiles` row and then deletes the Better Auth user record.
 - Deleted users' data is removed from the database immediately.
 
 ## Reporting Vulnerabilities
@@ -112,12 +112,12 @@ We will not pursue legal action against researchers who follow this policy.
 - XSS in resume rendering, PDF export, or HTML export
 - Data leakage through exported files or share links
 - Stripe webhook bypass or billing manipulation
-- RLS bypass on Supabase tables
+- Database access control bypass
 - Groq API key exfiltration from sessionStorage
 - File import parsing vulnerabilities (DOCX, PDF, HTML, MD, TXT)
 
 **Out of scope:**
-- Vulnerabilities in third-party services (Groq, Stripe, Supabase infrastructure)
+- Vulnerabilities in third-party services (Groq, Stripe, Neon, Cloudflare infrastructure)
 - Issues requiring physical device access
 - Browser-specific bugs not caused by ResumeBuildz code
 - Social engineering attacks
@@ -135,4 +135,4 @@ We will not pursue legal action against researchers who follow this policy.
 
 ---
 
-Last updated: 2026-05-06
+Last updated: 2026-05-23

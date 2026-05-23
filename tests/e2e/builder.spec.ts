@@ -7,7 +7,7 @@ import { test, expect } from '@playwright/test';
 //
 // These tests run against the Next.js dev server (same as smoke.spec.ts).
 // They do NOT test auth, cloud sync, or actual file downloads — those
-// require a live Supabase instance and are out of scope for local CI.
+// require a live database and are out of scope for local CI.
 
 test.describe('Builder — golden path', () => {
   test.beforeEach(async ({ page }) => {

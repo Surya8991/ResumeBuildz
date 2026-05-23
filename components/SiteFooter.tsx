@@ -71,7 +71,7 @@ export default function SiteFooter() {
     setError(null);
     // Reuse the waitlist backend for the footer newsletter. Same table, the
     // 'source' field distinguishes entry point. Falls back to localStorage
-    // automatically when Supabase is not configured.
+    // automatically when the API is not configured.
     const result = await joinWaitlist(email, 'footer-newsletter');
     setSubmitting(false);
     if (result.ok) setSent(true);

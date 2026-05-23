@@ -35,7 +35,7 @@ const personSchema = {
     'Technical Hiring',
     'Indian Job Market',
     'Next.js',
-    'Supabase',
+    'PostgreSQL',
     'TypeScript',
   ],
 };
@@ -76,7 +76,7 @@ export default function AuthorPage() {
 
             <h2 className="text-xl font-bold text-gray-900 mt-8 mb-3">Why I built ResumeBuildz</h2>
             <p>
-              I got frustrated applying through resume builders that paywalled the download, stored my data on servers I could not audit, or shipped templates that failed ATS parsing. ResumeBuildz is the tool I wished existed: genuinely free to export, resume data kept in the browser by default, all 20 templates tested against Workday / Greenhouse / Lever / iCIMS / Taleo. It is open source on GitHub, built with Next.js 16 + Supabase + TypeScript.
+              I got frustrated applying through resume builders that paywalled the download, stored my data on servers I could not audit, or shipped templates that failed ATS parsing. ResumeBuildz is the tool I wished existed: genuinely free to export, resume data kept in the browser by default, all 20 templates tested against Workday / Greenhouse / Lever / iCIMS / Taleo. It is open source on GitHub, built with Next.js 16 + Neon PostgreSQL + TypeScript.
             </p>
 
             <h2 className="text-xl font-bold text-gray-900 mt-8 mb-3">Expertise areas</h2>
@@ -84,7 +84,7 @@ export default function AuthorPage() {
               <li>ATS parsing mechanics and per-system tuning</li>
               <li>Resume content frameworks (XYZ bullet formula, 4-part summary)</li>
               <li>Indian hiring pipelines: TCS NQT, Infosys InfyTQ, Wipro Elite NTH, Naukri</li>
-              <li>Full-stack engineering with Next.js, Supabase, TypeScript</li>
+              <li>Full-stack engineering with Next.js, PostgreSQL, TypeScript</li>
               <li>Privacy-first product design (localStorage-first, opt-in sync)</li>
             </ul>
 

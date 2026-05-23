@@ -33,7 +33,7 @@ const ROADMAP: { group: string; items: Item[] }[] = [
       { title: 'Keyboard shortcut cheatsheet', detail: 'Ctrl+/ opens a full list of shortcuts.', status: 'shipped' },
       { title: 'Last-edited timestamp', detail: '"Saved 2m ago" in the builder footer.', status: 'shipped' },
       { title: 'Dark mode persistence', detail: 'Toggle survives page reload and navigation.', status: 'shipped' },
-      { title: 'Auto-save to Supabase', detail: 'Resume syncs to cloud so data follows you across devices.', status: 'in-progress' },
+      { title: 'Cloud sync', detail: 'Resume syncs to cloud so data follows you across devices.', status: 'shipped' },
       { title: 'Resume version history', detail: 'Up to 30 named snapshots, auto-save hourly, restore with pre-restore backup.', status: 'shipped' },
       { title: 'Shareable read-only link', detail: '/r#<payload> — gzip+base64url encoded URL fragment, zero backend.', status: 'shipped' },
       { title: 'LinkedIn JSON import', detail: 'Auto-detects LinkedIn Data Export, Voyager API, JSON Resume formats.', status: 'shipped' },

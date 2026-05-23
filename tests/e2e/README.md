@@ -47,11 +47,11 @@ npm run test:e2e:prod
 
 ## What is NOT covered
 
-- Auth flow (signup, OAuth) — covered by Supabase integration tests
-  we don't have yet
+- Auth flow (signup, OAuth) — requires a live database and auth
+  provider, not covered yet
 - Mobile viewport interactions beyond layout — covered by the
   `mobile-chrome` project but minimal assertions
-- Actual file downloads (PDF/DOCX) — require a live Supabase instance
+- Actual file downloads (PDF/DOCX) — require a live database
   and are out of scope for local CI
 
 ## When to expand

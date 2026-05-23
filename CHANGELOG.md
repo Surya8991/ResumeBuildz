@@ -6,6 +6,36 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ---
 
+## [1.24.0] - 2026-05-23
+
+### Changed
+
+- **Full Supabase removal.** Replaced the entire Supabase stack with open-source, self-hosted alternatives:
+  - **Auth:** Supabase Auth (GoTrue) → [Better Auth](https://www.better-auth.com/) with Google OAuth + email/password.
+  - **Database:** Supabase Postgres → Neon PostgreSQL + Drizzle ORM (`@neondatabase/serverless` neon-http driver).
+  - **Storage:** Supabase Storage → Cloudflare R2 via `@aws-sdk/client-s3`.
+  - **Edge Functions:** Supabase Deno runtime → Next.js API Route Handlers (`/api/usage`, `/api/account/delete`, `/api/cloud-sync`, `/api/profile`, `/api/upload/avatar`).
+- **New Drizzle schema** (`lib/db/schema.ts`) with 8 tables: `user`, `session`, `account`, `verification` (Better Auth core), `profiles`, `resumes`, `waitlist`, `contact_messages`.
+- **Profile auto-creation** via Better Auth `databaseHooks.user.create.after` — new users get a `profiles` row on first sign-up.
+- **Password reset** via Resend email integration in Better Auth's `sendResetPassword` hook.
+- **CSP updated** — removed `*.supabase.co` from `connect-src`.
+- **Privacy Policy, Terms, Status page** — all references to Supabase removed.
+- **ESLint config** — added `varsIgnorePattern: "^_"` for destructured omit patterns.
+
+### Removed
+
+- `@supabase/ssr` and `@supabase/supabase-js` dependencies.
+- All `NEXT_PUBLIC_SUPABASE_*` and `SUPABASE_SERVICE_ROLE_KEY` environment variables.
+- `lib/supabase/client.ts`, `server.ts`, `admin.ts` replaced with error-throwing stubs (to be deleted).
+
+### Added
+
+- `better-auth`, `drizzle-orm`, `@neondatabase/serverless`, `@aws-sdk/client-s3`, `drizzle-kit` dependencies.
+- `npm run db:generate`, `db:migrate`, `db:studio` scripts.
+- Backup branch `backup/supabase-original` preserving the pre-migration codebase.
+
+---
+
 ## [1.23.1] - 2026-05-06
 
 ### Security

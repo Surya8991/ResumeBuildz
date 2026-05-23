@@ -1,10 +1,10 @@
 // Normalized auth error codes.
 //
-// Raw error messages from Supabase (or any upstream auth provider) should
-// never be reflected into URL query params or rendered as-is to users:
+// Raw error messages from the auth provider should never be reflected into
+// URL query params or rendered as-is to users:
 //   - They can leak implementation details (e.g. "Email rate limit exceeded").
-//   - A future Supabase release could produce scary-looking messages that
-//     weaken user trust.
+//   - A future auth provider release could produce scary-looking messages
+//     that weaken user trust.
 //   - URL-reflected raw text can be used for mild phishing ("your session was
 //     compromised, enter your password again").
 //

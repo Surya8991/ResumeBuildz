@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 };
 
 // Static status page. Because resume data lives 100% in the browser, the only
-// server dependencies are: Supabase auth (optional), Groq AI (user-provided
+// server dependencies are: Better Auth + Neon (optional), Groq AI (user-provided
 // key), and pdfjs CDN. This page documents that and links to each upstream's
 // status dashboard so users can self-diagnose.
 

@@ -15,7 +15,7 @@ Live site: [resumebuildz.tech](https://resumebuildz.tech)
 
 Most resume tools optimise for looking pretty in PDF viewers. ATS software doesn't parse pretty — it parses structured text, keywords, and conventional section headings. ResumeBuildz is built around that reality: every template is ATS-safe, every bullet is scored against the rules real screeners apply, and every export renders predictable, keyword-rich output.
 
-Privacy-first: resume data lives in your browser by default. Supabase sync is opt-in for signed-in users. Groq API keys are stored in `sessionStorage` (cleared when the tab closes) and sent directly to Groq — the ResumeBuildz server never sees them.
+Privacy-first: resume data lives in your browser by default. Cloud sync is opt-in for signed-in users. Groq API keys are stored in `sessionStorage` (cleared when the tab closes) and sent directly to Groq — the ResumeBuildz server never sees them.
 
 ## Features
 
@@ -41,8 +41,8 @@ Privacy-first: resume data lives in your browser by default. Supabase sync is op
 - AI gap analysis on JD mismatch
 
 ### Account (optional sign-in)
-- Google OAuth + email/password + TOTP 2FA
-- Supabase cloud sync so resumes follow you across devices
+- Google OAuth + email/password via Better Auth
+- Cloud sync so resumes follow you across devices
 - `/account` settings: avatar, headline, job-search prefs, builder defaults, notification prefs, connected accounts
 - Profile values auto-fill into new resumes
 
@@ -51,8 +51,8 @@ Privacy-first: resume data lives in your browser by default. Supabase sync is op
 - ESLint + React 19 purity rules enforced
 - JSON-LD structured data across all marketing pages (Article, FAQ, Breadcrumb, HowTo)
 - CSP, HSTS, X-Frame-Options, Referrer-Policy via Next proxy
-- Row-Level Security on every Supabase table (`auth.uid() = id`)
-- GDPR: export-my-data + delete-account via Supabase Edge Function
+- Database security via Drizzle ORM + Neon PostgreSQL
+- GDPR: export-my-data + delete-account via API routes
 
 ## Quick start
 
@@ -74,39 +74,51 @@ All `NEXT_PUBLIC_*` values are inlined at build time. Restart the dev server aft
 
 | Variable | Required | Used for |
 |---|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | Optional | Auth, cloud sync, `/account`. Omit for guest-only mode. |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Optional | Same as above. |
+| `DATABASE_URL` | Yes | Neon PostgreSQL connection string. |
+| `BETTER_AUTH_SECRET` | Yes | Session signing secret for Better Auth. |
+| `GOOGLE_CLIENT_ID` | Yes | Google OAuth client ID. |
+| `GOOGLE_CLIENT_SECRET` | Yes | Google OAuth client secret. |
 | `NEXT_PUBLIC_SITE_URL` | Optional | Canonical site URL / OAuth redirect base. Defaults to `https://resumebuildz.tech`. |
-| `SUPABASE_SERVICE_ROLE_KEY` | Optional (required for billing) | Service-role key used only in `app/api/stripe/webhook` after signature verification to update `profiles.plan`. Never exposed client-side. |
+| `R2_ENDPOINT` | Optional | Cloudflare R2 S3-compatible endpoint for avatar uploads. |
+| `R2_ACCESS_KEY_ID` | Optional | R2 access key. |
+| `R2_SECRET_ACCESS_KEY` | Optional | R2 secret key. |
+| `R2_BUCKET_NAME` | Optional | R2 bucket name. |
+| `R2_PUBLIC_URL` | Optional | Public URL prefix for R2-hosted assets. |
 | `STRIPE_SECRET_KEY` | Optional | Stripe checkout session creation. |
 | `STRIPE_WEBHOOK_SECRET` | Optional | Stripe webhook signature verification. |
 | `NEXT_PUBLIC_STRIPE_PRICE_STARTER` | Optional | Stripe price ID for the Starter plan. |
 | `NEXT_PUBLIC_STRIPE_PRICE_PRO` | Optional | Stripe price ID for the Pro plan. |
 | `NEXT_PUBLIC_STRIPE_PRICE_TEAM` | Optional | Stripe price ID for the Team plan. |
 | `NEXT_PUBLIC_STRIPE_PRICE_LIFETIME` | Optional | Stripe price ID for the Lifetime plan. |
-| `RESEND_API_KEY` | Optional | Share-invite emails. Omit to disable email; UI falls back to copy-link mode. |
-| `SHARE_INVITE_FROM` | Optional | From address for share-invite emails (e.g. `ResumeBuildz <noreply@yourdomain.com>`). |
+| `RESEND_API_KEY` | Optional | Password reset and share-invite emails. Omit to disable email; UI falls back to copy-link mode. |
+| `SHARE_INVITE_FROM` | Optional | From address for emails (e.g. `ResumeBuildz <noreply@yourdomain.com>`). |
 | `NEXT_PUBLIC_SENTRY_DSN` | Optional | Sentry error monitoring. Omit to disable. |
 | Groq API key (per-user, client-side) | — | Users enter their own key in the builder. Stored in `sessionStorage` (cleared on tab close); the server never sees it. |
 
-## Supabase setup
+## Database setup
 
-Run the SQL in [`docs/SUPABASE_ACCOUNT_SCHEMA.md`](docs/SUPABASE_ACCOUNT_SCHEMA.md) once in the Supabase SQL editor. It creates the profile columns, RLS policies, and the `avatars` storage bucket.
+The app uses **Neon PostgreSQL** with **Drizzle ORM**. The schema is defined in [`lib/db/schema.ts`](lib/db/schema.ts).
 
-Then in the Supabase dashboard:
-- **Authentication → Providers → Google** — enable + paste client ID/secret.
-- **Authentication → Providers → MFA** — enable TOTP (for 2FA on `/account`).
+1. Create a Neon project at [neon.tech](https://neon.tech) and copy the connection string into `DATABASE_URL`.
+2. Run the migration:
+   ```bash
+   npx drizzle-kit migrate
+   ```
+3. Set up Google OAuth in [Google Cloud Console](https://console.cloud.google.com/apis/credentials) — add `https://yourdomain.com/api/auth/callback/google` as an authorized redirect URI.
 
-For the optional Edge Functions (GDPR-compliant delete-account + server-side rate limiting), see [`supabase/README.md`](supabase/README.md).
+Avatar uploads require a Cloudflare R2 bucket with CORS configured. Omit the `R2_*` vars to disable avatar uploads.
 
 ## Scripts
 
 ```bash
-npm run dev       # dev server (Turbopack)
-npm run build     # production build (also runs on pre-push)
-npm run start     # serve production build
-npm run lint      # ESLint (also runs on pre-push)
-npx tsc --noEmit  # TypeScript type-check (also runs on pre-push)
+npm run dev          # dev server (Turbopack)
+npm run build        # production build (also runs on pre-push)
+npm run start        # serve production build
+npm run lint         # ESLint (also runs on pre-push)
+npx tsc --noEmit     # TypeScript type-check (also runs on pre-push)
+npm run db:generate  # generate Drizzle migrations from schema changes
+npm run db:migrate   # apply pending migrations to Neon
+npm run db:studio    # open Drizzle Studio (DB browser)
 ```
 
 ### Git hooks
@@ -135,10 +147,10 @@ app/                Next.js App Router pages
   account/          Tabbed user settings (post-login)
   blog/             Blog hub + dynamic company guides
   resume/[role]/    10 role-based SEO guides (software-engineer, PM, etc.)
-  login/            Auth flow with Supabase OAuth/email
+  login/            Auth flow with Better Auth OAuth/email
   pricing/          4-tier pricing page
   global-error.tsx  Top-level error boundary, forwards to Sentry
-  api/              Edge routes (share links, etc.)
+  api/              API routes (auth, profile, cloud sync, usage, billing, etc.)
 components/
   templates/        20 resume templates, lazy-loaded via next/dynamic
   forms/            Section forms with live validation + bullet scorer
@@ -146,21 +158,21 @@ components/
   ats/              ATS score, keyword match, AI gap analysis
   ui/               shadcn/ui primitives
 hooks/              Auth, cloud sync, toast
-lib/                Export helpers (PDF/DOCX/HTML/MD/ATS), Zod schemas, bullet evaluator, Supabase client
+lib/                Export helpers (PDF/DOCX/HTML/MD/ATS), Zod schemas, bullet evaluator, auth, DB client
 store/              Zustand store for resume data with undo history
 types/              TypeScript types + TEMPLATES registry
-docs/               Supabase migration doc, blog post template, other reference docs
-supabase/           Edge function source + deploy notes
+docs/               Database schema reference, blog post template, other reference docs
+drizzle/            Database migrations (generated by drizzle-kit)
 instrumentation*.ts Sentry entry points (dormant until DSN is set)
 .husky/             Git hooks (pre-commit no-op, pre-push runs lint + tsc + build)
 ```
 
 ## Architecture notes
 
-- **Client-heavy by design.** The builder, account page, and share-link preview are all `"use client"`. Supabase RLS does the heavy lifting server-side; no API routes sit between the client and Postgres except Edge Functions for destructive operations.
-- **Guest-stub pattern.** `lib/supabase/client.ts` returns a no-op client when env vars are absent so the app never hard-crashes when running locally without Supabase credentials.
+- **Client-heavy by design.** The builder, account page, and share-link preview are all `"use client"`. Server-side auth is handled by Better Auth; all data access goes through Next.js API routes backed by Drizzle ORM.
+- **Better Auth + Drizzle + Neon.** Authentication uses [Better Auth](https://www.better-auth.com/) with Google OAuth and email/password. Database is Neon PostgreSQL accessed via Drizzle ORM (`@neondatabase/serverless` neon-http driver). Avatar uploads go to Cloudflare R2.
 - **Zustand persistence.** The resume store persists to `localStorage` with a custom serialiser that omits `history[]` and `historyIndex` to keep the persisted payload small.
-- **Zod at every write boundary.** `/account` forms + cover-letter generation validate input with Zod before hitting Supabase; the client cannot smuggle extra columns through `lib/accountUpdate.ts`.
+- **Zod at every write boundary.** `/account` forms + cover-letter generation validate input with Zod before hitting the API; the client cannot smuggle extra columns through `lib/accountUpdate.ts`.
 - **Next 16 + Turbopack specifics.** Some APIs differ from older Next versions — see `AGENTS.md`. `useSearchParams()` always wraps in `<Suspense>`, `NEXT_PUBLIC_*` reads must be literal `process.env.NEXT_PUBLIC_X` (not destructured) to be inlined.
 - **React 19 strict purity.** No `Math.random()` / `Date.now()` in render, no `setState` inside `useEffect` bodies without a trigger. Use module-level constants or lazy initialisers.
 
@@ -168,7 +180,7 @@ instrumentation*.ts Sentry entry points (dormant until DSN is set)
 
 Designed for Vercel. Any platform supporting Next.js 16 works. Set the `NEXT_PUBLIC_*` vars in your host's environment panel; Vercel auto-detects Next and needs no extra config.
 
-The `resumebuildz.tech` production deployment uses Vercel + the Supabase project configured in env. Build is ~45s on Vercel's default runners.
+The `resumebuildz.tech` production deployment uses Vercel + Neon PostgreSQL + Cloudflare R2. Build is ~45s on Vercel's default runners.
 
 ## Contributing
 

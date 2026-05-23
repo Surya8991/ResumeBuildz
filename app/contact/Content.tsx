@@ -9,7 +9,7 @@ import { submitContactMessage } from '@/lib/leads';
 // Client-side rate limit: 3 submits per session per 5 minutes. Not a
 // security control (bypassable with devtools) — a courtesy to slow down
 // accidental double-submits and casual bots. Real rate limit lives on
-// Supabase / Edge Functions.
+// the server-side API route.
 const SUBMIT_WINDOW_MS = 5 * 60 * 1000;
 const SUBMIT_MAX = 3;
 
