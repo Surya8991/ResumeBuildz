@@ -14,6 +14,23 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: 'v1.26.0',
+    date: 'May 23, 2026',
+    isoDate: '2026-05-23',
+    title: 'Full Transactional + Lifecycle Email System',
+    added: [
+      'Shared email module: lib/emails/layout.ts (one branded, responsive HTML wrapper) + lib/emails/templates.ts (pure {subject, html} builders) for welcome, email verification, password reset, password-changed alert, email-change confirmation, account-deleted, contact-notify, product-update, and resume-reminder. All sent through lib/email.ts sendEmail() which no-ops without RESEND_API_KEY and never throws.',
+      'Email verification on signup via Better Auth emailVerification.sendVerificationEmail (sendOnSignUp, autoSignInAfterVerification). Non-blocking — verification is not required to sign in. Social signups arrive pre-verified and are skipped.',
+      'Account lifecycle emails: password-changed security alert (onPasswordReset), change-email confirmation to the current address (user.changeEmail), and an account-deleted confirmation (user.deleteUser.afterDelete). Enabling deleteUser also repairs auth.api.deleteUser used by /api/account/delete.',
+      'Product-update broadcasts: POST /api/admin/broadcast (CRON_SECRET-gated) emails everyone with profiles.notifyProduct = true, batched, each with a one-click unsubscribe link. Supports dryRun.',
+      'Engagement nudge: GET /api/cron/resume-reminders (daily Vercel Cron) emails users who signed up 2-3 days ago but have no saved resume, respecting product-update consent. The signup-age window means each user is reminded at most once with no extra schema.',
+      'Stateless unsubscribe: lib/emailTokens.ts HMAC tokens + GET /api/email/unsubscribe flips notifyProduct off with no DB-stored token. New env vars CRON_SECRET, WELCOME_FROM documented in .env.example.',
+    ],
+    improved: [
+      'AGENTS.md expanded into a real project guide: stack, the mandatory lint+tsc+build gate, env/deploy gotchas (pooled Neon URL, build-time NEXT_PUBLIC vars), and conventions for email graceful-degradation, lazy db/auth proxies, API hardening, and cron/admin auth.',
+    ],
+  },
+  {
     version: 'v1.25.0',
     date: 'May 23, 2026',
     isoDate: '2026-05-23',

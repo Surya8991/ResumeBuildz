@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { contactMessages } from '@/lib/db/schema';
 import { rateLimit, clientId } from '@/lib/rateLimit';
-import { sendEmail, escapeHtml } from '@/lib/email';
+import { sendEmail } from '@/lib/email';
+import { contactNotifyEmail } from '@/lib/emails/templates';
 import { randomUUID } from 'crypto';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -54,24 +55,9 @@ export async function POST(req: NextRequest) {
   // (or RESEND_API_KEY) is unset.
   const notifyTo = process.env.CONTACT_NOTIFY_TO;
   if (notifyTo) {
-    await sendEmail({
-      to: notifyTo,
-      replyTo: email,
-      subject: `[ResumeBuildz contact] ${subject || 'New message'}`,
-      html: contactNotifyHtml({ name, email, subject, message }),
-    });
+    const { subject: emailSubject, html } = contactNotifyEmail({ name, email, subject, message });
+    await sendEmail({ to: notifyTo, replyTo: email, subject: emailSubject, html });
   }
 
   return NextResponse.json({ ok: true });
-}
-
-function contactNotifyHtml(m: { name: string; email: string; subject: string | null; message: string }): string {
-  return `<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#111827;font-size:14px;line-height:1.6;">
-    <h2 style="margin:0 0 12px;font-size:18px;">New contact form submission</h2>
-    <p style="margin:0 0 4px;"><strong>Name:</strong> ${escapeHtml(m.name)}</p>
-    <p style="margin:0 0 4px;"><strong>Email:</strong> ${escapeHtml(m.email)}</p>
-    <p style="margin:0 0 12px;"><strong>Subject:</strong> ${escapeHtml(m.subject || '(none)')}</p>
-    <p style="margin:0 0 4px;"><strong>Message:</strong></p>
-    <pre style="white-space:pre-wrap;word-break:break-word;background:#f6f7f9;padding:12px;border-radius:8px;margin:0;font-family:inherit;">${escapeHtml(m.message)}</pre>
-  </div>`;
 }

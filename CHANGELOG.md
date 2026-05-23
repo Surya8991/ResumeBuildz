@@ -6,6 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ---
 
+## [1.26.0] - 2026-05-23
+
+### Added
+
+- **Shared email module.** `lib/emails/layout.ts` (one branded, responsive HTML wrapper) + `lib/emails/templates.ts` (pure `{ subject, html }` builders) for welcome, email verification, password reset, password-changed alert, email-change confirmation, account-deleted, contact-notify, product-update, and resume-reminder. All routed through `lib/email.ts` `sendEmail()` (no-ops without `RESEND_API_KEY`, never throws).
+- **Email verification on signup** via Better Auth `emailVerification.sendVerificationEmail` (`sendOnSignUp`, `autoSignInAfterVerification`). Non-blocking — not required to sign in; social signups arrive pre-verified.
+- **Account lifecycle emails.** Password-changed security alert (`onPasswordReset`), change-email confirmation to the current address (`user.changeEmail`), and account-deleted confirmation (`user.deleteUser.afterDelete`). Enabling `deleteUser` also repairs `auth.api.deleteUser` used by `/api/account/delete`.
+- **Product-update broadcasts.** `POST /api/admin/broadcast` (CRON_SECRET-gated) emails users with `profiles.notify_product = true`, batched, each with a one-click unsubscribe link. Supports `dryRun`.
+- **Engagement nudge.** `GET /api/cron/resume-reminders` (daily Vercel Cron) emails users who signed up 2–3 days ago with no saved resume, respecting product-update consent. The signup-age window reminds each user at most once with no schema change.
+- **Stateless unsubscribe.** `lib/emailTokens.ts` HMAC tokens + `GET /api/email/unsubscribe` flips `notify_product` off with no stored token. New env vars `CRON_SECRET`, `WELCOME_FROM` documented in `.env.example`.
+
+### Changed
+
+- **AGENTS.md** expanded into a full project guide: stack, the mandatory lint + tsc + build gate, env/deploy gotchas (pooled Neon URL, build-time `NEXT_PUBLIC_*`), and conventions for email graceful-degradation, lazy db/auth proxies, API hardening, and cron/admin auth.
+
+---
+
 ## [1.25.0] - 2026-05-23
 
 ### Added
