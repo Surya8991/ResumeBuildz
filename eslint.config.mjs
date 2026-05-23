@@ -29,6 +29,11 @@ const eslintConfig = defineConfig([
     "blob-report/**",
     "playwright/.cache/**",
   ]),
+  {
+    rules: {
+      "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
+    },
+  },
   // Resume template files render the user's resume in the print preview.
   // next.config.ts sets `images.unoptimized: true`, so `<img>` is no worse
   // than `<Image />` here. Suppress the no-img-element warning for the

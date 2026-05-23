@@ -10,7 +10,7 @@ const sections = [
   },
   {
     title: 'Account Data (Optional)',
-    content: "Sign-in is optional. If you create an account via Supabase auth (Google or email/password), we store: your email address, full name (if provided via Google), avatar URL (if provided via Google), and your Pro plan tier. We do NOT store your resume content on our servers. Your resume always lives in your browser.",
+    content: "Sign-in is optional. If you create an account (Google or email/password), we store: your email address, full name (if provided via Google), avatar URL (if provided via Google), and your plan tier. We do NOT store your resume content on our servers. Your resume always lives in your browser.",
   },
   {
     title: 'Analytics',
@@ -18,7 +18,7 @@ const sections = [
   },
   {
     title: 'Cookies',
-    content: "ResumeBuildz uses minimal cookies. Authentication cookies are set when you sign in (managed by Supabase) so we can recognize your session. We do NOT use tracking cookies, advertising cookies, or third-party marketing cookies. The only first-party cookies are session cookies for auth.",
+    content: "ResumeBuildz uses minimal cookies. Authentication cookies are set when you sign in so we can recognize your session. We do NOT use tracking cookies, advertising cookies, or third-party marketing cookies. The only first-party cookies are session cookies for auth.",
   },
   {
     title: 'Third-Party Services',

@@ -40,26 +40,34 @@ export type Profile = {
 export function useAuth() {
   const { data: sessionData, isPending } = useSession();
   const user = sessionData?.user ?? null;
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const [profileData, setProfileData] = useState<Profile | null>(null);
+  const profile = user ? profileData : null;
 
   const fetchProfile = useCallback(async () => {
     try {
       const res = await fetch('/api/profile');
       if (!res.ok) return;
       const data = await res.json();
-      setProfile(data);
+      setProfileData(data);
     } catch (err) {
       logger.warn('Profile fetch error:', err);
     }
   }, []);
 
   useEffect(() => {
-    if (user) {
-      fetchProfile();
-    } else {
-      setProfile(null);
-    }
-  }, [user, fetchProfile]);
+    if (!user) return;
+    let cancelled = false;
+    fetch('/api/profile')
+      .then((res) => {
+        if (!res.ok || cancelled) return null;
+        return res.json();
+      })
+      .then((data) => {
+        if (data && !cancelled) setProfileData(data);
+      })
+      .catch((err) => logger.warn('Profile fetch error:', err));
+    return () => { cancelled = true; };
+  }, [user]);
 
   const isEmailVerified = useCallback(
     () => !!(sessionData?.user as { emailVerified?: boolean } | undefined)?.emailVerified,
@@ -107,7 +115,7 @@ export function useAuth() {
 
   const handleSignOut = useCallback(async () => {
     await signOut();
-    setProfile(null);
+    setProfileData(null);
   }, []);
 
   const exportUserData = useCallback(() => {
@@ -147,7 +155,7 @@ export function useAuth() {
       localStorage.removeItem('resumeforge-usage-pdf');
       localStorage.removeItem('resumeforge-last-visit');
     }
-    setProfile(null);
+    setProfileData(null);
     return { error: null };
   }, [user]);
 

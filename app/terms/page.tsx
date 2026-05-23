@@ -31,7 +31,7 @@ export default function TermsPage() {
             </section>
             <section>
               <h2 className="text-base font-semibold text-gray-900 mb-2">3. Your Data</h2>
-              <p>Your resume content is stored locally in your browser. If you optionally sign in, we store basic account info (email, name, plan tier) via Supabase. We use Vercel Web Analytics (cookieless, no personal tracking). See our <Link href="/privacy" className="text-blue-600 underline">Privacy Policy</Link> for full details.</p>
+              <p>Your resume content is stored locally in your browser. If you optionally sign in, we store basic account info (email, name, plan tier). We use Vercel Web Analytics (cookieless, no personal tracking). See our <Link href="/privacy" className="text-blue-600 underline">Privacy Policy</Link> for full details.</p>
             </section>
             <section>
               <h2 className="text-base font-semibold text-gray-900 mb-2">4. AI Features</h2>

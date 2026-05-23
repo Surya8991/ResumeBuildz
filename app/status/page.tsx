@@ -47,8 +47,8 @@ const SERVICES: Service[] = [
     name: 'Authentication',
     icon: Key,
     status: 'operational',
-    detail: 'Optional Supabase auth (Google + email/password). App works fully without signing in.',
-    upstream: { label: 'Supabase status', url: 'https://status.supabase.com' },
+    detail: 'Better Auth (Google + email/password). App works fully without signing in.',
+    upstream: { label: 'Neon status', url: 'https://neonstatus.com' },
   },
   {
     name: 'PDF Import',
