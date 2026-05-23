@@ -1,4 +1,4 @@
-// Profile writes and avatar uploads — now backed by API routes instead of Supabase.
+// Profile writes and avatar uploads — backed by API routes.
 
 export type ProfilePatch = Partial<{
   full_name: string;

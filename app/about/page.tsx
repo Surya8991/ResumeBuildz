@@ -4,7 +4,7 @@ import { absoluteUrl, SITE_URL } from '@/lib/siteConfig';
 import Content from './Content';
 
 const title = 'About ResumeBuildz — Free, Open-Source, Privacy-First';
-const description = 'ResumeBuildz is a free, open-source, privacy-first resume builder. Built by Surya L with Next.js 16 + Supabase. No data leaves your browser by default.';
+const description = 'ResumeBuildz is a free, open-source, privacy-first resume builder. Built by Surya L with Next.js 16 + TypeScript. No data leaves your browser by default.';
 
 export const metadata: Metadata = {
   title: `${title} | ResumeBuildz`,

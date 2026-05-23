@@ -1,4 +1,4 @@
-// Replaces the Supabase `increment-usage` Edge Function.
+// Usage tracking and rate limiting.
 // GET  ?feature=ai&dryRun=true  → check remaining without incrementing
 // POST { feature: 'ai' }        → increment and return new remaining
 

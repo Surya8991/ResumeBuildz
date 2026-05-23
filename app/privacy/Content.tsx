@@ -26,11 +26,11 @@ const sections = [
   },
   {
     title: 'Waitlist Emails',
-    content: "If you join our Pro launch waitlist via the pricing page, your email is currently stored in your browser's localStorage only (not on our servers yet). When the Pro plan launches, we will migrate to a proper email service (such as Resend or Supabase). At that point, you will be notified once and your email will be removed if you do not respond.",
+    content: "If you join our Pro launch waitlist via the pricing page, your email is stored on our servers. When the Pro plan launches, you will be notified. You can request removal at any time by contacting us.",
   },
   {
     title: 'Data Security',
-    content: 'Your resume content lives in your browser and is never transmitted to our servers. Account data (email, name) is stored by Supabase, which provides industry-standard security including encryption at rest and in transit, regular backups, and SOC 2 compliance. We follow security best practices including HSTS, CSP headers, and OAuth redirect whitelisting.',
+    content: 'Your resume content lives in your browser and is never transmitted to our servers. Account data (email, name) is stored in a Neon PostgreSQL database with encryption at rest and in transit. We follow security best practices including HSTS, CSP headers, and OAuth redirect whitelisting.',
   },
   {
     title: 'GDPR & Your Rights',

@@ -1,5 +1,5 @@
-// Replaces the Supabase `delete-user` Edge Function.
-// Deletes profile row + Better Auth user record (GDPR-compliant).
+// GDPR-compliant account deletion.
+// Deletes profile row + Better Auth user record.
 
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';

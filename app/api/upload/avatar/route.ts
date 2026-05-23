@@ -1,5 +1,4 @@
-// Replaces Supabase Storage for avatar uploads.
-// Uploads to Cloudflare R2 (or any S3-compatible store).
+// Avatar uploads to Cloudflare R2 (or any S3-compatible store).
 
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';

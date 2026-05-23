@@ -1,4 +1,4 @@
-// Lead capture — now backed by API routes instead of Supabase direct calls.
+// Lead capture — backed by API routes.
 
 const WAITLIST_LOCAL_KEY = 'resumeforge-waitlist';
 const CONTACT_LOCAL_KEY = 'resumeforge-contact-pending';

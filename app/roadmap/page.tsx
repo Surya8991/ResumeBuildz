@@ -52,8 +52,8 @@ const ROADMAP: { group: string; items: Item[] }[] = [
   {
     group: 'Infrastructure',
     items: [
-      { title: 'Edge Function: delete-user', detail: 'GDPR-safe account deletion (auth.users + profile cascade).', status: 'in-progress' },
-      { title: 'Edge Function: server-side rate limit', detail: 'Enforce AI/PDF limits on the server. Kills bypass vector.', status: 'in-progress' },
+      { title: 'Account deletion API', detail: 'GDPR-safe account deletion (user + profile cascade).', status: 'shipped' },
+      { title: 'Server-side rate limiting', detail: 'Enforce AI/PDF limits on the server. Kills bypass vector.', status: 'shipped' },
       { title: 'Stripe checkout for Pro tier', detail: 'Unlock unlimited AI + PDF for $9/mo.', status: 'in-progress' },
       { title: 'Server-component migration', detail: 'Move 20+ marketing pages to server components for real SEO metadata.', status: 'planned' },
       { title: 'Waitlist backend', detail: 'Actually capture pricing-page waitlist emails.', status: 'planned' },
