@@ -53,9 +53,11 @@ app/login-preview/
 /MARKETING_REVIEW.html
 /MARKETING_REVIEW_V2.html
 /FEATURES_PLAN.html
+/code-review-report.html
 
 # tooling state (not for commit)
 .claude/
+.vscode/
 supabase/.temp/
 
 # Playwright test artifacts

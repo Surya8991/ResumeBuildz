@@ -18,7 +18,9 @@ function createAuth() {
     trustedOrigins: [
       'https://resumebuildz.tech',
       'https://www.resumebuildz.tech',
-      ...(isProd ? [] : ['http://localhost:3000']),
+      // Dev only: allow any localhost port so the dev server works regardless
+      // of which port Next picks (3000, 3847, etc.). Never widened in prod.
+      ...(isProd ? [] : ['http://localhost:*']),
     ],
 
     emailAndPassword: {
@@ -68,10 +70,20 @@ function createAuth() {
 
 // Lazy singleton — defers initialization until first use so the module
 // can be imported during CI builds without DATABASE_URL / auth secrets.
+// The `has` trap is required: toNextJsHandler() does `"handler" in auth`
+// to decide whether `auth` is the instance or the raw handler. Without it,
+// `in` hits the empty target, returns false, and the handler is invoked as
+// a function — throwing "auth is not a function".
 let _auth: ReturnType<typeof createAuth> | undefined;
+function getAuth() {
+  if (!_auth) _auth = createAuth();
+  return _auth;
+}
 export const auth = new Proxy({} as ReturnType<typeof createAuth>, {
   get(_target, prop, receiver) {
-    if (!_auth) _auth = createAuth();
-    return Reflect.get(_auth, prop, receiver);
+    return Reflect.get(getAuth(), prop, receiver);
+  },
+  has(_target, prop) {
+    return Reflect.has(getAuth(), prop);
   },
 });

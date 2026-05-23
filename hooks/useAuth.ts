@@ -3,7 +3,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useSession, signIn, signOut, signUp } from '@/lib/auth-client';
 import { logger } from '@/lib/logger';
-import { SITE_URL } from '@/lib/siteConfig';
 
 export type Profile = {
   id: string;
@@ -96,7 +95,7 @@ export function useAuth() {
     () =>
       signIn.social({
         provider: 'google',
-        callbackURL: `${SITE_URL}/builder`,
+        callbackURL: '/builder',
       }),
     [],
   );
