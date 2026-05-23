@@ -46,8 +46,9 @@ export async function POST(req: NextRequest) {
   try {
     await db.insert(contactMessages).values({ id: randomUUID(), name, email, subject, message });
   } catch (e) {
-    const msg = e instanceof Error ? e.message : 'DB error';
-    return NextResponse.json({ error: msg }, { status: 500 });
+    // Don't leak DB/driver internals to the client; log server-side only.
+    console.error('[leads/contact] insert failed:', e);
+    return NextResponse.json({ error: 'Something went wrong. Please try again later.' }, { status: 500 });
   }
 
   // Notify the operator so messages don't sit unseen in the DB. Best-effort:

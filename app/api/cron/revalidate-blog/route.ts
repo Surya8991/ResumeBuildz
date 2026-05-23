@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { BLOG_POSTS } from '@/lib/blogPosts';
+import { requireCronAuth } from '@/lib/apiAuth';
 
 /**
  * Scheduled revalidation endpoint.
@@ -28,16 +29,8 @@ import { BLOG_POSTS } from '@/lib/blogPosts';
  *     https://resumebuildz.tech/api/cron/revalidate-blog
  */
 export async function GET(request: Request) {
-  const secret = process.env.CRON_SECRET;
-  if (!secret) {
-    // Fail closed: without a secret configured, nobody can trigger.
-    return NextResponse.json({ error: 'CRON_SECRET not configured' }, { status: 503 });
-  }
-
-  const auth = request.headers.get('authorization') ?? '';
-  if (auth !== `Bearer ${secret}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const unauthorized = requireCronAuth(request);
+  if (unauthorized) return unauthorized;
 
   try {
     revalidatePath('/blog');

@@ -23,8 +23,11 @@ import { eq } from 'drizzle-orm';
 import { sendEmail, emailEnabled } from '@/lib/email';
 import { productUpdateEmail } from '@/lib/emails/templates';
 import { unsubscribeUrl } from '@/lib/emailTokens';
+import { requireCronAuth } from '@/lib/apiAuth';
 
 export const dynamic = 'force-dynamic';
+// Allow longer execution for batched sends (Vercel default is 10s on Hobby).
+export const maxDuration = 60;
 
 const BATCH = 20; // concurrent sends per chunk — friendly to Resend rate limits.
 
@@ -36,13 +39,8 @@ interface BroadcastBody {
 }
 
 export async function POST(req: NextRequest) {
-  const secret = process.env.CRON_SECRET;
-  if (!secret) {
-    return NextResponse.json({ error: 'CRON_SECRET not configured' }, { status: 503 });
-  }
-  if ((req.headers.get('authorization') ?? '') !== `Bearer ${secret}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const unauthorized = requireCronAuth(req);
+  if (unauthorized) return unauthorized;
 
   let body: BroadcastBody;
   try {
@@ -79,14 +77,23 @@ export async function POST(req: NextRequest) {
     const chunk = recipients.slice(i, i + BATCH);
     const results = await Promise.allSettled(
       chunk.map((r) => {
+        const unsub = unsubscribeUrl(r.id);
         const { subject, html } = productUpdateEmail({
           name: r.name || '',
           heading,
           bodyHtml,
           cta,
-          unsubscribeUrl: unsubscribeUrl(r.id),
+          unsubscribeUrl: unsub,
         });
-        return sendEmail({ to: r.email, subject, html });
+        return sendEmail({
+          to: r.email,
+          subject,
+          html,
+          headers: {
+            'List-Unsubscribe': `<${unsub}>`,
+            'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+          },
+        });
       }),
     );
     for (const res of results) {

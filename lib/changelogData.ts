@@ -14,6 +14,23 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: 'v1.27.0',
+    date: 'May 24, 2026',
+    isoDate: '2026-05-24',
+    title: 'Email System Hardening (code-review fixes)',
+    added: [
+      'Password-changed security alert now also fires when a logged-in user changes their password (Better Auth request-lifecycle hooks.after on /change-password), not just on the forgot-password reset flow.',
+      'lib/apiAuth.ts requireCronAuth(): constant-time (timingSafeEqual) bearer check shared by /api/admin/broadcast and both cron routes, replacing per-route string comparisons.',
+    ],
+    improved: [
+      'Unsubscribe is now two-step to defeat email link-prefetchers/security scanners that auto-follow GET links: GET renders a confirmation page (no mutation), POST performs the opt-out. Marketing email carries List-Unsubscribe + List-Unsubscribe-Post (RFC 8058 one-click) headers.',
+      'Resume-reminder consent switched to opt-OUT (sends unless notifyProduct is explicitly false) so lifecycle nudges actually reach new users; bulk product-update broadcasts stay strict opt-in. Every such email still carries an unsubscribe link.',
+      'Welcome email no longer doubles up with the verification email: credential signups are welcomed after they verify (afterEmailVerification); social signups (pre-verified) are welcomed at creation.',
+      'Lead APIs (/api/leads/contact + waitlist) no longer leak raw DB/driver error strings to clients — generic message returned, details logged server-side.',
+      'Bulk send routes set maxDuration=60 and escape all interpolated text in the unsubscribe page.',
+    ],
+  },
+  {
     version: 'v1.26.0',
     date: 'May 23, 2026',
     isoDate: '2026-05-23',

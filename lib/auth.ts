@@ -1,5 +1,6 @@
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import { createAuthMiddleware } from 'better-auth/api';
 import { db } from '@/lib/db';
 import { user, session, account, verification, profiles } from '@/lib/db/schema';
 import { sendEmail } from '@/lib/email';
@@ -11,6 +12,14 @@ import {
   changeEmailConfirmEmail,
   accountDeletedEmail,
 } from '@/lib/emails/templates';
+
+// Sends the branded welcome email. Shared by the social-signup path
+// (create.after, already verified) and the credential path (after the user
+// verifies their email) so each user receives exactly one welcome.
+async function sendWelcome(to: string, name: string | null | undefined) {
+  const { subject, html } = welcomeEmail(name || '');
+  await sendEmail({ to, subject, html });
+}
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -56,6 +65,11 @@ function createAuth() {
         const { subject, html } = verifyEmail(url);
         await sendEmail({ to: user.email, subject, html });
       },
+      // Credential signups get their welcome here (once verified) so they don't
+      // receive both a verification email and a welcome email at signup.
+      async afterEmailVerification(verifiedUser) {
+        await sendWelcome(verifiedUser.email, verifiedUser.name);
+      },
     },
 
     user: {
@@ -91,13 +105,34 @@ function createAuth() {
         enabled: true,
         maxAge: 5 * 60,
       },
-      // freshAge 0 disables Better Auth's "fresh session" requirement for
-      // sensitive ops. Without this, auth.api.deleteUser (called from the
-      // authenticated /api/account/delete route without a password) throws
-      // SESSION_EXPIRED once the session is older than the default freshAge,
-      // silently breaking account deletion. The account page already requires
-      // an active session, so re-auth freshness adds no real protection here.
+      // freshAge 0 disables Better Auth's "fresh session" requirement for ALL
+      // sensitive ops (notably deleteUser AND changeEmail), not just one.
+      // Rationale: both are initiated only from the authenticated /account
+      // settings page, and our server-side delete (auth.api.deleteUser, no
+      // password) would otherwise throw SESSION_EXPIRED on sessions older than
+      // the default freshAge, silently breaking account deletion. Change-email
+      // still requires email verification of the new address, so dropping the
+      // freshness gate here does not weaken that flow.
       freshAge: 0,
+    },
+
+    // Request-lifecycle hook: Better Auth's changePassword endpoint has no
+    // dedicated callback, so we send the security alert here when an
+    // authenticated user changes their password. Reaching the `after` hook
+    // means the endpoint succeeded; guarded so a failure can't break the request.
+    hooks: {
+      after: createAuthMiddleware(async (ctx) => {
+        if (ctx.path !== '/change-password') return;
+        try {
+          const u = ctx.context.session?.user;
+          if (u?.email) {
+            const { subject, html } = passwordChangedEmail(u.name || '');
+            await sendEmail({ to: u.email, subject, html });
+          }
+        } catch (e) {
+          console.error('[auth] password-changed alert failed:', e);
+        }
+      }),
     },
 
     databaseHooks: {
@@ -105,10 +140,11 @@ function createAuth() {
         create: {
           after: async (newUser) => {
             await db.insert(profiles).values({ id: newUser.id }).onConflictDoNothing();
-            // Branded welcome email. No-ops without RESEND_API_KEY and never
-            // throws, so a slow/failed Resend call can't break signup.
-            const { subject, html } = welcomeEmail(newUser.name || '');
-            await sendEmail({ to: newUser.email, subject, html });
+            // Welcome only the already-verified (social/Google) users here.
+            // Credential users are welcomed in emailVerification.afterEmailVerification
+            // so they don't get a welcome + a verification email at once.
+            // No-ops without RESEND_API_KEY and never throws.
+            if (newUser.emailVerified) await sendWelcome(newUser.email, newUser.name);
           },
         },
       },

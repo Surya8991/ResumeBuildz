@@ -20,6 +20,8 @@ export interface SendEmailOptions {
   from?: string;
   /** Sets Reply-To so operators can answer the original sender directly. */
   replyTo?: string;
+  /** Extra SMTP headers (e.g. List-Unsubscribe for marketing mail). */
+  headers?: Record<string, string>;
 }
 
 /**
@@ -49,6 +51,7 @@ export async function sendEmail(opts: SendEmailOptions): Promise<boolean> {
         subject: opts.subject,
         html: opts.html,
         ...(opts.replyTo ? { reply_to: opts.replyTo } : {}),
+        ...(opts.headers ? { headers: opts.headers } : {}),
       }),
     });
     return res.ok;

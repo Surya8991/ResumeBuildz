@@ -6,6 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ---
 
+## [1.27.0] - 2026-05-24
+
+### Added
+
+- **Password-changed alert on authenticated change.** Better Auth `hooks.after` on `/change-password` sends the security alert when a logged-in user changes their password (previously only the forgot-password reset flow notified).
+- **`lib/apiAuth.ts` `requireCronAuth()`** — constant-time (`timingSafeEqual`) bearer check shared by `/api/admin/broadcast` and both cron routes, replacing per-route string comparison.
+
+### Changed
+
+- **Two-step unsubscribe.** `GET /api/email/unsubscribe` now renders a confirmation page (no mutation) so email link-prefetchers/security scanners can't silently unsubscribe users; `POST` performs the opt-out. Marketing email sends `List-Unsubscribe` + `List-Unsubscribe-Post` (RFC 8058 one-click) headers.
+- **Reminder consent is opt-out.** Resume-reminder cron sends unless `notify_product` is explicitly `false` (so lifecycle nudges reach new users); bulk broadcasts remain strict opt-in. All carry an unsubscribe link.
+- **Welcome email de-duplicated.** Credential signups are welcomed after email verification (`afterEmailVerification`); social signups (pre-verified) at creation — no more welcome + verification double-send.
+- Bulk send routes set `maxDuration = 60`; unsubscribe page escapes all interpolated text.
+
+### Security
+
+- **Lead APIs no longer leak raw DB errors.** `/api/leads/contact` + `/api/leads/waitlist` return a generic message and log details server-side.
+
+---
+
 ## [1.26.0] - 2026-05-23
 
 ### Added

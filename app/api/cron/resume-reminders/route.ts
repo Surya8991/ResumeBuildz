@@ -13,31 +13,31 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { user, profiles, resumes } from '@/lib/db/schema';
-import { and, eq, gte, lt, isNull } from 'drizzle-orm';
+import { and, eq, gte, lt, isNull, or } from 'drizzle-orm';
 import { sendEmail, emailEnabled } from '@/lib/email';
 import { resumeReminderEmail } from '@/lib/emails/templates';
 import { unsubscribeUrl } from '@/lib/emailTokens';
+import { requireCronAuth } from '@/lib/apiAuth';
 
 export const dynamic = 'force-dynamic';
+export const maxDuration = 60;
 
 const BATCH = 20;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 export async function GET(request: Request) {
-  const secret = process.env.CRON_SECRET;
-  if (!secret) {
-    return NextResponse.json({ error: 'CRON_SECRET not configured' }, { status: 503 });
-  }
-  if ((request.headers.get('authorization') ?? '') !== `Bearer ${secret}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const unauthorized = requireCronAuth(request);
+  if (unauthorized) return unauthorized;
 
   const now = Date.now();
   const windowStart = new Date(now - 3 * DAY_MS); // 3 days ago
   const windowEnd = new Date(now - 2 * DAY_MS); // 2 days ago
 
-  // Users who signed up 2-3 days ago, opted into product updates, and have no
-  // saved resume yet (resumes has one row per user keyed by userId).
+  // Users who signed up 2-3 days ago and have no saved resume yet (resumes has
+  // one row per user keyed by userId). Lifecycle nudge consent is opt-OUT: send
+  // unless the user explicitly turned product updates off (notifyProduct=false);
+  // NULL (never chose) and true both receive it, and every email carries an
+  // unsubscribe link. Bulk marketing (/api/admin/broadcast) stays strict opt-in.
   const targets = await db
     .select({ id: user.id, email: user.email, name: user.name })
     .from(user)
@@ -47,7 +47,7 @@ export async function GET(request: Request) {
       and(
         gte(user.createdAt, windowStart),
         lt(user.createdAt, windowEnd),
-        eq(profiles.notifyProduct, true),
+        or(eq(profiles.notifyProduct, true), isNull(profiles.notifyProduct)),
         isNull(resumes.userId),
       ),
     );
@@ -62,11 +62,20 @@ export async function GET(request: Request) {
     const chunk = targets.slice(i, i + BATCH);
     const results = await Promise.allSettled(
       chunk.map((t) => {
+        const unsub = unsubscribeUrl(t.id);
         const { subject, html } = resumeReminderEmail({
           name: t.name || '',
-          unsubscribeUrl: unsubscribeUrl(t.id),
+          unsubscribeUrl: unsub,
         });
-        return sendEmail({ to: t.email, subject, html });
+        return sendEmail({
+          to: t.email,
+          subject,
+          html,
+          headers: {
+            'List-Unsubscribe': `<${unsub}>`,
+            'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+          },
+        });
       }),
     );
     for (const res of results) {

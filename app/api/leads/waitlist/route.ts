@@ -39,6 +39,8 @@ export async function POST(req: NextRequest) {
     const msg = e instanceof Error ? e.message : 'DB error';
     // Treat a duplicate email as success — the visitor is already on the list.
     if (/duplicate|unique/i.test(msg)) return NextResponse.json({ ok: true });
-    return NextResponse.json({ error: msg }, { status: 500 });
+    // Don't leak DB/driver internals to the client; log server-side only.
+    console.error('[leads/waitlist] insert failed:', e);
+    return NextResponse.json({ error: 'Something went wrong. Please try again later.' }, { status: 500 });
   }
 }
