@@ -114,7 +114,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ url: session.url });
   } catch (err) {
-    const msg = err instanceof Error ? err.message : 'Stripe error';
-    return NextResponse.json({ error: msg, code: 'stripe_error' }, { status: 500 });
+    // Never surface raw Stripe/exception text to the client — it can leak
+    // account/config internals. Log server-side, return a generic message.
+    console.error('[checkout] Stripe session create failed:', err);
+    return NextResponse.json({ error: 'Could not start checkout. Please try again.', code: 'stripe_error' }, { status: 500 });
   }
 }

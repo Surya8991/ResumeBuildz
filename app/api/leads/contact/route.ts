@@ -57,7 +57,11 @@ export async function POST(req: NextRequest) {
   const notifyTo = process.env.CONTACT_NOTIFY_TO;
   if (notifyTo) {
     const { subject: emailSubject, html } = contactNotifyEmail({ name, email, subject, message });
-    await sendEmail({ to: notifyTo, replyTo: email, subject: emailSubject, html });
+    // Fire-and-forget: a slow/failed Resend call must never delay or fail the
+    // user's submission (already persisted above).
+    void sendEmail({ to: notifyTo, replyTo: email, subject: emailSubject, html }).catch((e) => {
+      console.error('[leads/contact] notify email failed:', e);
+    });
   }
 
   return NextResponse.json({ ok: true });

@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { profiles } from '@/lib/db/schema';
-import { eq } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import { headers } from 'next/headers';
 
 type Feature = 'ai' | 'pdf';
@@ -59,14 +59,19 @@ export async function POST(req: NextRequest) {
   const user = await getUser();
   if (!user) return NextResponse.json({ allowed: false, remaining: 0 }, { status: 401 });
 
-  const body = await req.json();
+  let body: { feature?: unknown };
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+  }
   const feature = body?.feature as Feature | undefined;
   if (!feature || !['ai', 'pdf'].includes(feature)) {
     return NextResponse.json({ error: 'Invalid feature' }, { status: 400 });
   }
 
   const [profile] = await db
-    .select()
+    .select({ plan: profiles.plan })
     .from(profiles)
     .where(eq(profiles.id, user.id))
     .limit(1);
@@ -78,17 +83,32 @@ export async function POST(req: NextRequest) {
 
   const usedKey = feature === 'ai' ? 'aiRewritesUsed' : 'pdfExportsUsed';
   const dateKey = feature === 'ai' ? 'aiRewritesResetDate' : 'pdfExportsResetDate';
+  const usedCol = feature === 'ai' ? profiles.aiRewritesUsed : profiles.pdfExportsUsed;
+  const dateCol = feature === 'ai' ? profiles.aiRewritesResetDate : profiles.pdfExportsResetDate;
+  const t = today();
 
-  const isToday = profile[dateKey] === today();
-  const used = isToday ? (profile[usedKey] ?? 0) : 0;
-
-  if (used >= limit) return NextResponse.json({ allowed: false, remaining: 0 });
-
-  const newUsed = used + 1;
-  await db
+  // Atomic increment: a single conditional UPDATE so concurrent requests can't
+  // both read the same count and double-spend the quota. Reset to 1 when the
+  // day rolled over, otherwise +1 — but only while still under the limit.
+  const updated = await db
     .update(profiles)
-    .set({ [usedKey]: newUsed, [dateKey]: today() })
-    .where(eq(profiles.id, user.id));
+    .set({
+      [usedKey]: sql`CASE WHEN ${dateCol} = ${t} THEN COALESCE(${usedCol}, 0) + 1 ELSE 1 END`,
+      [dateKey]: t,
+    })
+    .where(
+      and(
+        eq(profiles.id, user.id),
+        sql`(${dateCol} IS DISTINCT FROM ${t} OR COALESCE(${usedCol}, 0) < ${limit})`,
+      ),
+    )
+    .returning({ used: usedCol });
 
-  return NextResponse.json({ allowed: true, used: newUsed, remaining: limit - newUsed });
+  if (updated.length === 0) {
+    // The guard failed → already at the limit for today.
+    return NextResponse.json({ allowed: false, remaining: 0 });
+  }
+
+  const newUsed = updated[0].used ?? 1;
+  return NextResponse.json({ allowed: true, used: newUsed, remaining: Math.max(0, limit - newUsed) });
 }

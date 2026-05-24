@@ -4,6 +4,7 @@ import { db } from '@/lib/db';
 import { profiles, user } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { headers } from 'next/headers';
+import { profilePatchSchema } from '@/lib/accountSchema';
 
 async function getUser() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -81,7 +82,20 @@ export async function PATCH(req: NextRequest) {
   const authUser = await getUser();
   if (!authUser) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const body = await req.json();
+  let raw: unknown;
+  try {
+    raw = await req.json();
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+  }
+
+  // Validate + coerce server-side: type-check, length-cap, enum/URL validate.
+  // Never trust the client; only validated fields proceed to the DB.
+  const parsed = profilePatchSchema.safeParse(raw);
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Invalid profile fields' }, { status: 400 });
+  }
+  const body: Record<string, unknown> = parsed.data;
 
   // Whitelist patch keys and remap to DB column names.
   const dbPatch: Record<string, unknown> = {};
@@ -116,9 +130,9 @@ export async function PATCH(req: NextRequest) {
   for (const key of ALLOWED_KEYS) {
     if (key in body) {
       if (key === 'full_name') {
-        updateName = body[key];
+        updateName = body[key] as string;
       } else if (key === 'avatar_url') {
-        updateImage = body[key];
+        updateImage = body[key] as string;
       } else {
         dbPatch[keyMap[key]] = body[key];
       }

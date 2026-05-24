@@ -8,7 +8,11 @@ import { createHmac, timingSafeEqual } from 'crypto';
 import { SITE_URL } from '@/lib/siteConfig';
 
 function secret(): string {
-  return process.env.BETTER_AUTH_SECRET || '';
+  const s = process.env.BETTER_AUTH_SECRET;
+  // Fail closed: signing with an empty key yields predictable, forgeable
+  // tokens. BETTER_AUTH_SECRET is already required for auth to function.
+  if (!s) throw new Error('BETTER_AUTH_SECRET is required to sign email tokens');
+  return s;
 }
 
 export function unsubscribeToken(userId: string): string {

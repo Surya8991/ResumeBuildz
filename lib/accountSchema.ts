@@ -105,6 +105,40 @@ export const billingSchema = z.object({
     .or(z.literal('')),
 });
 
+// Server-side validator for PATCH /api/profile, which accepts an arbitrary
+// subset of fields. Every field is optional (.partial()) but each is still
+// type-checked, length-capped, and enum/URL-validated so the client cannot
+// push oversized, wrong-typed, or unsafe values straight into the DB.
+export const profilePatchSchema = z
+  .object({
+    full_name: z.string().trim().min(1).max(80),
+    avatar_url: urlSchema,
+    headline: z.string().trim().max(120),
+    current_role: z.string().trim().max(120),
+    years_experience: z.coerce.number().int().min(0).max(60).nullable(),
+    timezone: z.string().trim().max(64),
+    locale: z.string().trim().max(16),
+    target_role: z.string().trim().max(120),
+    target_seniority: z
+      .enum(['intern', 'junior', 'mid', 'senior', 'staff', 'principal', 'director', 'vp', 'c-suite'])
+      .nullable(),
+    target_industry: z.string().trim().max(120),
+    target_locations: z.string().trim().max(240),
+    open_to_work: z.boolean(),
+    default_template: z.string().trim().max(40),
+    default_font: z.string().trim().max(40),
+    default_accent: z.string().trim().regex(/^#[0-9a-fA-F]{6}$/, 'Must be a hex colour like #4F46E5'),
+    default_language: z.enum(['en', 'hi']),
+    mask_phone_on_share: z.boolean(),
+    linkedin_url: urlSchema,
+    github_url: urlSchema,
+    portfolio_url: urlSchema,
+    notify_ats_tips: z.boolean(),
+    notify_product: z.boolean(),
+    invoice_email: z.string().trim().email().max(254).or(z.literal('')),
+  })
+  .partial();
+
 export type ProfileInput = z.infer<typeof profileSchema>;
 export type JobSearchInput = z.infer<typeof jobSearchSchema>;
 export type DefaultsInput = z.infer<typeof defaultsSchema>;

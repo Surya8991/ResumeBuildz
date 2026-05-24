@@ -17,14 +17,16 @@ export async function DELETE() {
 
   const userId = session.user.id;
 
-  // Delete profile first (cascade handles child rows).
-  await db.delete(profiles).where(eq(profiles.id, userId));
-
-  // Delete the auth user record — this also removes sessions and accounts.
+  // Delete the auth user record first; the FK cascade removes sessions,
+  // accounts, and the profiles row. Doing this first avoids an orphaned/partial
+  // state where the profile is gone but deleteUser then fails.
   await auth.api.deleteUser({
     headers: hdrs,
     body: { callbackURL: '/' },
   });
+
+  // Defensive cleanup in case the cascade ever misses the profile row.
+  await db.delete(profiles).where(eq(profiles.id, userId)).catch(() => {});
 
   return NextResponse.json({ ok: true });
 }

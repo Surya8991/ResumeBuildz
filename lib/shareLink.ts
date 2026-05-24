@@ -101,7 +101,12 @@ export async function decodeResume(payload: string): Promise<ResumeData | null> 
       return null;
     }
 
-    const parsed = JSON.parse(json);
+    // Reject prototype-pollution keys anywhere in the decoded payload — the
+    // fragment is fully attacker-controlled. The reviver runs for every key.
+    const parsed = JSON.parse(json, (key, value) => {
+      if (key === '__proto__' || key === 'constructor' || key === 'prototype') return undefined;
+      return value;
+    });
     if (!parsed?.personalInfo) return null;
     return parsed as ResumeData;
   } catch {
