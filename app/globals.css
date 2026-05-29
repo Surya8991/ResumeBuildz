@@ -190,6 +190,10 @@
   .resume-print style {
     display: none;
   }
+  .resume-preview-paged .page-break-line,
+  .resume-preview-paged .page-break-label {
+    display: none !important;
+  }
   .resume-print a {
     text-decoration: underline;
     color: inherit;
@@ -253,6 +257,17 @@
   break-inside: avoid;
 }
 
+/* Cover letter cover page: hidden on screen (the live preview should not
+ * be cluttered with it), visible only in @media print. */
+.print-cover-letter {
+  display: none;
+}
+@media print {
+  .print-cover-letter {
+    display: block;
+  }
+}
+
 .resume-print h2,
 .resume-print h3 {
   page-break-after: avoid;
@@ -262,6 +277,18 @@
 .resume-print section {
   page-break-inside: avoid;
   break-inside: avoid;
+}
+
+/* Bullet lists: keep each bullet intact across pages, allow the list itself to break. */
+.resume-print li {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+/* Paragraph orphans/widows: prevent a single trailing/leading line getting marooned on a page. */
+.resume-print p {
+  orphans: 2;
+  widows: 2;
 }
 
 /* Hide scrollbar for nav pills */

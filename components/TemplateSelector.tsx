@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useResumeStore } from '@/store/useResumeStore';
-import { TEMPLATES, DEFAULT_COLORS, sampleResumeData, TemplateName } from '@/types/resume';
+import { TEMPLATES, DEFAULT_COLORS, ATS_RISK_META, sampleResumeData, TemplateName } from '@/types/resume';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Check, RotateCcw, Eye, X } from 'lucide-react';
@@ -81,8 +81,14 @@ export default function TemplateSelector() {
                     <Eye className="h-3 w-3" />
                   </button>
                 </div>
-                <div className="px-1.5 py-1 bg-muted/50">
-                  <span className={`text-xs font-medium ${isSelected ? 'text-primary' : 'text-foreground'}`}>{t.label}</span>
+                <div className="px-1.5 py-1 bg-muted/50 flex items-center justify-between gap-1">
+                  <span className={`text-xs font-medium truncate ${isSelected ? 'text-primary' : 'text-foreground'}`}>{t.label}</span>
+                  <span
+                    className={`text-[9px] font-semibold px-1.5 py-0.5 rounded shrink-0 ${ATS_RISK_META[t.atsRisk].classes}`}
+                    title={ATS_RISK_META[t.atsRisk].tooltip}
+                  >
+                    {t.atsRisk === 'safe' ? '✓ ATS' : t.atsRisk === 'caution' ? '△ ATS' : '✗ ATS'}
+                  </span>
                 </div>
               </motion.div>
             );

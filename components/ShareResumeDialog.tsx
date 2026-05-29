@@ -46,6 +46,9 @@ export default function ShareResumeDialog({ open, onOpenChange }: Props) {
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteMode, setInviteMode] = useState<InviteMode>('view');
   const [inviteStatus, setInviteStatus] = useState<string | null>(null);
+  // 'never' | '1d' | '7d' | '30d'. Stored as the user-picked label so the
+  // select re-mounts cleanly; converted to expiresAt ms in the encode effect.
+  const [expiry, setExpiry] = useState<'never' | '1d' | '7d' | '30d'>('never');
 
   useEffect(() => {
     if (!open) return;
@@ -55,7 +58,10 @@ export default function ShareResumeDialog({ open, onOpenChange }: Props) {
     setInviteCopied(false);
     setInviteStatus(null);
     setTooLargeError(null);
-    encodeResume(resumeData)
+    const expiresAt = expiry === 'never'
+      ? undefined
+      : Date.now() + ({ '1d': 1, '7d': 7, '30d': 30 } as const)[expiry] * 24 * 60 * 60 * 1000;
+    encodeResume(resumeData, expiresAt ? { expiresAt } : undefined)
       .then((payload) => {
         // Use window.origin in dev so the link works locally; SITE_URL in prod.
         const base = typeof window !== 'undefined' ? window.location.origin : SITE_URL;
@@ -70,7 +76,7 @@ export default function ShareResumeDialog({ open, onOpenChange }: Props) {
           setTooLargeError('Failed to generate share link. Please try again.');
         }
       });
-  }, [open, resumeData]);
+  }, [open, resumeData, expiry]);
 
   const copyToClipboard = async (value: string, onSuccess: () => void) => {
     try {
@@ -199,10 +205,26 @@ export default function ShareResumeDialog({ open, onOpenChange }: Props) {
                 {copied ? 'Copied' : 'Copy'}
               </Button>
             </div>
-            <p className="text-[10px] text-muted-foreground">
-              URL length: {urlLen} chars · Payload: {payloadLen} chars
-              {tooLong && <span className="text-amber-700 ml-2">Long link: some email clients may truncate it</span>}
-            </p>
+            <div className="flex items-center justify-between gap-2 text-[11px]">
+              <label className="flex items-center gap-1.5 text-muted-foreground">
+                Expires:
+                <select
+                  value={expiry}
+                  onChange={(e) => setExpiry(e.target.value as typeof expiry)}
+                  className="text-[11px] px-1.5 py-0.5 border rounded bg-background"
+                  aria-label="Share link expiry"
+                >
+                  <option value="never">Never</option>
+                  <option value="1d">In 24 hours</option>
+                  <option value="7d">In 7 days</option>
+                  <option value="30d">In 30 days</option>
+                </select>
+              </label>
+              <span className="text-muted-foreground">
+                URL: {urlLen} · Payload: {payloadLen}
+                {tooLong && <span className="text-amber-700 ml-2">Long link: some email clients may truncate</span>}
+              </span>
+            </div>
           </section>
 
           <section className="rounded-xl border p-3 space-y-3">

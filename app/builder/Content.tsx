@@ -7,8 +7,9 @@ import { useResumeStore } from '@/store/useResumeStore';
 import { downloadDocx } from '@/lib/exportDocx';
 import { downloadHtml } from '@/lib/exportHtml';
 import { downloadMarkdown, downloadAtsText } from '@/lib/exportMarkdown';
-import { importResumeFromFile, SUPPORTED_IMPORT_FORMATS } from '@/lib/importResume';
-import ResumePreview from '@/components/preview/ResumePreview';
+import { toJsonResume } from '@/lib/jsonResume';
+import { importResumeFromFile, confirmImport, SUPPORTED_IMPORT_FORMATS } from '@/lib/importResume';
+import PrintableResume from '@/components/preview/PrintableResume';
 import HelpDialog from '@/components/HelpDialog';
 import ResumeProfileManager from '@/components/ResumeProfileManager';
 import PersonalInfoForm from '@/components/forms/PersonalInfoForm';
@@ -121,6 +122,13 @@ export default function HomePage() {
   const [showVersionHistory, setShowVersionHistory] = useState(false);
   const [showLinkedInImport, setShowLinkedInImport] = useState(false);
   const [showShare, setShowShare] = useState(false);
+  // True when localStorage writes are failing (private mode / quota). The
+  // store dispatches a window event from its catch block; we surface a
+  // persistent banner so the user isn't misled by the "Saved" autosave chip.
+  const [storageError, setStorageError] = useState(false);
+  // When true, the PDF download includes the cover letter as page 1 (if the
+  // resume has one). Toggled from the Export menu next to the PDF row.
+  const [includeCoverLetter, setIncludeCoverLetter] = useState(false);
   const { showToast } = useToast();
   const { user, profile, isPro, isEmailVerified } = useAuth();
 
@@ -221,6 +229,18 @@ export default function HomePage() {
   }, [resumeData]);
 
   useEffect(() => {
+    const onStorageError = () => setStorageError(true);
+    const onCorruptVersions = () => showToast('Version history was unreadable and has been reset.', 'warning', 6000);
+    window.addEventListener('resume-storage-error', onStorageError);
+    window.addEventListener('resume-corrupt-versions', onCorruptVersions);
+    return () => {
+      window.removeEventListener('resume-storage-error', onStorageError);
+      window.removeEventListener('resume-corrupt-versions', onCorruptVersions);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     setMounted(true);
 
     // Welcome back check
@@ -299,6 +319,19 @@ export default function HomePage() {
     setTimeout(() => URL.revokeObjectURL(url), 60_000);
   };
 
+  const handleExportJsonResume = () => {
+    const data = useResumeStore.getState().resumeData;
+    const jr = toJsonResume(data);
+    const blob = new Blob([JSON.stringify(jr, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = resumeFilename(data, 'json').replace(/\.json$/, '.jsonresume.json');
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 60_000);
+    showToast('JSON Resume exported — compatible with jsonresume.org tooling.', 'success');
+  };
+
   const [isImporting, setIsImporting] = useState(false);
 
   const handleImportFile = () => {
@@ -315,6 +348,10 @@ export default function HomePage() {
       try {
         const result = await importResumeFromFile(file);
         if (result.success && result.data) {
+          if (!confirmImport(result.data, file.name)) {
+            setIsImporting(false);
+            return;
+          }
           try {
             importData(result.data);
             showToast(`Resume imported from ${file.name}. Review the extracted data and make corrections.`, 'success', 5000);
@@ -682,6 +719,21 @@ export default function HomePage() {
                       <button onClick={() => { handleExportPdf(); setShowExportMenu(false); }} disabled={isExporting} className="w-full px-3 py-2 text-sm flex items-center gap-2.5 hover:bg-muted text-left rounded-lg mx-0.5 transition-colors" style={{ width: 'calc(100% - 4px)' }}>
                         <Download className="h-4 w-4 text-muted-foreground" /> {exportingType === 'pdf' ? 'Exporting...' : 'PDF'} <span className="text-[11px] text-muted-foreground ml-auto">{pdfRemaining} left today</span>
                       </button>
+                      {resumeData.coverLetter?.trim() && (
+                        <label
+                          className="w-full px-3 py-1.5 text-[11px] flex items-center gap-2 text-muted-foreground hover:text-foreground cursor-pointer rounded-lg mx-0.5"
+                          style={{ width: 'calc(100% - 4px)' }}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={includeCoverLetter}
+                            onChange={(e) => setIncludeCoverLetter(e.target.checked)}
+                            className="h-3 w-3"
+                          />
+                          Include cover letter as cover page
+                        </label>
+                      )}
                       <button onClick={handleExportDocx} disabled={isExporting} className="w-full px-3 py-2 text-sm flex items-center gap-2.5 hover:bg-muted text-left rounded-lg mx-0.5 transition-colors" style={{ width: 'calc(100% - 4px)' }}>
                         <FileType className="h-4 w-4 text-muted-foreground" /> {exportingType === 'docx' ? 'Exporting...' : 'DOCX'} <span className="text-[11px] text-muted-foreground ml-auto">Word</span>
                       </button>
@@ -693,6 +745,9 @@ export default function HomePage() {
                       </button>
                       <button onClick={handleExportAtsText} disabled={isExporting} className="w-full px-3 py-2 text-sm flex items-center gap-2.5 hover:bg-muted text-left rounded-lg mx-0.5 transition-colors" style={{ width: 'calc(100% - 4px)' }}>
                         <FileText className="h-4 w-4 text-muted-foreground" /> ATS Plain Text <span className="text-[11px] text-muted-foreground ml-auto">.txt</span>
+                      </button>
+                      <button onClick={() => { handleExportJsonResume(); setShowExportMenu(false); }} disabled={isExporting} className="w-full px-3 py-2 text-sm flex items-center gap-2.5 hover:bg-muted text-left rounded-lg mx-0.5 transition-colors" style={{ width: 'calc(100% - 4px)' }}>
+                        <Code className="h-4 w-4 text-muted-foreground" /> JSON Resume <span className="text-[11px] text-muted-foreground ml-auto">.json</span>
                       </button>
                     </div>
                   </>
@@ -736,6 +791,19 @@ export default function HomePage() {
           </div>
         </div>
       </header>
+
+      {storageError && (
+        <div
+          role="alert"
+          aria-live="polite"
+          className="shrink-0 bg-amber-100 text-amber-900 border-b border-amber-300 px-4 py-2 text-xs sm:text-sm flex items-center gap-2"
+        >
+          <span aria-hidden="true">⚠️</span>
+          <span>
+            <strong>Edits aren&apos;t being saved.</strong> Your browser is blocking storage (private window or quota full). Reopen in a normal window, or export now before reloading.
+          </span>
+        </div>
+      )}
 
       {/* Mobile tab bar - separate row */}
       <div className="md:hidden flex border-b border-gray-800 bg-gray-900 shrink-0">
@@ -1070,7 +1138,7 @@ export default function HomePage() {
                     transformOrigin: 'top left',
                     width: '210mm',
                   }}>
-                    <ResumePreview ref={resumeRef} />
+                    <PrintableResume ref={resumeRef} includeCoverLetter={includeCoverLetter} />
                   </div>
                 </div>
               </div>
@@ -1103,9 +1171,17 @@ export default function HomePage() {
               <span className="text-xs text-muted-foreground ml-2">~{estimatedPages} page{estimatedPages > 1 ? 's' : ''}</span>
             </div>
             <div className="flex items-center gap-2">
-              <button onClick={() => setPreviewScale(Math.max(0.3, previewScale - 0.1))} className="text-sm px-2 py-0.5 rounded hover:bg-muted transition-colors">-</button>
+              <button
+                onClick={() => setPreviewScale(Math.max(0.3, previewScale - 0.1))}
+                aria-label="Zoom out preview"
+                className="text-base min-w-[44px] min-h-[36px] sm:min-h-[28px] sm:min-w-[28px] flex items-center justify-center rounded hover:bg-muted transition-colors"
+              >−</button>
               <span className="text-xs text-muted-foreground w-12 text-center font-mono">{Math.round(previewScale * 100)}%</span>
-              <button onClick={() => setPreviewScale(Math.min(1, previewScale + 0.1))} className="text-sm px-2 py-0.5 rounded hover:bg-muted transition-colors">+</button>
+              <button
+                onClick={() => setPreviewScale(Math.min(1, previewScale + 0.1))}
+                aria-label="Zoom in preview"
+                className="text-base min-w-[44px] min-h-[36px] sm:min-h-[28px] sm:min-w-[28px] flex items-center justify-center rounded hover:bg-muted transition-colors"
+              >+</button>
               <div className="w-px h-4 bg-border mx-1" />
 
               <button
@@ -1144,7 +1220,7 @@ export default function HomePage() {
                       width: '210mm',
                     }}
                   >
-                    <ResumePreview ref={resumeRef} />
+                    <PrintableResume ref={resumeRef} includeCoverLetter={includeCoverLetter} />
                   </div>
                 </div>
               </div>

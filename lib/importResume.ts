@@ -2,6 +2,24 @@
 
 import { ResumeData, defaultResumeData } from '@/types/resume';
 
+/**
+ * Show a confirmation dialog summarizing what's about to be imported, so
+ * the user isn't surprised by a silent overwrite. Returns true if the user
+ * accepts, false otherwise. The Ctrl+Z rollback path still exists either
+ * way — this is a UX safety net, not the only guard.
+ */
+export function confirmImport(data: ResumeData, label?: string): boolean {
+  if (typeof window === 'undefined') return true;
+  const parts: string[] = [];
+  if (data.experience?.length) parts.push(`${data.experience.length} experience`);
+  if (data.education?.length) parts.push(`${data.education.length} education`);
+  if (data.skills?.length) parts.push(`${data.skills.length} skill ${data.skills.length === 1 ? 'category' : 'categories'}`);
+  if (data.projects?.length) parts.push(`${data.projects.length} project${data.projects.length === 1 ? '' : 's'}`);
+  const summary = parts.length ? parts.join(', ') : 'a resume';
+  const prefix = label ? `Import ${label} (${summary})?` : `Import ${summary}?`;
+  return window.confirm(`${prefix}\n\nYour current resume will be saved to undo history (Ctrl+Z to revert).`);
+}
+
 // ---- Text Extraction ----
 
 async function extractTextFromDocx(file: File): Promise<string> {
@@ -606,13 +624,15 @@ Extract ALL bullet points completely. Keep exact text. Use unique IDs. Set curre
     if (jsonMatch) jsonStr = jsonMatch[1].trim();
     const parsed = JSON.parse(jsonStr);
     if (!parsed?.personalInfo || typeof parsed.personalInfo !== 'object') return null;
-    // Validate arrays to prevent downstream crashes from malformed AI output
-    if (parsed.experience && !Array.isArray(parsed.experience)) parsed.experience = [];
-    if (parsed.education && !Array.isArray(parsed.education)) parsed.education = [];
-    if (parsed.skills && !Array.isArray(parsed.skills)) parsed.skills = [];
-    if (parsed.projects && !Array.isArray(parsed.projects)) parsed.projects = [];
-    if (parsed.certifications && !Array.isArray(parsed.certifications)) parsed.certifications = [];
-    if (parsed.languages && !Array.isArray(parsed.languages)) parsed.languages = [];
+    // Validate arrays to prevent downstream crashes from malformed AI output.
+    // Use !Array.isArray (no truthy guard) so explicit null / undefined are
+    // normalized to [] too — the previous `x && !Array.isArray(x)` left null intact.
+    if (!Array.isArray(parsed.experience)) parsed.experience = [];
+    if (!Array.isArray(parsed.education)) parsed.education = [];
+    if (!Array.isArray(parsed.skills)) parsed.skills = [];
+    if (!Array.isArray(parsed.projects)) parsed.projects = [];
+    if (!Array.isArray(parsed.certifications)) parsed.certifications = [];
+    if (!Array.isArray(parsed.languages)) parsed.languages = [];
     if (!parsed.sectionOrder || !Array.isArray(parsed.sectionOrder)) parsed.sectionOrder = ['summary', 'experience', 'education', 'skills', 'projects', 'certifications', 'languages'];
     if (!parsed.customSections || !Array.isArray(parsed.customSections)) parsed.customSections = [];
     if (!parsed.coverLetter) parsed.coverLetter = '';
@@ -630,10 +650,28 @@ export async function importResumeFromFile(file: File): Promise<ImportResult> {
   if (file.size > MAX_SIZE) return { success: false, error: 'File exceeds 10MB limit.' };
 
   const ext = file.name.split('.').pop()?.toLowerCase() || '';
-  const supported = ['pdf', 'docx', 'doc', 'txt', 'html', 'htm', 'md'];
-  if (!supported.includes(ext)) return { success: false, error: `Unsupported: .${ext}. Use PDF, DOCX, TXT, HTML, or MD.` };
+  const supported = ['pdf', 'docx', 'doc', 'txt', 'html', 'htm', 'md', 'json'];
+  if (!supported.includes(ext)) return { success: false, error: `Unsupported: .${ext}. Use PDF, DOCX, TXT, HTML, MD, or JSON.` };
 
   try {
+    // JSON files take a separate fast path — try our internal shape first
+    // (created by "Export as JSON"), then JSON Resume schema as fallback.
+    if (ext === 'json') {
+      const text = await file.text();
+      let parsed: unknown;
+      try { parsed = JSON.parse(text); }
+      catch { return { success: false, error: 'File is not valid JSON.' }; }
+      const obj = parsed as Record<string, unknown> | null;
+      if (obj && typeof obj === 'object' && 'personalInfo' in obj) {
+        return { success: true, data: parsed as ResumeData, rawText: text };
+      }
+      if (obj && typeof obj === 'object' && ('basics' in obj || 'work' in obj || 'education' in obj)) {
+        const { fromJsonResume } = await import('@/lib/jsonResume');
+        return { success: true, data: fromJsonResume(parsed), rawText: text };
+      }
+      return { success: false, error: 'JSON does not match our schema or JSON Resume schema.' };
+    }
+
     let rawText: string;
     if (ext === 'pdf') rawText = await extractTextFromPdf(file);
     else if (ext === 'doc') return { success: false, error: 'Legacy .doc format is not supported. Please save as .docx and try again.' };
@@ -655,7 +693,7 @@ export async function importResumeFromFile(file: File): Promise<ImportResult> {
   }
 }
 
-export const SUPPORTED_IMPORT_FORMATS = '.pdf,.docx,.txt,.html,.htm,.md';
+export const SUPPORTED_IMPORT_FORMATS = '.pdf,.docx,.txt,.html,.htm,.md,.json';
 
 /**
  * Import resume from raw text (paste workflow).

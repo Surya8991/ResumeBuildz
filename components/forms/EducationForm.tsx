@@ -12,7 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { toMonthInput, fromMonthInput, isValidDateRange } from '@/lib/dateUtils';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Plus, Trash2, ChevronDown, ChevronUp, GripVertical } from 'lucide-react';
+import { Plus, Trash2, ChevronDown, ChevronUp, GripVertical, GraduationCap } from 'lucide-react';
 import { DndContext, closestCenter, DragEndEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -175,9 +175,13 @@ export default function EducationForm() {
       </div>
 
       {resumeData.education.length === 0 && (
-        <p className="text-sm text-muted-foreground text-center py-8">
-          No education added yet. Click &quot;Add&quot; to get started.
-        </p>
+        <Card className="p-8 text-center border-dashed">
+          <GraduationCap className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
+          <p className="text-sm text-muted-foreground">No education added yet.</p>
+          <Button onClick={handleAdd} size="sm" variant="outline" className="mt-3 gap-1.5">
+            <Plus className="h-4 w-4" /> Add Your First Education
+          </Button>
+        </Card>
       )}
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>

@@ -13,7 +13,7 @@ import BulletScoreList from '@/components/forms/BulletScoreList';
 import { toMonthInput, fromMonthInput, isValidDateRange } from '@/lib/dateUtils';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Plus, Trash2, ChevronDown, ChevronUp, GripVertical } from 'lucide-react';
+import { Plus, Trash2, ChevronDown, ChevronUp, GripVertical, FolderGit2 } from 'lucide-react';
 import { DndContext, closestCenter, DragEndEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -176,9 +176,13 @@ export default function ProjectsForm() {
       </div>
 
       {resumeData.projects.length === 0 && (
-        <p className="text-sm text-muted-foreground text-center py-8">
-          No projects added yet. Click &quot;Add&quot; to get started.
-        </p>
+        <Card className="p-8 text-center border-dashed">
+          <FolderGit2 className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
+          <p className="text-sm text-muted-foreground">No projects added yet.</p>
+          <Button onClick={handleAdd} size="sm" variant="outline" className="mt-3 gap-1.5">
+            <Plus className="h-4 w-4" /> Add Your First Project
+          </Button>
+        </Card>
       )}
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>

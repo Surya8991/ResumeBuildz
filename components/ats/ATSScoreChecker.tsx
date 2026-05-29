@@ -58,6 +58,13 @@ export default function ATSScoreChecker() {
     return 'border-red-500';
   };
 
+  // Non-color cue (glyph + word) so colorblind / low-vision users get the same signal.
+  const getScoreTier = (pct: number): { glyph: string; word: string } => {
+    if (pct >= 80) return { glyph: '✓', word: 'good' };
+    if (pct >= 50) return { glyph: '△', word: 'fair' };
+    return { glyph: '✗', word: 'low' };
+  };
+
   const getIcon = (status: ATSCheck['status']) => {
     switch (status) {
       case 'pass': return <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />;
@@ -115,7 +122,17 @@ export default function ATSScoreChecker() {
         </h3>
 
         <div className="flex justify-center py-3">
-          <div className={`w-24 h-24 rounded-full border-4 ${getScoreRing()} flex flex-col items-center justify-center`}>
+          <div
+            className={`relative w-24 h-24 rounded-full border-4 ${getScoreRing()} flex flex-col items-center justify-center`}
+            role="meter"
+            aria-valuenow={score}
+            aria-valuemin={0}
+            aria-valuemax={maxScore}
+            aria-label={`ATS score ${score} of ${maxScore} (${getScoreTier(score).word})`}
+          >
+            <span aria-hidden="true" className={`absolute -top-1 -right-1 text-xs font-bold px-1.5 py-0.5 rounded-full bg-background border ${getScoreRing()} ${getScoreColor()}`}>
+              {getScoreTier(score).glyph}
+            </span>
             <span className={`text-2xl font-bold ${getScoreColor()}`}>{score}</span>
             <span className="text-xs text-muted-foreground">/ {maxScore}</span>
           </div>
@@ -234,7 +251,17 @@ export default function ATSScoreChecker() {
           <div className="mt-4 space-y-3">
             {/* Match score */}
             <div className="flex items-center gap-3">
-              <div className={`w-16 h-16 rounded-full border-[3px] ${getMatchRing(keywordResult.matchPercentage)} flex flex-col items-center justify-center shrink-0`}>
+              <div
+                className={`relative w-16 h-16 rounded-full border-[3px] ${getMatchRing(keywordResult.matchPercentage)} flex flex-col items-center justify-center shrink-0`}
+                role="meter"
+                aria-valuenow={keywordResult.matchPercentage}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label={`Keyword match ${keywordResult.matchPercentage}% (${getScoreTier(keywordResult.matchPercentage).word})`}
+              >
+                <span aria-hidden="true" className={`absolute -top-1 -right-1 text-[10px] font-bold px-1 rounded-full bg-background border ${getMatchRing(keywordResult.matchPercentage)} ${getMatchColor(keywordResult.matchPercentage)}`}>
+                  {getScoreTier(keywordResult.matchPercentage).glyph}
+                </span>
                 <span className={`text-lg font-bold ${getMatchColor(keywordResult.matchPercentage)}`}>{keywordResult.matchPercentage}%</span>
               </div>
               <div>
@@ -311,7 +338,7 @@ export default function ATSScoreChecker() {
                   {aiGapLoading ? 'Analyzing...' : 'AI Gap Analysis'}
                 </Button>
                 {aiGapAnalysis && (
-                  <Card className="mt-2 p-3 bg-blue-50/50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-900">
+                  <Card aria-live="polite" className="mt-2 p-3 bg-blue-50/50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-900">
                     <pre className="text-xs text-foreground whitespace-pre-wrap leading-relaxed font-sans">{aiGapAnalysis}</pre>
                   </Card>
                 )}

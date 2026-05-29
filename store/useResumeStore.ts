@@ -25,13 +25,23 @@ import { StyleOptions, DEFAULT_STYLE_OPTIONS } from '@/components/templates/Temp
 let writeTimer: ReturnType<typeof setTimeout> | null = null;
 const pendingWrites = new Map<string, string>();
 
+// Fires when a localStorage write fails (private mode / quota exceeded).
+// The builder shell listens for this and shows a persistent banner so the
+// user isn't misled by the "Saved" autosave chip.
+function notifyStorageError() {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('resume-storage-error'));
+  }
+}
+
 function flushWrites() {
   if (typeof window === 'undefined') return;
   for (const [key, value] of pendingWrites) {
     try {
       window.localStorage.setItem(key, value);
     } catch {
-      // Quota exceeded or storage disabled
+      // Quota exceeded or storage disabled (private mode, full disk, etc.)
+      notifyStorageError();
     }
   }
   pendingWrites.clear();
@@ -467,6 +477,20 @@ export const useResumeStore = create<ResumeStore>()(
     {
       name: 'resumeforge-storage',
       storage: createJSONStorage(() => debouncedStorage),
+      // Bump when a schema change makes old payloads incompatible. Add the
+      // matching forward step inside `migrate` below. Zustand persists this
+      // number alongside the state and replays migrations on hydrate.
+      version: 1,
+      migrate: (persistedState, _version) => {
+        // No schema diffs yet; this stub exists so adding a field later only
+        // requires bumping `version` above and inserting a `if (_version < N)`
+        // branch here. Any non-object payload is dropped and the store
+        // falls back to its initial defaults.
+        if (!persistedState || typeof persistedState !== 'object') {
+          return {} as ResumeStore;
+        }
+        return persistedState as ResumeStore;
+      },
       // History is session-only; persisting 50 deep-cloned snapshots would bloat localStorage by megabytes.
       partialize: (state) => {
         const { history: _h, historyIndex: _i, ...rest } = state;

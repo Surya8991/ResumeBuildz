@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Plus, Trash2, X, Sparkles } from 'lucide-react';
+import { Plus, Trash2, X, Sparkles, Wrench } from 'lucide-react';
 import { useState, useMemo } from 'react';
 import { INDUSTRIES } from '@/components/ats/data/industryKeywords';
 import { generateId } from '@/lib/ids';
@@ -98,9 +98,13 @@ export default function SkillsForm() {
       </div>
 
       {resumeData.skills.length === 0 && (
-        <p className="text-sm text-muted-foreground text-center py-8">
-          No skills added yet. Click &quot;Add Category&quot; to organize your skills.
-        </p>
+        <Card className="p-8 text-center border-dashed">
+          <Wrench className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
+          <p className="text-sm text-muted-foreground">No skills added yet.</p>
+          <Button onClick={handleAdd} size="sm" variant="outline" className="mt-3 gap-1.5">
+            <Plus className="h-4 w-4" /> Add Your First Category
+          </Button>
+        </Card>
       )}
 
       {suggestedSkills.length > 0 && (

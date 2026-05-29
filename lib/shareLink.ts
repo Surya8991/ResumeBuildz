@@ -50,11 +50,28 @@ export class ShareLinkTooLargeError extends Error {
  * Encode ResumeData into a URL-safe fragment. Uses CompressionStream when
  * available (all modern browsers) for ~70% size reduction.
  *
+ * Pass `opts.expiresAt` (unix ms) to bake an expiry into the link itself —
+ * the viewer reads this and refuses to render past that timestamp. There's
+ * no server check; this is convenience, not enforcement (a determined viewer
+ * can extract the data from the URL fragment).
+ *
  * Throws {@link ShareLinkTooLargeError} if the encoded payload exceeds
  * {@link MAX_SHARE_PAYLOAD_LENGTH} characters.
  */
-export async function encodeResume(data: ResumeData): Promise<string> {
-  const json = JSON.stringify(data);
+export interface ShareEnvelope {
+  v: 1;
+  data: ResumeData;
+  exp?: number;
+}
+
+export async function encodeResume(data: ResumeData, opts?: { expiresAt?: number }): Promise<string> {
+  // Wrap in a versioned envelope when expiresAt is set. Legacy payloads
+  // without expiry stay as the bare resume object for backwards compatibility
+  // with already-shared links.
+  const envelope: ResumeData | ShareEnvelope = opts?.expiresAt
+    ? ({ v: 1, data, exp: opts.expiresAt } as ShareEnvelope)
+    : data;
+  const json = JSON.stringify(envelope);
   const bytes = new TextEncoder().encode(json);
 
   // Try gzip compression — cuts URL length roughly 3-4x.
@@ -82,15 +99,20 @@ export async function encodeResume(data: ResumeData): Promise<string> {
   return payload;
 }
 
-export async function decodeResume(payload: string): Promise<ResumeData | null> {
+export type DecodeResult =
+  | { kind: 'ok'; data: ResumeData; expiresAt?: number }
+  | { kind: 'expired'; expiredAt: number }
+  | { kind: 'invalid' };
+
+export async function decodeResume(payload: string): Promise<DecodeResult> {
   try {
     const [tag, body] = payload.split(':', 2);
-    if (!tag || !body) return null;
+    if (!tag || !body) return { kind: 'invalid' };
     const bytes = base64UrlDecode(body);
 
     let json: string;
     if (tag === 'g') {
-      if (typeof DecompressionStream === 'undefined') return null;
+      if (typeof DecompressionStream === 'undefined') return { kind: 'invalid' };
       const stream = new Response(
         new Blob([bytes as BlobPart]).stream().pipeThrough(new DecompressionStream('gzip')),
       );
@@ -98,7 +120,7 @@ export async function decodeResume(payload: string): Promise<ResumeData | null> 
     } else if (tag === 'p') {
       json = new TextDecoder().decode(bytes);
     } else {
-      return null;
+      return { kind: 'invalid' };
     }
 
     // Reject prototype-pollution keys anywhere in the decoded payload — the
@@ -107,10 +129,24 @@ export async function decodeResume(payload: string): Promise<ResumeData | null> 
       if (key === '__proto__' || key === 'constructor' || key === 'prototype') return undefined;
       return value;
     });
-    if (!parsed?.personalInfo) return null;
-    return parsed as ResumeData;
+
+    // Versioned envelope (v=1) with optional expiry, or legacy bare resume.
+    let data: ResumeData;
+    let expiresAt: number | undefined;
+    if (parsed && typeof parsed === 'object' && parsed.v === 1 && parsed.data) {
+      data = parsed.data as ResumeData;
+      expiresAt = typeof parsed.exp === 'number' ? parsed.exp : undefined;
+    } else {
+      data = parsed as ResumeData;
+    }
+
+    if (!data?.personalInfo) return { kind: 'invalid' };
+    if (expiresAt && Date.now() > expiresAt) {
+      return { kind: 'expired', expiredAt: expiresAt };
+    }
+    return expiresAt ? { kind: 'ok', data, expiresAt } : { kind: 'ok', data };
   } catch {
-    return null;
+    return { kind: 'invalid' };
   }
 }
 

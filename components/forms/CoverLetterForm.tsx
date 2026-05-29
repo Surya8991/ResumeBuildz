@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useResumeStore } from '@/store/useResumeStore';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -32,6 +32,9 @@ export default function CoverLetterForm() {
   const [tone, setTone] = useState<Tone>('professional');
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+  // Cancel any in-flight stream on unmount or re-run so we don't burn the
+  // user's Groq quota generating output they'll never see.
+  const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     if (!jobTitle && resumeData.personalInfo.jobTitle) {
@@ -40,12 +43,17 @@ export default function CoverLetterForm() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => () => abortRef.current?.abort(), []);
+
   const generateCoverLetter = async () => {
     const apiKey = getGroqApiKey();
     if (!apiKey) {
       alert('Set up your Groq API key in the AI tab first.');
       return;
     }
+
+    abortRef.current?.abort();
+    abortRef.current = new AbortController();
 
     const { personalInfo, summary, experience, skills } = resumeData;
     const context = [
@@ -66,6 +74,7 @@ export default function CoverLetterForm() {
         (_delta, full) => updateCoverLetter(full),
         900,
         tone === 'casual' ? 0.85 : tone === 'formal' ? 0.5 : 0.7,
+        abortRef.current.signal,
       );
       if (!res.success) alert(res.error || 'AI generation failed.');
     } catch {

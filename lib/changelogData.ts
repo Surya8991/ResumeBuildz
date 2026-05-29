@@ -14,6 +14,36 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: 'v1.30.0',
+    date: 'May 29, 2026',
+    isoDate: '2026-05-29',
+    title: 'Builder Polish: ATS Badges, Cover Letter PDF, JSON Resume, Share Expiry',
+    added: [
+      'ATS-risk badges in the template picker — every template card now carries a small ✓ / △ / ✗ pill so users picking by aesthetics see upfront whether the layout is ATS-safe (single column), caution (decorative elements some parsers mis-read), or risky (multi-column / sidebar that ATS may reorder or drop).',
+      'Empty-state CTA cards on Education / Projects / Skills forms with a clear "Add Your First X" button.',
+      'Persistent offline banner when localStorage writes fail (private window or quota) — replaces the silent failure where the autosave chip still claimed "Saved".',
+      'Confirm-before-import dialog summarizing what is about to land ("Import 4 experience, 2 education, 18 skills?") with a reminder that Ctrl+Z reverts.',
+      'Share-link expiry (Never / 24h / 7d / 30d). Expiry timestamp encoded in the URL fragment; viewer renders an "expired" page past that date. Zero-trust model preserved.',
+      'Cover letter as PDF cover page — new checkbox in the Export → PDF menu prepends a styled cover-letter page to the PDF. Hidden on screen to avoid cluttering the preview.',
+      'JSON Resume schema import/export (jsonresume.org-compatible). Export menu gets "JSON Resume .json"; file import auto-detects the schema.',
+      'Schema-version migration scaffold on the persisted store so future schema changes can land without breaking existing localStorage data.',
+      'Toast warning when version history JSON is unreadable (instead of silent loss).',
+    ],
+    improved: [
+      'ATS scoring is now per-entry, not all-or-nothing. Adding one experience without a date no longer drops the Work Experience section from 25 to 15 points; partials get half credit.',
+      'Quantified-results detection broadened to catch $50K, $1.2M, 25x, 3.5×, 2nd / 3rd / 4th, 3M users — the metric formats real resumes use.',
+      'KeywordAutoInsert uses a small allowlist of real tech acronyms (API, SQL, AWS, CI/CD, …) so non-tech all-caps words like NBA / CEO / USA stop being classified as skills.',
+      'ATS score rings now include a non-color glyph (✓ / △ / ✗) plus role="meter" + aria-label, so colorblind and screen-reader users get the same signal as the colored rings.',
+      'Hardened print CSS — bullets no longer split across pages; paragraph orphans/widows policy added; the in-preview page-break indicator is now hidden in the printed PDF.',
+      'Import robustness — AI-fallback parser normalizes any non-array section (including explicit null) to [], so a malformed AI response cannot crash the import flow.',
+      '44 × 44 touch targets on the preview zoom buttons, with proper aria labels.',
+      'aria-live on async AI regions so screen-reader users get notified when generation completes or errors.',
+      'AbortController on streaming AI calls (JDTailor, CoverLetterForm) — navigating away mid-stream cancels the request instead of burning Groq quota.',
+      'Fixed: Groq API key was being sent quoted because useSessionStorage JSON-stringifies its value, while getGroqApiKey() read the raw string. Every Groq call sent Authorization: Bearer "gsk_..." and got back 401 — AI features looked broken even with a valid key. Now unwrapped on read.',
+      '/api/share/invite refactored to use sendEmail() from lib/email.ts instead of a duplicate fetch — picks up the shared error logging; no behavior change for users.',
+    ],
+  },
+  {
     version: 'v1.29.0',
     date: 'May 24, 2026',
     isoDate: '2026-05-24',

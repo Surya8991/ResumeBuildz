@@ -11,6 +11,18 @@ type SectionType = 'skills' | 'experience' | 'summary' | 'education';
 
 const EDUCATION_TERMS = /\b(degree|bachelor|master|university|certified|certification|diploma|phd|mba|accredited|academic|coursework|gpa)\b/i;
 
+// Known tech acronyms — exclude false positives like "NBA", "USA", "CEO" that
+// would otherwise match the generic "ALL CAPS 2-10 chars" rule below.
+const TECH_ACRONYMS = new Set([
+  'API', 'APIS', 'REST', 'GRAPHQL', 'GRPC', 'SOAP', 'HTTP', 'HTTPS', 'TCP', 'UDP', 'SSH', 'SSL', 'TLS',
+  'SQL', 'NOSQL', 'CSS', 'HTML', 'XML', 'JSON', 'YAML', 'TOML', 'CSV', 'XSS', 'CSRF', 'JWT', 'OAUTH',
+  'AWS', 'GCP', 'IBM', 'ETL', 'ELT', 'CI', 'CD', 'CICD', 'CI/CD', 'DNS', 'CDN', 'VPC', 'IAM', 'S3', 'EC2', 'RDS', 'SNS', 'SQS',
+  'IDE', 'CLI', 'GUI', 'SDK', 'ORM', 'MVC', 'MVP', 'MVVM', 'SPA', 'PWA', 'SSR', 'SSG', 'CSR', 'WCAG', 'ARIA',
+  'AI', 'ML', 'NLP', 'LLM', 'CV', 'RAG', 'GAN', 'GPU', 'CPU', 'RAM', 'TPU',
+  'TDD', 'BDD', 'DRY', 'SOLID', 'OOP', 'FP', 'KPI', 'OKR', 'SLA', 'SLO', 'SLI', 'MTTR', 'MTTF',
+  'GIT', 'SVN', 'NPM', 'YARN', 'PNPM', 'GO', 'RUST', 'JAVA', 'C++', 'C#', 'F#',
+]);
+
 const ACTION_VERBS = new Set([
   'led', 'managed', 'developed', 'created', 'implemented', 'designed', 'built',
   'launched', 'increased', 'reduced', 'improved', 'achieved', 'delivered',
@@ -22,12 +34,14 @@ const ACTION_VERBS = new Set([
 
 function classifyKeyword(keyword: string): SectionType {
   const lower = keyword.toLowerCase().trim();
+  const upper = keyword.trim().toUpperCase();
 
   // Tech terms -> skills
   if (
     /\.(js|ts|py|rb|go|rs|cs|java|net)$/i.test(keyword) ||
     /\+\+|#/.test(keyword) ||
-    (/^[A-Z]{2,}$/.test(keyword) && keyword.length <= 10) // e.g., API, SQL, AWS, CSS
+    // Allowlisted tech acronym (avoids false positives like "NBA" / "CEO").
+    TECH_ACRONYMS.has(upper)
   ) {
     return 'skills';
   }

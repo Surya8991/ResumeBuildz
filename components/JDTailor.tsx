@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useResumeStore } from '@/store/useResumeStore';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -27,6 +27,11 @@ export default function JDTailor() {
   const [error, setError] = useState('');
   const [streamed, setStreamed] = useState('');
   const [preview, setPreview] = useState<{ summary: string; bullets: string[] } | null>(null);
+  // Cancel any in-flight stream when the user re-runs or unmounts the panel,
+  // so we don't burn the user's Groq quota on output they'll never see.
+  const abortRef = useRef<AbortController | null>(null);
+
+  useEffect(() => () => abortRef.current?.abort(), []);
 
   const canRun = jd.trim().length > 30 && resumeData.experience.length > 0;
 
@@ -38,6 +43,8 @@ export default function JDTailor() {
       return;
     }
 
+    abortRef.current?.abort();
+    abortRef.current = new AbortController();
     setError('');
     setStreamed('');
     setPreview(null);
@@ -54,7 +61,7 @@ Rules: 3 sentences max for summary; up to 5 bullets each starting with a strong 
     const user = `JOB DESCRIPTION:\n${jd.trim()}\n\nCURRENT SUMMARY:\n${currentSummary}\n\nCURRENT BULLETS (for role "${topExp.position}" at "${topExp.company}"):\n${currentBullets}\n\nRewrite for better JD match.`;
 
     try {
-      const res = await streamGroqAI(system, user, (_delta, full) => setStreamed(full), 1000, 0.5);
+      const res = await streamGroqAI(system, user, (_delta, full) => setStreamed(full), 1000, 0.5, abortRef.current.signal);
       if (!res.success || !res.content) {
         setError(res.error || 'AI rewrite failed.');
         setLoading(false);
@@ -139,7 +146,7 @@ Rules: 3 sentences max for summary; up to 5 bullets each starting with a strong 
         )}
 
         {error && (
-          <div className="flex items-start gap-2 text-xs text-red-600 bg-red-50 p-2 rounded">
+          <div role="alert" aria-live="polite" className="flex items-start gap-2 text-xs text-red-600 bg-red-50 p-2 rounded">
             <AlertCircle className="h-3.5 w-3.5 shrink-0 mt-0.5" />
             <span>{error}</span>
           </div>
@@ -147,7 +154,7 @@ Rules: 3 sentences max for summary; up to 5 bullets each starting with a strong 
       </Card>
 
       {preview && (
-        <Card className="p-3 space-y-4 border-green-200">
+        <Card aria-live="polite" className="p-3 space-y-4 border-green-200">
           <p className="text-xs font-semibold text-green-700">
             AI rewrite ready — review before applying (current version will be auto-saved)
           </p>

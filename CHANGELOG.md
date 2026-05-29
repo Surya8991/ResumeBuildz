@@ -6,6 +6,40 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ---
 
+## [1.30.0] - 2026-05-29
+
+### Added
+
+- **ATS-risk badges in the template picker.** Each template card now carries a small `✓ ATS` / `△ ATS` / `✗ ATS` pill (with a tooltip explaining the trade-off) so users picking by aesthetics know upfront whether the layout is single-column safe, has decorative elements some parsers mis-read, or is a multi-column layout the ATS may reorder or drop. `Sidebar` / `Modern` / `Tech` are flagged risky; `Gradient` / `Timeline` / `Infographic` flagged caution.
+- **Empty-state CTA cards** for Education / Projects / Skills forms (matching the existing Experience pattern) — first-run users now see a clear "Add Your First X" button instead of a one-line tip.
+- **Private-mode / quota offline banner.** When `localStorage` writes fail (private window, full disk, browser block) a persistent amber banner appears: "Edits aren't being saved. Open in a normal window to save." Replaces the previously silent failure where the autosave chip still claimed "Saved".
+- **Confirm-before-import dialog.** Paste / file / LinkedIn imports now summarize what's about to land ("Import 4 experience, 2 education, 18 skills?") and remind the user that Ctrl+Z reverts. Prior rollback path is unchanged.
+- **Share-link expiry.** Share dialog picks Never / 24h / 7d / 30d. Expiry timestamp encoded into the URL fragment alongside the resume data; viewer shows an "expired" page past that date. Zero-trust model preserved — no server check.
+- **Cover letter as PDF cover page.** New checkbox in the Export → PDF menu (only enabled when a cover letter exists) prepends a styled cover-letter page to the printed PDF with `page-break-after: always`. Hidden on screen so it doesn't clutter the live preview.
+- **JSON Resume schema import/export.** New `lib/jsonResume.ts` maps between our shape and `jsonresume.org/schema`. Export menu gets "JSON Resume .json"; file import auto-detects whether a `.json` upload is our internal shape or JSON Resume and parses accordingly. Awards round-trip via custom sections.
+- **Schema-version migration scaffold.** Zustand persist now stamps `version: 1` on the stored payload with a `migrate` hook ready to absorb future schema changes without breaking existing localStorage data.
+- **Corrupt version-history warning.** When `versionHistory.read()` hits unparseable JSON, the bad payload is dropped and a one-time toast surfaces: "Version history was unreadable and has been reset." (Previously silent.)
+
+### Changed
+
+- **ATS scoring is now per-entry, not all-or-nothing.** Adding one experience entry without a date no longer drops the whole Work Experience section from 25 → 15. Each entry contributes proportionally; partials get half credit.
+- **Quantified-results detection broadened** from `\d+%|\$\d+|\d+\+` to also catch `$50K`, `$1.2M`, `25x`, `3.5×`, `2nd / 3rd / 4th`, `3M users` — the metric formats real resumes actually use.
+- **Tech-keyword allowlist for KeywordAutoInsert.** A small allowlist of real tech acronyms (API, SQL, AWS, CI/CD, …) replaces the generic "ALL-CAPS 2-10 chars" heuristic, so non-tech all-caps words like NBA / CEO / USA no longer get classified as skills.
+- **Non-color glyph on ATS score rings** (`✓ / △ / ✗`) plus `role="meter"` + `aria-label` so colorblind and screen-reader users get the same signal as the colored rings.
+- **Page-break preview guide hidden in print.** The dashed page-break indicators in the live preview were inheriting `visibility: visible` from the print whitelist; now explicitly suppressed in `@media print`.
+- **Hardened print CSS** — added `li { page-break-inside: avoid }` so bullets don't split across pages, and `p { orphans: 2; widows: 2 }` for paragraph breaks.
+- **Import robustness** — AI-fallback parser now normalizes any non-array section (including explicit `null`) to `[]` so a malformed AI response can't crash the import. PDF column detection retains its existing "no confident gap → single-column" fallback.
+- **`44 × 44` touch targets on preview zoom buttons** + proper `aria-label`s.
+- **`aria-live` on async AI regions** (AISuggestions, JDTailor, ATSScoreChecker AI Gap) so screen-reader users get notified when generation completes or errors.
+- **`AbortController` on streaming AI calls** (JDTailor, CoverLetterForm) — navigating away mid-stream now cancels the request instead of burning Groq quota on output the user will never see.
+
+### Fixed
+
+- **Groq API key was being sent quoted.** `useSessionStorage` from `usehooks-ts` JSON-stringifies its value (so `gsk_abc...` was stored as `"gsk_abc..."`), and `getGroqApiKey()` read the raw string — every Groq call sent `Authorization: Bearer "gsk_..."` and got back 401. AI features looked broken even with a valid key. `getGroqApiKey()` now unwraps the JSON-quoted form when present.
+- **`/api/share/invite`** refactored to use `sendEmail()` from `lib/email.ts` instead of a duplicate `fetch` + locally-redefined `escapeHtml` — picks up the shared error logging, no behavior change for users.
+
+---
+
 ## [1.29.0] - 2026-05-24
 
 ### Added

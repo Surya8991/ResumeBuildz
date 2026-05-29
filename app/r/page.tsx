@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { AlertCircle, Copy, FileText, Printer } from 'lucide-react';
+import { AlertCircle, Clock, Copy, FileText, Printer } from 'lucide-react';
 import { useResumeStore } from '@/store/useResumeStore';
 import { decodeResume } from '@/lib/shareLink';
 import ResumePreview from '@/components/preview/ResumePreview';
@@ -15,8 +15,9 @@ import type { ResumeData } from '@/types/resume';
  * corrupt, we show a clear error + CTA back to the builder.
  */
 export default function SharePage() {
-  const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [state, setState] = useState<'loading' | 'ready' | 'error' | 'expired'>('loading');
   const [errorMsg, setErrorMsg] = useState('');
+  const [expiredAt, setExpiredAt] = useState<number | null>(null);
   const [shareMode] = useState<'view' | 'copy'>(() => {
     if (typeof window === 'undefined') return 'view';
     return new URLSearchParams(window.location.search).get('mode') === 'copy' ? 'copy' : 'view';
@@ -34,13 +35,18 @@ export default function SharePage() {
       setState('error');
       return;
     }
-    decodeResume(raw).then((data: ResumeData | null) => {
-      if (!data) {
+    decodeResume(raw).then((result) => {
+      if (result.kind === 'expired') {
+        setExpiredAt(result.expiredAt);
+        setState('expired');
+        return;
+      }
+      if (result.kind === 'invalid') {
         setErrorMsg('Link is corrupt or from an incompatible version.');
         setState('error');
         return;
       }
-      setSharedData(data);
+      setSharedData(result.data);
       setState('ready');
     });
   }, []);
@@ -60,6 +66,27 @@ export default function SharePage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <p className="text-sm text-gray-500">Loading shared resume...</p>
+      </div>
+    );
+  }
+
+  if (state === 'expired') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-slate-900 to-black text-white px-4">
+        <div className="text-center max-w-md">
+          <Clock className="h-12 w-12 text-amber-400 mx-auto mb-4" />
+          <h1 className="text-2xl font-bold mb-2">This share link has expired</h1>
+          <p className="text-sm text-gray-400 mb-6">
+            The sender set this link to expire on {expiredAt ? new Date(expiredAt).toLocaleString() : 'an earlier date'}.
+            Ask them for a fresh link, or build your own.
+          </p>
+          <Link
+            href="/builder"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-500 text-white rounded-xl font-semibold hover:bg-blue-600 transition"
+          >
+            <FileText className="h-4 w-4" /> Build your own
+          </Link>
+        </div>
       </div>
     );
   }

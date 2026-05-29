@@ -5,7 +5,14 @@ export function getGroqApiKey(): string | null {
   if (typeof window === 'undefined') return null;
   // sessionStorage: key is scoped to the current tab and cleared automatically
   // when the tab closes, limiting the exposure window vs. localStorage.
-  return sessionStorage.getItem('groq-api-key');
+  const raw = sessionStorage.getItem('groq-api-key');
+  if (!raw) return null;
+  // The UI writes this via usehooks-ts `useSessionStorage`, which JSON-stringifies
+  // the value (so a string is stored quoted). Unwrap if needed; tolerate either shape.
+  if (raw.startsWith('"') && raw.endsWith('"')) {
+    try { return JSON.parse(raw) as string; } catch { return raw; }
+  }
+  return raw;
 }
 
 export async function callGroqAI(

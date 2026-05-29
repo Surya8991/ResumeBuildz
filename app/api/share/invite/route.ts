@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { rateLimit, clientId } from '@/lib/rateLimit';
 import { SITE_URL } from '@/lib/siteConfig';
 import { auth } from '@/lib/auth';
+import { sendEmail, emailEnabled, escapeHtml } from '@/lib/email';
 import { headers } from 'next/headers';
 
 export const dynamic = 'force-dynamic';
@@ -86,9 +87,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ emailSent: false, error: 'Invite link must be a ResumeBuildz share link.' }, { status: 400 });
   }
 
-  const resendKey = process.env.RESEND_API_KEY;
-  const from = process.env.SHARE_INVITE_FROM || process.env.WELCOME_FROM || 'ResumeBuildz <noreply@resumebuildz.tech>';
-  if (!resendKey) {
+  if (!emailEnabled()) {
     return NextResponse.json({ emailSent: false, error: 'Email is not configured. Copy the invite link instead.' });
   }
 
@@ -97,21 +96,13 @@ export async function POST(req: NextRequest) {
     ? `${resumeName} was shared with copy access`
     : `${resumeName} was shared with you`;
 
-  const resendRes = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${resendKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      from,
-      to: [email],
-      subject,
-      html: inviteHtml({ resumeName, inviteUrl, canCopy }),
-    }),
+  const sent = await sendEmail({
+    to: email,
+    subject,
+    html: inviteHtml({ resumeName, inviteUrl, canCopy }),
   });
 
-  if (!resendRes.ok) {
+  if (!sent) {
     return NextResponse.json({ emailSent: false, error: 'Email failed. Copy the invite link instead.' });
   }
 
@@ -147,14 +138,4 @@ function inviteHtml({ resumeName, inviteUrl, canCopy }: { resumeName: string; in
     </table>
   </body>
 </html>`;
-}
-
-// Prevents HTML injection in email body; resumeName and inviteUrl come from user input.
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
 }

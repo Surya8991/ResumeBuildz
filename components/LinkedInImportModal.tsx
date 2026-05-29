@@ -13,6 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Download, Loader2, AlertCircle } from 'lucide-react';
 import { parseLinkedInJson } from '@/lib/importLinkedIn';
+import { confirmImport } from '@/lib/importResume';
 import { useResumeStore } from '@/store/useResumeStore';
 import { saveVersion } from '@/lib/versionHistory';
 import { useToast } from '@/components/Toast';
@@ -40,6 +41,7 @@ export default function LinkedInImportModal({ open, onOpenChange }: Props) {
       setError(res.error || 'Unknown error');
       return;
     }
+    if (!confirmImport(res.data, 'LinkedIn profile')) return;
     importData(res.data);
     showToast('LinkedIn data imported. Prior resume saved to version history.', 'success');
     setJson('');

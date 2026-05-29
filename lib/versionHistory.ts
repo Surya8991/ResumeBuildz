@@ -29,6 +29,12 @@ function read(): ResumeVersion[] {
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed : [];
   } catch {
+    // Corrupt JSON — drop the bad payload and notify the UI so the user
+    // isn't surprised when the version list silently empties.
+    try { localStorage.removeItem(KEY); } catch { /* private mode — nothing to do */ }
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('resume-corrupt-versions'));
+    }
     return [];
   }
 }

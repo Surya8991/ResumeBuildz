@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { ClipboardPaste, X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { importResumeFromText } from '@/lib/importResume';
+import { importResumeFromText, confirmImport } from '@/lib/importResume';
 import { useResumeStore } from '@/store/useResumeStore';
 import { useToast } from '@/components/Toast';
 
@@ -40,6 +40,10 @@ export default function PasteImportModal({ open, onClose }: PasteImportModalProp
     try {
       const result = await importResumeFromText(text);
       if (result.success && result.data) {
+        if (!confirmImport(result.data, 'pasted resume')) {
+          setLoading(false);
+          return;
+        }
         importData(result.data);
         showToast('Resume imported. Review and edit the extracted data.', 'success', 5000);
         setText('');

@@ -254,7 +254,7 @@ export default function AISuggestions() {
 
       {/* Error */}
       {error && (
-        <div className="flex items-start gap-2 text-xs text-red-600 bg-red-50 dark:bg-red-950/30 p-2 rounded-lg">
+        <div role="alert" aria-live="polite" className="flex items-start gap-2 text-xs text-red-600 bg-red-50 dark:bg-red-950/30 p-2 rounded-lg">
           <AlertCircle className="h-3.5 w-3.5 shrink-0 mt-0.5" />
           <span>{error}</span>
         </div>
@@ -262,7 +262,7 @@ export default function AISuggestions() {
 
       {/* Result */}
       {result && (
-        <Card className="p-3 relative">
+        <Card aria-live="polite" className="p-3 relative">
           <button
             onClick={copyToClipboard}
             className="absolute top-2 right-2 p-1 rounded hover:bg-muted transition-colors"

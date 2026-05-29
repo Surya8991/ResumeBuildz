@@ -100,35 +100,60 @@ export interface ResumeData {
 
 export type TemplateName = 'classic' | 'modern' | 'minimalist' | 'professional' | 'executive' | 'creative' | 'compact' | 'tech' | 'elegant' | 'bold' | 'academic' | 'corporate' | 'nordic' | 'gradient' | 'timeline' | 'sidebar' | 'infographic' | 'federal' | 'startup' | 'monochrome';
 
+// ATS parser compatibility hint:
+//  - 'safe'   : single column, plain text. Parses cleanly in every major ATS.
+//  - 'caution': decorative elements (timelines, gradient headers, skill bars) most ATS handle but a few mis-read.
+//  - 'risky'  : multi-column or sidebar layouts. Many ATS read top-to-bottom and reorder content or drop the sidebar entirely.
+export type AtsRisk = 'safe' | 'caution' | 'risky';
+
 export interface TemplateConfig {
   name: TemplateName;
   label: string;
   description: string;
   primaryColor: string;
+  atsRisk: AtsRisk;
 }
 
 export const TEMPLATES: TemplateConfig[] = [
-  { name: 'classic', label: 'Classic', description: 'Traditional single-column layout with serif fonts', primaryColor: '#1a1a1a' },
-  { name: 'modern', label: 'Modern', description: 'Two-column layout with accent sidebar', primaryColor: '#2563eb' },
-  { name: 'minimalist', label: 'Minimalist', description: 'Clean whitespace with subtle typography', primaryColor: '#374151' },
-  { name: 'professional', label: 'Professional', description: 'Bold headers with structured sections', primaryColor: '#0f766e' },
-  { name: 'executive', label: 'Executive', description: 'Elegant design with muted tones', primaryColor: '#4338ca' },
-  { name: 'creative', label: 'Creative', description: 'Colorful accents with unique layout', primaryColor: '#db2777' },
-  { name: 'compact', label: 'Compact', description: 'Dense single-column, fits more content', primaryColor: '#334155' },
-  { name: 'tech', label: 'Tech', description: 'Developer-focused with dark sidebar', primaryColor: '#10b981' },
-  { name: 'elegant', label: 'Elegant', description: 'Refined typography with soft accents', primaryColor: '#8b5cf6' },
-  { name: 'bold', label: 'Bold', description: 'Heavy typography with strong visual impact', primaryColor: '#1e293b' },
-  { name: 'academic', label: 'Academic', description: 'Research-focused with publications style', primaryColor: '#1e40af' },
-  { name: 'corporate', label: 'Corporate', description: 'Conservative design for traditional industries', primaryColor: '#0c4a6e' },
-  { name: 'nordic', label: 'Nordic', description: 'Scandinavian clean design with soft tones', primaryColor: '#64748b' },
-  { name: 'gradient', label: 'Gradient', description: 'Subtle gradient header with modern feel', primaryColor: '#7c3aed' },
-  { name: 'timeline', label: 'Timeline', description: 'Vertical timeline layout for experience', primaryColor: '#0891b2' },
-  { name: 'sidebar', label: 'Sidebar', description: 'Right-aligned sidebar with clean layout', primaryColor: '#059669' },
-  { name: 'infographic', label: 'Infographic', description: 'Visual skill bars and metric highlights', primaryColor: '#d946ef' },
-  { name: 'federal', label: 'Federal', description: 'Government resume format, formal style', primaryColor: '#1e3a5f' },
-  { name: 'startup', label: 'Startup', description: 'Modern startup aesthetic with bold accents', primaryColor: '#f97316' },
-  { name: 'monochrome', label: 'Monochrome', description: 'Pure black and white, no color accents', primaryColor: '#18181b' },
+  { name: 'classic', label: 'Classic', description: 'Traditional single-column layout with serif fonts', primaryColor: '#1a1a1a', atsRisk: 'safe' },
+  { name: 'modern', label: 'Modern', description: 'Two-column layout with accent sidebar', primaryColor: '#2563eb', atsRisk: 'risky' },
+  { name: 'minimalist', label: 'Minimalist', description: 'Clean whitespace with subtle typography', primaryColor: '#374151', atsRisk: 'safe' },
+  { name: 'professional', label: 'Professional', description: 'Bold headers with structured sections', primaryColor: '#0f766e', atsRisk: 'safe' },
+  { name: 'executive', label: 'Executive', description: 'Elegant design with muted tones', primaryColor: '#4338ca', atsRisk: 'safe' },
+  { name: 'creative', label: 'Creative', description: 'Colorful accents with unique layout', primaryColor: '#db2777', atsRisk: 'safe' },
+  { name: 'compact', label: 'Compact', description: 'Dense single-column, fits more content', primaryColor: '#334155', atsRisk: 'safe' },
+  { name: 'tech', label: 'Tech', description: 'Developer-focused with dark sidebar', primaryColor: '#10b981', atsRisk: 'risky' },
+  { name: 'elegant', label: 'Elegant', description: 'Refined typography with soft accents', primaryColor: '#8b5cf6', atsRisk: 'safe' },
+  { name: 'bold', label: 'Bold', description: 'Heavy typography with strong visual impact', primaryColor: '#1e293b', atsRisk: 'safe' },
+  { name: 'academic', label: 'Academic', description: 'Research-focused with publications style', primaryColor: '#1e40af', atsRisk: 'safe' },
+  { name: 'corporate', label: 'Corporate', description: 'Conservative design for traditional industries', primaryColor: '#0c4a6e', atsRisk: 'safe' },
+  { name: 'nordic', label: 'Nordic', description: 'Scandinavian clean design with soft tones', primaryColor: '#64748b', atsRisk: 'safe' },
+  { name: 'gradient', label: 'Gradient', description: 'Subtle gradient header with modern feel', primaryColor: '#7c3aed', atsRisk: 'caution' },
+  { name: 'timeline', label: 'Timeline', description: 'Vertical timeline layout for experience', primaryColor: '#0891b2', atsRisk: 'caution' },
+  { name: 'sidebar', label: 'Sidebar', description: 'Right-aligned sidebar with clean layout', primaryColor: '#059669', atsRisk: 'risky' },
+  { name: 'infographic', label: 'Infographic', description: 'Visual skill bars and metric highlights', primaryColor: '#d946ef', atsRisk: 'caution' },
+  { name: 'federal', label: 'Federal', description: 'Government resume format, formal style', primaryColor: '#1e3a5f', atsRisk: 'safe' },
+  { name: 'startup', label: 'Startup', description: 'Modern startup aesthetic with bold accents', primaryColor: '#f97316', atsRisk: 'safe' },
+  { name: 'monochrome', label: 'Monochrome', description: 'Pure black and white, no color accents', primaryColor: '#18181b', atsRisk: 'safe' },
 ];
+
+export const ATS_RISK_META: Record<AtsRisk, { label: string; tooltip: string; classes: string }> = {
+  safe: {
+    label: 'ATS-safe',
+    tooltip: 'Single column, plain text. Parses cleanly in every major ATS.',
+    classes: 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300',
+  },
+  caution: {
+    label: 'ATS-caution',
+    tooltip: 'Decorative elements that most ATS handle, but a few mis-read. Run an ATS check after editing.',
+    classes: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300',
+  },
+  risky: {
+    label: 'ATS-risky',
+    tooltip: 'Multi-column layout. Many ATS reorder or drop sidebar content. Use only if you know the employer parses cleanly.',
+    classes: 'bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-300',
+  },
+};
 
 // Accent presets offered in the builder color picker.
 export const DEFAULT_COLORS = [

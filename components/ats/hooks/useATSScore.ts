@@ -70,17 +70,25 @@ export function useATSScore() {
     score += summaryEarned;
     sectionScores.push({ label: 'Professional Summary', earned: summaryEarned, max: 10 });
 
-    // Work experience (25 pts)
+    // Work experience (25 pts) — per-entry contribution so one missing
+    // date doesn't tank the whole section.
     let experienceEarned = 0;
-    if (resumeData.experience.length > 0) {
-      const hasDescriptions = resumeData.experience.every((e) => e.highlights.length > 0);
-      const hasDates = resumeData.experience.every((e) => e.startDate);
-      if (hasDescriptions && hasDates) {
-        checks.push({ section: 'experience', label: 'Work Experience', status: 'pass', message: `${resumeData.experience.length} position(s) with descriptions and dates` });
-        experienceEarned = 25;
+    const expEntries = resumeData.experience;
+    if (expEntries.length > 0) {
+      const perEntry = 25 / expEntries.length;
+      let entriesMissing = 0;
+      for (const e of expEntries) {
+        const hasBullets = e.highlights.length > 0;
+        const hasDate = Boolean(e.startDate);
+        if (hasBullets && hasDate) { experienceEarned += perEntry; }
+        else if (hasBullets || hasDate) { experienceEarned += perEntry * 0.5; entriesMissing++; }
+        else { entriesMissing++; }
+      }
+      experienceEarned = Math.round(experienceEarned);
+      if (entriesMissing === 0) {
+        checks.push({ section: 'experience', label: 'Work Experience', status: 'pass', message: `${expEntries.length} position(s) with descriptions and dates` });
       } else {
-        checks.push({ section: 'experience', label: 'Work Experience', status: 'warn', message: 'Add bullet points and dates to all positions' });
-        experienceEarned = 15;
+        checks.push({ section: 'experience', label: 'Work Experience', status: 'warn', message: `${entriesMissing} position(s) missing bullets or dates` });
       }
     } else {
       checks.push({ section: 'experience', label: 'Work Experience', status: 'fail', message: 'Add at least one work experience entry' });
@@ -131,10 +139,12 @@ export function useATSScore() {
     score += actionVerbsEarned;
     sectionScores.push({ label: 'Action Verbs', earned: actionVerbsEarned, max: 10 });
 
-    // Quantified achievements (5 pts)
+    // Quantified achievements (5 pts) — broad regex covers the common forms
+    // resumes actually use, not just bare % and $.
     let quantifiedEarned = 0;
-    // Matches: percentage (50%), dollar amount ($1M), count with plus (10+).
-    const hasNumbers = allHighlights.some((h) => /\d+%|\$\d+|\d+\+/.test(h));
+    // Matches: $50K / $1.2M / $1,500 ; 25x / 3.5× ; 50% ; 2nd 3rd 4th ; 100+ ; 3M users (digit + K/M/B unit).
+    const QUANT_RE = /\$[\d,]+(?:\.\d+)?[KMB]?|\d+(?:\.\d+)?[KMB%x×]|\d+(?:st|nd|rd|th)\b|\d+\+/i;
+    const hasNumbers = allHighlights.some((h) => QUANT_RE.test(h));
     if (hasNumbers) {
       checks.push({ section: 'experience', label: 'Quantified Results', status: 'pass', message: 'Achievements include measurable results' });
       quantifiedEarned = 5;
