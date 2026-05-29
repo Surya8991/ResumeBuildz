@@ -351,7 +351,7 @@ export default function HomePage() {
               <Shield className="h-8 w-8 text-indigo-600 mx-auto mb-3" />
               <p className="font-semibold text-gray-900 mb-1.5">localStorage-first</p>
               <p className="text-sm text-gray-600 leading-relaxed">
-                Your resume data lives on your device by default. Not on our servers, not in an ad network. Cloud sync is opt-in.
+                Your resume data lives on your device. Not on our servers, not in an ad network. Sign-in only stores account/billing metadata.
               </p>
             </div>
             <div className="bg-white border border-gray-200 rounded-xl p-6 text-center">
@@ -393,7 +393,7 @@ export default function HomePage() {
               },
               {
                 q: 'Do I need to create an account?',
-                a: 'No. ResumeBuildz works entirely in your browser with no sign-up. Your resume data stays in localStorage on your device. Sign in optionally to sync across devices when Pro launches.',
+                a: 'No. ResumeBuildz works entirely in your browser with no sign-up. Your resume data stays in localStorage on your device. Sign in optionally to manage multiple profiles, save versions, and unlock Pro features.',
               },
               {
                 q: 'Will my data be sold?',

@@ -4,26 +4,30 @@ ResumeBuildz takes security seriously. This document describes the security arch
 
 ## Architecture Overview
 
-ResumeBuildz is a **hybrid application**: the builder UI runs entirely in the browser, but opt-in features (auth, cloud sync, billing, share invites) use server-side infrastructure.
+ResumeBuildz is a **hybrid application**: the builder UI runs entirely in the browser, but opt-in features (auth, billing, share invites) use server-side infrastructure.
 
 | Layer | Technology | What it handles |
 |---|---|---|
 | Frontend | Next.js 16 (App Router) | Builder UI, ATS tools, templates |
 | Auth | Better Auth | Google OAuth, email/password |
-| Database | Neon PostgreSQL + Drizzle ORM | User profiles, cloud sync |
-| Storage | Cloudflare R2 | Avatar uploads |
-| Billing | Stripe | Subscription management |
+| Database | Neon PostgreSQL + Drizzle ORM | User accounts, profile metadata, usage counters, Stripe webhook idempotency |
+| Storage | Cloudflare R2 | Avatar uploads (with cleanup on overwrite + account delete) |
+| Billing | Stripe | Subscription management (signature-verified webhooks, idempotent handlers) |
 | Email | Resend | Password reset, share invite emails |
+| Rate limiting | Upstash Redis (optional) | Per-IP limits on public write endpoints; falls back to in-memory burst guard |
 | API Routes | Next.js Route Handlers | Usage counting, account deletion (GDPR), profile management |
 
 ## Data Storage
 
-### Local (unauthenticated users)
-- Resume content, template, and preferences are stored in **`localStorage`** — they never leave the browser.
+### Resume content (everyone)
+- Resume content, template, and preferences live in **`localStorage`** — they never leave the browser, signed-in or not. The app never syncs resumes to the server.
 - Auto-saves debounce at 1 second; `beforeunload` / `pagehide` flush any pending writes.
+- Multiple resume profiles are stored as separate localStorage entries; the user picks the active one via the profile manager.
 
-### Cloud (signed-in users, opt-in)
-- Resume data can be synced to Neon PostgreSQL via cloud save.
+### Server-side data (signed-in users only)
+- Better Auth user, session, account, verification tables: required to log you in.
+- `profiles` table: plan tier, usage counters (AI rewrites, PDF exports), Stripe customer ID, account preferences. Does **not** contain resume content.
+- `webhook_events` table: Stripe event IDs for idempotency, no PII.
 - All data access is mediated through authenticated API routes — the client never connects to the database directly.
 - Server-side session verification via `auth.api.getSession()` in every Route Handler and Server Action.
 
@@ -42,7 +46,9 @@ ResumeBuildz is a **hybrid application**: the builder UI runs entirely in the br
 ## API Security
 
 ### Rate Limiting
-- Share invite endpoint: 10 requests per IP per hour.
+- Public write endpoints: share invite (10/h/IP), waitlist (10/h/IP), contact (5/h/IP), checkout (10/h/IP).
+- Backed by Upstash Redis when `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` are set — atomic `INCR` + first-write `EXPIRE` shared across every Lambda instance and region. Without those env vars the limiter degrades to a per-process in-memory burst guard (fine for dev/self-host; trivial to bypass on Vercel because each Lambda has its own counter).
+- Falls through to the in-memory guard on Upstash request failure so a Redis outage doesn't lock everyone out.
 - Same-origin enforcement: `Origin` header is validated against `SITE_URL` on all write endpoints.
 
 ### Input Validation
@@ -53,6 +59,7 @@ ResumeBuildz is a **hybrid application**: the builder UI runs entirely in the br
 ### Stripe Webhooks
 - All incoming Stripe webhook payloads are verified with `stripe.webhooks.constructEvent` using `STRIPE_WEBHOOK_SECRET` before any database writes.
 - Unverified payloads return 400 immediately.
+- **Idempotency:** every processed `event.id` is recorded in the `webhook_events` table via `INSERT ... ON CONFLICT DO NOTHING`. A Stripe replay short-circuits to `{ received: true, replay: true }` before any handler runs, so a retried event cannot double-apply a state change.
 
 ## Security Measures
 

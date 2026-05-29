@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ emailSent: false, error: 'Authentication required.' }, { status: 401 });
   }
 
-  const rl = rateLimit(`share-invite:${clientId(req)}`, 10, 60 * 60 * 1000);
+  const rl = await rateLimit(`share-invite:${clientId(req)}`, 10, 60 * 60 * 1000);
   if (!rl.allowed) {
     return NextResponse.json(
       { emailSent: false, error: `Rate limited. Try again in ${rl.retryAfterSec}s.` },

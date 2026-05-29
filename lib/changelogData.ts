@@ -14,6 +14,20 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: 'v1.32.0',
+    date: 'May 29, 2026',
+    isoDate: '2026-05-29',
+    title: 'Real Rate Limiting via Upstash Redis',
+    added: [
+      'Real rate limiting via Upstash Redis. When UPSTASH_REDIS_REST_URL + UPSTASH_REDIS_REST_TOKEN are set, every public write endpoint (share invite, waitlist, contact, checkout) gets a real per-IP/per-route limit shared across every Lambda instance and region. Atomic via Redis INCR + first-write EXPIRE; falls through to the in-memory burst guard on Upstash failure so a Redis blip never locks everyone out.',
+      'New optional env vars UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN. Without them the limiter degrades to the existing per-process in-memory burst guard — fine for dev and self-hosted single-node deploys; bypassable on Vercel because each Lambda instance has its own counter.',
+    ],
+    improved: [
+      'rateLimit() is now async; all four callers updated to await it.',
+      '@upstash/redis added as a dependency.',
+    ],
+  },
+  {
     version: 'v1.31.0',
     date: 'May 29, 2026',
     isoDate: '2026-05-29',

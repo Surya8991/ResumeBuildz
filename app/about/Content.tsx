@@ -134,7 +134,7 @@ export default function AboutPage() {
           <div className="grid md:grid-cols-2 gap-5">
             {[
               { n: '01', t: 'Free to start, forever', b: 'The build + export loop is free. No paywalled downloads, no watermarks, no 14-day trials that renew at Rs 2,000/month. Pro exists for unlimited AI rewrites and heavy-use features; the core tool stays free.' },
-              { n: '02', t: 'Your data stays yours', b: 'Resume content lives in your browser\'s localStorage by default. Sign-in is opt-in, and even then we store the minimum needed to sync across devices. We never sell data, never feed it to third-party recruiter networks, never use it to train models.' },
+              { n: '02', t: 'Your data stays yours', b: 'Resume content lives in your browser\'s localStorage — we don\'t store it on our servers. Sign-in is opt-in and only persists your account/billing metadata. We never sell data, never feed it to third-party recruiter networks, never use it to train models.' },
               { n: '03', t: 'ATS-first, always', b: 'Every template we ship is parsed and tested against real ATS (Workday, Greenhouse, Lever, iCIMS, Taleo). Pretty designs that fail parsers get rejected in review. Function before flourish.' },
               { n: '04', t: 'Honest AI', b: 'AI assists writing; it does not invent. Our rewrites use your actual bullet context so they never hallucinate metrics. If we cannot make a feature reliably honest, we do not ship it.' },
               { n: '05', t: 'Open and inspectable', b: 'Full source code on GitHub. Anyone can audit what runs in your browser, fork the project, contribute templates, or self-host. Transparency is not marketing; it is the default.' },

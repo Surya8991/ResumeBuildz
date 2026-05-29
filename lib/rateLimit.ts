@@ -1,29 +1,85 @@
-// Best-effort burst guard — NOT a real rate limiter.
+// Rate limiter with optional Upstash Redis backing.
 //
-// On Vercel serverless each Lambda instance has its own Map: warm instances,
-// cold-starts, and concurrent invocations all keep separate counters. An
-// attacker spreading requests across IPs or hitting during scale-out can
-// trivially bypass the cap. Treat this as a cheap shield against accidental
-// floods from a single client, nothing more. For real per-user/IP limiting,
-// back this with Upstash, Redis, or Vercel KV.
+// Set UPSTASH_REDIS_REST_URL + UPSTASH_REDIS_REST_TOKEN to get a *real*
+// per-IP/per-route limit shared across every Lambda instance and region.
+// Without those env vars the limiter degrades to a per-process Map — that's
+// fine for local dev and self-hosted single-node deploys, but on serverless
+// it's only a best-effort burst guard (warm-instance scale-out and cold
+// starts each carry their own Map).
 //
-// Algorithm: fixed-window counter keyed by "route:identifier", per process.
+// Algorithm (both backings): fixed-window counter keyed by "route:identifier".
+// Atomic on Upstash via INCR + first-INCR sets EXPIRE; non-atomic in memory
+// but fine because no other process competes for the key in that case.
+
+import { Redis } from '@upstash/redis';
 
 interface Bucket { resetAt: number; count: number }
 
 const buckets = new Map<string, Bucket>();
 
+let _redis: Redis | null | undefined;
+function getRedis(): Redis | null {
+  if (_redis !== undefined) return _redis;
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) { _redis = null; return null; }
+  try {
+    _redis = new Redis({ url, token });
+    return _redis;
+  } catch (e) {
+    console.error('[rateLimit] Upstash init failed, falling back to in-memory:', e);
+    _redis = null;
+    return null;
+  }
+}
+
+export interface RateLimitResult {
+  allowed: boolean;
+  remaining: number;
+  retryAfterSec: number;
+}
+
 /**
- * Check-and-increment against the in-process Map. Returns
- * { allowed, remaining, retryAfterSec }. Counters are per-instance and
- * per-process — not shared across Lambda invocations or deployments.
- * Safe to call from every request without awaiting cleanup.
+ * Check-and-increment for `key`. Returns whether the call is allowed plus
+ * how many slots remain in the current window.
+ *
+ * When Upstash is configured this is atomic and globally consistent. Without
+ * it, the counter is per-process — multiple Lambda instances will each see
+ * their own counter, so the effective cap is `limit × instanceCount`.
+ *
+ * Always awaitable: the in-memory fast path resolves synchronously.
  */
-export function rateLimit(
+export async function rateLimit(
   key: string,
   limit: number,
   windowMs: number,
-): { allowed: boolean; remaining: number; retryAfterSec: number } {
+): Promise<RateLimitResult> {
+  const redis = getRedis();
+  if (redis) {
+    try {
+      const windowSec = Math.max(1, Math.ceil(windowMs / 1000));
+      // INCR returns the new value; if it's 1 we just created the key, so
+      // stamp the TTL. PEXPIRE only-if-no-ttl would also work but EXPIRE on
+      // first-incr is the canonical Redis rate-limit recipe.
+      const count = await redis.incr(key);
+      if (count === 1) await redis.expire(key, windowSec);
+      const ttl = await redis.ttl(key);
+      const retryAfterSec = ttl > 0 ? ttl : windowSec;
+      if (count > limit) {
+        return { allowed: false, remaining: 0, retryAfterSec };
+      }
+      return { allowed: true, remaining: Math.max(0, limit - count), retryAfterSec: 0 };
+    } catch (e) {
+      // Upstash blip: do NOT lock everyone out — fall through to in-memory
+      // burst guard. Logged so the operator notices a sustained outage.
+      console.error('[rateLimit] Upstash request failed, using in-memory fallback:', e);
+    }
+  }
+
+  return rateLimitInMemory(key, limit, windowMs);
+}
+
+function rateLimitInMemory(key: string, limit: number, windowMs: number): RateLimitResult {
   const now = Date.now();
   const b = buckets.get(key);
 

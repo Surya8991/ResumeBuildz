@@ -11,7 +11,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const LIMITS = { name: 100, email: 254, subject: 100, message: 5000 } as const;
 
 export async function POST(req: NextRequest) {
-  const rl = rateLimit(`contact:${clientId(req)}`, 5, 60 * 60 * 1000);
+  const rl = await rateLimit(`contact:${clientId(req)}`, 5, 60 * 60 * 1000);
   if (!rl.allowed) {
     return NextResponse.json(
       { error: `Too many messages. Try again in ${rl.retryAfterSec}s.` },

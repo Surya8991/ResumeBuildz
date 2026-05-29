@@ -58,7 +58,7 @@ export default function LoginPage() {
         'content',
         mode === 'login'
           ? 'Sign in to ResumeBuildz to access your resume profiles, Pro features, and unlimited AI rewrites.'
-          : 'Create a free ResumeBuildz account to save your resumes, sync across devices, and unlock Pro features.',
+          : 'Create a free ResumeBuildz account to save multiple resume profiles, track usage, and unlock Pro features.',
       );
     }
   }, [mode]);

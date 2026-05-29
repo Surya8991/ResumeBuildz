@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ---
 
+## [1.32.0] - 2026-05-29
+
+### Added
+
+- **Real rate limiting via Upstash Redis.** When `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` are set, every public write endpoint (share invite, waitlist, contact, checkout) now gets a *real* per-IP/per-route limit shared across every Lambda instance and region. Without those env vars the limiter degrades to the existing per-process in-memory burst guard — fine for local dev and self-hosted single-node deploys; trivial to bypass on Vercel where each Lambda instance has its own counter. Atomic via Redis `INCR` + first-write `EXPIRE`; falls through to in-memory on Upstash request failure so a Redis blip doesn't lock everyone out.
+- **`UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN`** env vars (optional). Get them from `console.upstash.com → Create Database → REST API tab`. Documented in `.env.example`.
+- **`@upstash/redis`** added as a dependency.
+
+### Changed
+
+- `rateLimit()` is now async (returns `Promise<RateLimitResult>`). All four callers (`/api/share/invite`, `/api/leads/waitlist`, `/api/leads/contact`, `/api/checkout`) updated to `await` it.
+
+---
+
 ## [1.31.0] - 2026-05-29
 
 ### Added

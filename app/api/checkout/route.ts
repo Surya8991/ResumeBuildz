@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
   // ── Rate limit: 10 checkout sessions / hour / IP ────────────────────
   // Protects against Stripe-fee exhaustion + accidental double-clicks.
   const id = clientId(req);
-  const rl = rateLimit(`checkout:${id}`, 10, 60 * 60 * 1000);
+  const rl = await rateLimit(`checkout:${id}`, 10, 60 * 60 * 1000);
   if (!rl.allowed) {
     return NextResponse.json(
       { error: `Rate limited. Try again in ${rl.retryAfterSec}s.`, code: 'rate_limited' },

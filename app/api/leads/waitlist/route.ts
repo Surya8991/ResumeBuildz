@@ -8,7 +8,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const LIMITS = { email: 254, source: 60 } as const;
 
 export async function POST(req: NextRequest) {
-  const rl = rateLimit(`waitlist:${clientId(req)}`, 10, 60 * 60 * 1000);
+  const rl = await rateLimit(`waitlist:${clientId(req)}`, 10, 60 * 60 * 1000);
   if (!rl.allowed) {
     return NextResponse.json(
       { error: `Too many requests. Try again in ${rl.retryAfterSec}s.` },

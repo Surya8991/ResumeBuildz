@@ -171,7 +171,6 @@ export default function PricingPage() {
                 'Unlimited PDF exports',
                 'Unlimited ATS scans',
                 'Multiple resume versions (tailor per job)',
-                'Cloud sync across devices',
                 'Priority AI queue',
                 'Cover letter AI',
                 'Email support',
@@ -294,7 +293,6 @@ export default function PricingPage() {
                   { label: 'PDF exports', Free: '3 / day', Pro: 'Unlimited', Life: 'Unlimited', Coach: 'Unlimited' },
                   { label: 'ATS scans', Free: '3 / day', Pro: 'Unlimited', Life: 'Unlimited', Coach: 'Unlimited' },
                   { label: 'Multiple resume versions', Free: '1', Pro: 'Unlimited', Life: 'Unlimited', Coach: 'Unlimited' },
-                  { label: 'Cloud sync', Free: 'No', Pro: 'Yes', Life: 'Yes', Coach: 'Yes' },
                   { label: 'Cover letter AI', Free: 'No', Pro: 'Yes', Life: 'Yes', Coach: 'Yes' },
                   { label: 'Coach dashboard', Free: 'No', Pro: 'No', Life: 'No', Coach: 'Yes' },
                   { label: 'Client inline comments', Free: 'No', Pro: 'No', Life: 'No', Coach: 'Yes' },
@@ -378,7 +376,7 @@ export default function PricingPage() {
               },
               {
                 q: 'What happens to my resumes if I stop paying?',
-                a: 'Nothing. Your resume data lives in your browser localStorage (and optionally cloud sync on Pro). You can keep editing and exporting on the Free tier forever.',
+                a: 'Nothing. Your resume data lives in your browser localStorage — it is not stored on our servers. You can keep editing and exporting on the Free tier forever.',
               },
               {
                 q: 'Do coaches own their clients data?',

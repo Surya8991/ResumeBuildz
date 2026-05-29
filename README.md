@@ -31,6 +31,7 @@ Works at http://localhost:3000 without env vars (guest mode, everything in local
 | Storage | Cloudflare R2 (avatars) |
 | Billing | Stripe |
 | Email | Resend |
+| Rate limiting | Upstash Redis (optional — falls back to in-memory) |
 | AI | Groq (user-supplied key, client-side only) |
 
 ## Environment variables
@@ -47,6 +48,7 @@ Copy `.env.example` and fill in:
 | `R2_*` | No | Cloudflare R2 for avatar uploads |
 | `STRIPE_*` | No | Billing |
 | `RESEND_API_KEY` | No | Password reset + share invite emails |
+| `UPSTASH_REDIS_REST_URL` / `_TOKEN` | No | Real per-IP rate limiting on public write endpoints. Without these, the limiter is a per-process in-memory burst guard (fine for dev/self-host; trivial to bypass on Vercel). |
 
 Full list in [`.env.example`](.env.example).
 
