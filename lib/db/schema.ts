@@ -5,6 +5,7 @@ import {
   boolean,
   integer,
   jsonb,
+  index,
 } from 'drizzle-orm/pg-core';
 
 // ── Better Auth core tables ──────────────────────────────────────────────────
@@ -18,7 +19,10 @@ export const user = pgTable('user', {
   image: text('image'),
   createdAt: timestamp('created_at').notNull(),
   updatedAt: timestamp('updated_at').notNull(),
-});
+}, (t) => ({
+  // /api/cron/resume-reminders filters new accounts by creation date.
+  createdAtIdx: index('user_created_at_idx').on(t.createdAt),
+}));
 
 export const session = pgTable('session', {
   id: text('id').primaryKey(),
@@ -98,7 +102,15 @@ export const profiles = pgTable('profiles', {
   // cleared when the user returns. Drives /api/cron/inactive-cleanup.
   lastSeenAt: timestamp('last_seen_at'),
   inactiveWarnedAt: timestamp('inactive_warned_at'),
-});
+}, (t) => ({
+  // /api/cron/inactive-cleanup filters profiles by these timestamps.
+  lastSeenAtIdx: index('profiles_last_seen_at_idx').on(t.lastSeenAt),
+  inactiveWarnedAtIdx: index('profiles_inactive_warned_at_idx').on(t.inactiveWarnedAt),
+  // /api/admin/broadcast and /api/cron/resume-reminders filter by opt-in.
+  notifyProductIdx: index('profiles_notify_product_idx').on(t.notifyProduct),
+  // Stripe webhook looks up the profile by stripeCustomerId for subscription events.
+  stripeCustomerIdIdx: index('profiles_stripe_customer_id_idx').on(t.stripeCustomerId),
+}));
 
 // Dormant: the table is kept (so it stays in the DB and can be re-enabled
 // later) but NOTHING reads or writes it — resume content lives only in the
@@ -126,4 +138,14 @@ export const contactMessages = pgTable('contact_messages', {
   subject: text('subject'),
   message: text('message').notNull(),
   createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+// Stripe webhook idempotency. Stripe retries on transient failures with the
+// same eventId; we record processed events here and short-circuit replays.
+// pruned out-of-band — old rows can be deleted once they age past Stripe's
+// retry window (~3 days), but we keep them around longer for audit.
+export const webhookEvents = pgTable('webhook_events', {
+  eventId: text('event_id').primaryKey(),
+  eventType: text('event_type').notNull(),
+  processedAt: timestamp('processed_at').notNull().defaultNow(),
 });

@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -53,17 +52,13 @@ const SHOWCASE_TEMPLATES = [
   { name: 'Nordic', color: '#64748b' },
 ];
 
+// Metadata for this route lives in the root layout (app/layout.tsx). The
+// previous useEffect that mutated document.title / meta tags client-side
+// was a no-op for crawlers (they only read the server-rendered HTML) and a
+// redundant overwrite for users — removed.
+
 export default function HomePage() {
   const { openGateway } = useLoginGateway();
-  useEffect(() => {
-    document.title = 'ResumeBuildz - Free ATS Resume Builder with 20 Templates & AI';
-    const metaDesc = document.querySelector('meta[name="description"]');
-    if (metaDesc) metaDesc.setAttribute('content', 'Build professional, ATS-optimized resumes with 20 free templates, AI writing assistant, and real-time ATS scoring. No sign-up required.');
-    const ogDesc = document.querySelector('meta[property="og:description"]');
-    if (ogDesc) ogDesc.setAttribute('content', 'Build professional, ATS-optimized resumes with 20 free templates, AI writing assistant, and real-time ATS scoring. No sign-up required.');
-    const ogTitle = document.querySelector('meta[property="og:title"]');
-    if (ogTitle) ogTitle.setAttribute('content', 'ResumeBuildz - Free ATS Resume Builder with 20 Templates & AI');
-  }, []);
 
   return (
     <div className="min-h-screen flex flex-col">

@@ -6,6 +6,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ---
 
+## [1.31.0] - 2026-05-29
+
+### Added
+
+- **R2 cleanup on account delete + avatar re-upload.** Avatars are now removed from Cloudflare R2 when the user deletes their account (`deletePrefixFromR2('avatars/${userId}/')` before `auth.api.deleteUser`) and when they upload a replacement (`deleteFromR2(oldKey)` before writing the new key). Closes the GDPR "right to be forgotten" gap and stops the storage drift where every re-upload doubled the user's R2 footprint.
+- **Stripe webhook idempotency table.** New `webhook_events` table (`event_id` primary key, `event_type`, `processed_at`). The handler now does `INSERT ... ON CONFLICT DO NOTHING` on `event.id` before mutating state — a replay short-circuits to a `{ received: true, replay: true }` ack. Defends against the next non-idempotent handler we add.
+- **Database indexes for cron query paths.** Added btree indexes on `profiles.last_seen_at`, `profiles.inactive_warned_at`, `profiles.notify_product`, `profiles.stripe_customer_id`, and `user.created_at` — every column the daily crons or the Stripe webhook filter on. Migration `0002_supreme_leper_queen.sql`.
+- **`deleteFromR2()` + `deletePrefixFromR2()` helpers** in `lib/storage.ts`. Both no-op when R2 isn't configured and swallow errors so a storage failure can't break the calling request.
+
+### Removed
+
+- **Dead `proxy.ts` at repo root.** Named/exported incorrectly so Next.js never picked it up — nothing in this file was running. Grep confirmed no references in the source. Deleted.
+- **Stale planning HTML in the repo root** (~225 KB): `BLOG_PLAN_V3.html`, `MARKETING_STRATEGY.html`, `TODO.html`, `TodoWeek.html`, `code-review-report.html`. None were referenced anywhere. `RESEND_SETUP.html` kept (still has real DNS-walkthrough content not duplicated elsewhere).
+
+### Changed
+
+- **Landing page `app/page.tsx`** no longer mutates `document.title` and meta tags from `useEffect` — those overrides were a no-op for crawlers (HTML is already shipped by then) and a redundant overwrite of the root-layout metadata. Dropped.
+- **`app/account/page.tsx`** drops its `document.title` `useEffect` — `app/account/layout.tsx` already exports the correct `metadata`. Pure cleanup.
+- **`lib/rateLimit.ts`** docstring rewritten to be honest about its serverless limitations. The implementation hasn't changed, but the comment now correctly calls it a *best-effort burst guard* rather than a real rate limiter (the in-memory `Map` is per Lambda instance — warm-instance scale-out and concurrent invocations bypass the cap). Calls out Upstash/Redis/Vercel KV as the migration target.
+- **`VersionHistoryDialog.tsx`** — silenced the pre-existing `react-hooks/incompatible-library` warning with an inline `eslint-disable-next-line` (the `"use no memo"` directive at the top of the component already handles the runtime side; the lint rule just doesn't read it). Build now ships with zero warnings.
+
+---
+
 ## [1.30.0] - 2026-05-29
 
 ### Added

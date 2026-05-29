@@ -5,7 +5,7 @@ import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { user } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
-import { uploadToR2 } from '@/lib/storage';
+import { uploadToR2, deleteFromR2 } from '@/lib/storage';
 import { detectImageKind, type ImageKind } from '@/lib/imageMagic';
 import { headers } from 'next/headers';
 
@@ -45,6 +45,26 @@ export async function POST(req: NextRequest) {
   const meta = kind ? KIND_META[kind] : undefined;
   if (!meta) {
     return NextResponse.json({ error: 'Only JPG, PNG, or WebP allowed' }, { status: 400 });
+  }
+
+  // Best-effort: delete the previous avatar before writing the new one so we
+  // don't orphan files in R2. Only delete keys we recognise as ours
+  // (avatars/<this user>/...) — never trust a foreign URL on the user row.
+  // uploadToR2 builds URLs as `${R2_PUBLIC_URL}/${key}`, so the key is the
+  // path after that prefix.
+  const publicBase = process.env.R2_PUBLIC_URL;
+  const prevImage = (
+    await db
+      .select({ image: user.image })
+      .from(user)
+      .where(eq(user.id, session.user.id))
+      .limit(1)
+  )[0]?.image;
+  if (prevImage && publicBase && prevImage.startsWith(`${publicBase}/`)) {
+    const oldKey = prevImage.slice(publicBase.length + 1);
+    if (oldKey.startsWith(`avatars/${session.user.id}/`)) {
+      await deleteFromR2(oldKey);
+    }
   }
 
   // Key + content type are derived from validated server-side values, never

@@ -45,6 +45,10 @@ export default function VersionHistoryDialog({ open, onOpenChange }: Props) {
   const [newLabel, setNewLabel] = useState('');
   const listRef = useRef<HTMLDivElement>(null);
 
+  // The "use no memo" directive at the top of this component already opts us
+  // out of React Compiler's auto-memoization for this hook. The lint rule
+  // can't read the directive, so silence it explicitly at the call site.
+  // eslint-disable-next-line react-hooks/incompatible-library
   const virtualizer = useVirtualizer({
     count: versions.length,
     getScrollElement: () => listRef.current,

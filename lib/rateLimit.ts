@@ -1,16 +1,22 @@
-// In-memory rate limiter. Fine for a single Vercel/Node instance; for a
-// horizontally-scaled deployment swap the Map for Redis/Upstash.
+// Best-effort burst guard — NOT a real rate limiter.
 //
-// Algorithm: fixed-window counter keyed by "route:identifier". Resets on a
-// rolling window so a burst at t=59s + another burst at t=60s cannot double
-// the limit.
+// On Vercel serverless each Lambda instance has its own Map: warm instances,
+// cold-starts, and concurrent invocations all keep separate counters. An
+// attacker spreading requests across IPs or hitting during scale-out can
+// trivially bypass the cap. Treat this as a cheap shield against accidental
+// floods from a single client, nothing more. For real per-user/IP limiting,
+// back this with Upstash, Redis, or Vercel KV.
+//
+// Algorithm: fixed-window counter keyed by "route:identifier", per process.
 
 interface Bucket { resetAt: number; count: number }
 
 const buckets = new Map<string, Bucket>();
 
 /**
- * Check-and-increment. Returns { allowed, remaining, retryAfterSec }.
+ * Check-and-increment against the in-process Map. Returns
+ * { allowed, remaining, retryAfterSec }. Counters are per-instance and
+ * per-process — not shared across Lambda invocations or deployments.
  * Safe to call from every request without awaiting cleanup.
  */
 export function rateLimit(

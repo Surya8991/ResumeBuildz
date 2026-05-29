@@ -5,6 +5,7 @@
 // avoids the 90-second cold-compile we saw with one monolithic file.
 
 import { useEffect, useState } from 'react';
+// Metadata for /account lives in app/account/layout.tsx.
 import dynamic from 'next/dynamic';
 import {
   User as UserIcon,
@@ -54,10 +55,6 @@ export default function AccountPage() {
   const { user, profile, loading, signOut } = useAuth();
   const router = useRouter();
   const [tab, setTab] = useState<TabId>('profile');
-
-  useEffect(() => {
-    document.title = 'Account settings . ResumeBuildz';
-  }, []);
 
   useEffect(() => {
     if (!loading && !user) router.replace('/login?next=/account');

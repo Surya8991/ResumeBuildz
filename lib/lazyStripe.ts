@@ -31,7 +31,7 @@ export type StripeLike = new (key: string) => {
       body: string,
       sig: string,
       secret: string,
-    ) => { type: string; data: { object: Record<string, unknown> } };
+    ) => { id: string; type: string; data: { object: Record<string, unknown> } };
   };
 };
 

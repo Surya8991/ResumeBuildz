@@ -3,7 +3,7 @@ import { logger } from '@/lib/logger';
 import { serverEnv } from '@/lib/env';
 import { loadStripe } from '@/lib/lazyStripe';
 import { db } from '@/lib/db';
-import { profiles } from '@/lib/db/schema';
+import { profiles, webhookEvents } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { PLANS, type PlanId } from '@/lib/stripe';
 
@@ -61,6 +61,25 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     logger.warn('[stripe-webhook] signature verification failed:', err instanceof Error ? err.message : err);
     return new NextResponse('Signature verification failed', { status: 400 });
+  }
+
+  // Idempotency: Stripe retries failed webhooks with the same event.id. Record
+  // every processed id so a replay short-circuits before mutating state. The
+  // INSERT ... ON CONFLICT DO NOTHING is atomic; if 0 rows were inserted, the
+  // event was already handled and we ack without re-running the handler.
+  try {
+    const inserted = await db
+      .insert(webhookEvents)
+      .values({ eventId: event.id, eventType: event.type })
+      .onConflictDoNothing()
+      .returning({ eventId: webhookEvents.eventId });
+    if (inserted.length === 0) {
+      logger.info(`[stripe-webhook] replay of ${event.id} (${event.type}) — already processed, skipping`);
+      return NextResponse.json({ received: true, replay: true });
+    }
+  } catch (err) {
+    logger.error('[stripe-webhook] idempotency check failed:', err);
+    return new NextResponse('Idempotency check failed', { status: 500 });
   }
 
   try {

@@ -14,6 +14,26 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: 'v1.31.0',
+    date: 'May 29, 2026',
+    isoDate: '2026-05-29',
+    title: 'Server-Side Cleanup: R2 GC, Webhook Idempotency, DB Indexes',
+    added: [
+      'R2 cleanup on account delete and avatar re-upload. Avatars are now removed from Cloudflare R2 when a user deletes their account, and the previous avatar is removed before a new one is uploaded. Closes the GDPR "right to be forgotten" gap and stops storage drift.',
+      'Stripe webhook idempotency. New webhook_events table records every processed event.id with ON CONFLICT DO NOTHING so a replayed webhook short-circuits before mutating state — defends against the next non-idempotent handler we add.',
+      'Database indexes on the columns the daily crons and Stripe webhook query — profiles.last_seen_at / inactive_warned_at / notify_product / stripe_customer_id and user.created_at. Eliminates full-table scans on every cron tick.',
+      'New lib/storage.ts helpers deleteFromR2 and deletePrefixFromR2. Both no-op when R2 isn\'t configured and swallow errors so storage failures cannot break the calling request.',
+    ],
+    improved: [
+      'Removed dead proxy.ts at the repo root — it was named/exported incorrectly so Next.js never picked it up; nothing in the file was running.',
+      'Removed five stale planning HTML files from the repo root (~225 KB) — none were referenced from code.',
+      'Landing page no longer mutates document.title and meta tags from useEffect. Those overrides were a no-op for crawlers and a redundant overwrite of the root-layout metadata.',
+      'Account page drops its document.title useEffect — app/account/layout.tsx already exports the correct metadata.',
+      'lib/rateLimit.ts docstring now honestly calls itself a best-effort burst guard rather than a rate limiter (the in-memory Map is per Lambda instance on Vercel — warm-instance scale-out and concurrent invocations bypass the cap). Calls out Upstash/Redis/Vercel KV as the migration target.',
+      'Silenced the pre-existing react-hooks/incompatible-library warning in VersionHistoryDialog with an inline eslint-disable. Build now ships with zero warnings.',
+    ],
+  },
+  {
     version: 'v1.30.0',
     date: 'May 29, 2026',
     isoDate: '2026-05-29',

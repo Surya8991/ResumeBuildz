@@ -7,6 +7,7 @@ import { db } from '@/lib/db';
 import { profiles } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { headers } from 'next/headers';
+import { deletePrefixFromR2 } from '@/lib/storage';
 
 export async function DELETE() {
   const hdrs = await headers();
@@ -16,6 +17,11 @@ export async function DELETE() {
   }
 
   const userId = session.user.id;
+
+  // Best-effort: purge all R2 objects under this user's avatar prefix before
+  // deleting the auth row. deletePrefixFromR2 swallows errors, so a storage
+  // failure can't block account deletion.
+  await deletePrefixFromR2(`avatars/${userId}/`);
 
   // Delete the auth user record first; the FK cascade removes sessions,
   // accounts, and the profiles row. Doing this first avoids an orphaned/partial

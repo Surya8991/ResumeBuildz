@@ -15,6 +15,13 @@
       "when": 1779565677740,
       "tag": "0001_volatile_war_machine",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1780071047784,
+      "tag": "0002_supreme_leper_queen",
+      "breakpoints": true
     }
   ]
 }
