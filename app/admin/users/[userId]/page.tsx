@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, User } from 'lucide-react';
+import { ArrowLeft, User, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -33,11 +33,24 @@ export default function AdminUserDetailPage() {
   const [user, setUser] = useState<UserDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  // managedBy assignment state (superadmin only)
+  const [adminInput, setAdminInput] = useState('');
+  const [managedByEmail, setManagedByEmail] = useState<string | null>(null);
 
   useEffect(() => {
     fetch(`/api/admin/users/${userId}`)
       .then((r) => r.json())
-      .then((data) => { setUser(data); setLoading(false); })
+      .then((data: UserDetail) => {
+        setUser(data);
+        setLoading(false);
+        // Fetch the managing admin's email for display
+        if (data.managedBy) {
+          fetch(`/api/admin/users/${data.managedBy}`)
+            .then((r) => r.ok ? r.json() : null)
+            .then((admin) => { if (admin?.email) setManagedByEmail(admin.email); })
+            .catch(() => {});
+        }
+      })
       .catch(() => setLoading(false));
   }, [userId]);
 
@@ -58,6 +71,23 @@ export default function AdminUserDetailPage() {
     }
   }
 
+  async function handleAssignAdmin() {
+    const id = adminInput.trim();
+    if (!id) return;
+    await patch({ managedBy: id });
+    // Refresh the admin email label
+    fetch(`/api/admin/users/${id}`)
+      .then((r) => r.ok ? r.json() : null)
+      .then((admin) => setManagedByEmail(admin?.email ?? id))
+      .catch(() => setManagedByEmail(id));
+    setAdminInput('');
+  }
+
+  async function handleUnassignAdmin() {
+    await patch({ managedBy: null });
+    setManagedByEmail(null);
+  }
+
   async function handleImpersonate() {
     const res = await fetch('/api/admin/impersonate', {
       method: 'POST',
@@ -70,9 +100,7 @@ export default function AdminUserDetailPage() {
   }
 
   if (loading) {
-    return (
-      <div className="mx-auto max-w-2xl px-4 py-8 text-gray-400">Loading…</div>
-    );
+    return <div className="mx-auto max-w-2xl px-4 py-8 text-gray-400">Loading…</div>;
   }
 
   if (!user) {
@@ -136,6 +164,49 @@ export default function AdminUserDetailPage() {
             </Field>
           )}
 
+          {isSuperadmin && (
+            <div className="py-3">
+              <div className="flex items-start justify-between">
+                <span className="text-sm font-medium text-gray-500 w-36 shrink-0 pt-1">Assigned admin</span>
+                <div className="flex-1 text-right">
+                  {user.managedBy ? (
+                    <div className="flex items-center justify-end gap-2">
+                      <span className="text-sm text-gray-700 truncate max-w-[180px]" title={user.managedBy}>
+                        {managedByEmail ?? user.managedBy}
+                      </span>
+                      <button
+                        onClick={handleUnassignAdmin}
+                        disabled={saving}
+                        title="Unassign"
+                        className="shrink-0 rounded border border-red-200 bg-red-50 p-0.5 text-red-500 hover:bg-red-100 transition-colors disabled:opacity-40"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-end gap-2">
+                      <span className="text-sm text-gray-400">None</span>
+                      <input
+                        value={adminInput}
+                        onChange={(e) => setAdminInput(e.target.value)}
+                        placeholder="Admin user ID"
+                        className="w-40 rounded border border-gray-200 px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-400"
+                        onKeyDown={(e) => { if (e.key === 'Enter') handleAssignAdmin(); }}
+                      />
+                      <button
+                        onClick={handleAssignAdmin}
+                        disabled={saving || !adminInput.trim()}
+                        className="shrink-0 rounded border border-indigo-200 bg-indigo-50 px-2 py-1 text-xs font-medium text-indigo-700 hover:bg-indigo-100 transition-colors disabled:opacity-40"
+                      >
+                        Assign
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
           <Field label="Joined">
             {new Date(user.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
           </Field>
@@ -152,7 +223,7 @@ export default function AdminUserDetailPage() {
 
         {/* Actions */}
         <div className="px-6 py-5 border-t border-gray-100">
-          {(user.role === 'user') && (
+          {user.role === 'user' && (
             <button
               onClick={handleImpersonate}
               className="flex items-center gap-2 rounded-lg border border-amber-300 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-700 hover:bg-amber-100 transition-colors"

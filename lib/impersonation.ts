@@ -46,6 +46,9 @@ export function buildImpEmailCookie(email: string): string {
   return `${EMAIL_COOKIE}=${safe}; Path=/; SameSite=Strict; Max-Age=${MAX_AGE}`;
 }
 
+// Call this in any API route that should switch context to the impersonated user
+// (e.g. if a server-side session switch is ever added). Currently resumes are
+// localStorage-only so no server route needs to read the target user's data.
 export function verifyImpersonation(cookieHeader: string): { adminId: string; targetUserId: string } | null {
   const match = cookieHeader.match(new RegExp(`(?:^|;\\s*)${COOKIE_NAME}=([^;]+)`));
   if (!match) return null;
