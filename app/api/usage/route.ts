@@ -44,6 +44,11 @@ export async function GET(req: NextRequest) {
 
   if (!profile) return NextResponse.json({ allowed: false, remaining: 0 });
 
+  // Admin and superadmin always have unlimited quota — bypass plan checks entirely.
+  if (profile.role === 'admin' || profile.role === 'superadmin') {
+    return NextResponse.json({ allowed: true, remaining: UNLIMITED });
+  }
+
   const limit = limitForPlan(profile.plan, feature);
   if (limit === UNLIMITED) return NextResponse.json({ allowed: true, remaining: UNLIMITED });
 
@@ -71,12 +76,17 @@ export async function POST(req: NextRequest) {
   }
 
   const [profile] = await db
-    .select({ plan: profiles.plan })
+    .select({ plan: profiles.plan, role: profiles.role })
     .from(profiles)
     .where(eq(profiles.id, user.id))
     .limit(1);
 
   if (!profile) return NextResponse.json({ allowed: false, remaining: 0 }, { status: 404 });
+
+  // Admin and superadmin always have unlimited quota — no counter increments.
+  if (profile.role === 'admin' || profile.role === 'superadmin') {
+    return NextResponse.json({ allowed: true, remaining: UNLIMITED });
+  }
 
   const limit = limitForPlan(profile.plan, feature);
   if (limit === UNLIMITED) return NextResponse.json({ allowed: true, remaining: UNLIMITED });

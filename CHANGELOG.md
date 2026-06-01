@@ -6,6 +6,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ---
 
+## [1.33.0] - 2026-06-01
+
+### Added
+
+- **Admin role system.** Two-tier internal admin (`admin` < `superadmin`) stored in `profiles.role`. Admins are scoped to users they manage (`profiles.managed_by`); superadmins act on all users. Access at `/admin` — server-side role gate with no public exposure of the superadmin tier.
+- **Admin dashboard** at `/admin/users` — paginated, debounce-searched user table with role/plan badges. User detail page (`/admin/users/[userId]`) supports plan override via dropdown (any role ≥ admin) and role change via dropdown (superadmin only).
+- **Admin API routes** — `GET /api/admin/users`, `GET/PATCH /api/admin/users/[userId]`. All require admin session; superadmin-only fields (role, managedBy) enforce rank in the PATCH handler.
+- **User impersonation** — `POST /api/admin/impersonate` sets two signed cookies (`x-impersonate` + `x-imp-email`). Amber sticky banner visible on every page while active; `DELETE /api/admin/impersonate` clears cookies and returns admin to `/admin/users`. Admins cannot impersonate other admins/superadmins. **Export My Data is hidden during impersonation** so no user data can be extracted.
+- **`lib/adminAuth.ts`** — `requireAdminSession(minRole)` shared guard with rank-based access control.
+- **`lib/impersonation.ts`** — HMAC-SHA256 (using `BETTER_AUTH_SECRET`) signed httpOnly cookie, 2-hour expiry, base64url payload.
+- **`proxy.ts`** — fast session-cookie gate for `/admin/*` (Next.js 16 `proxy` convention, replaces deprecated `middleware.ts`).
+- **Admin email notifications** — `rolePromotedEmail` sent on promotion to admin; `planChangedEmail` sent on any admin-triggered plan change. Both are best-effort and never block the response.
+- **Superadmin bootstrap** via `SUPERADMIN_EMAIL` env var. Set it to auto-promote on first signup; use the SQL escape hatch for existing accounts. Documented in `.env.example` and `README.md`.
+- **Unlimited quota** for admin/superadmin — AI rewrites and PDF exports bypass daily counters server-side (`/api/usage` GET + POST).
+- **Navbar role badge** — indigo `ADMIN` chip visible in the profile dropdown for admin/superadmin accounts; avatar ring changes to indigo. "Admin dashboard" link added below Account settings.
+- **Pricing FAQ entry** — "Do you offer admin accounts for organizations?" clarifies managed admin access without exposing internal role hierarchy.
+
+### Changed
+
+- `hooks/useAuth.ts` — `role` added to `Profile` type; `isPro()` returns `true` for admin/superadmin regardless of billing plan.
+- `app/api/profile/route.ts` — `role` field added to GET response.
+- DB migration `0003` — adds `role text NOT NULL DEFAULT 'user'` and `managed_by text` columns + `profiles_managed_by_idx` index.
+
+---
+
 ## [1.32.0] - 2026-05-29
 
 ### Added

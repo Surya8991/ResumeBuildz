@@ -49,8 +49,22 @@ Copy `.env.example` and fill in:
 | `STRIPE_*` | No | Billing |
 | `RESEND_API_KEY` | No | Password reset + share invite emails |
 | `UPSTASH_REDIS_REST_URL` / `_TOKEN` | No | Real per-IP rate limiting on public write endpoints. Without these, the limiter is a per-process in-memory burst guard (fine for dev/self-host; trivial to bypass on Vercel). |
+| `SUPERADMIN_EMAIL` | No | Auto-promotes this email to superadmin on first signup. For existing accounts run `UPDATE profiles SET role = 'superadmin' WHERE id = '<id>';`. Additional admins can be promoted from `/admin/users`. |
 
 Full list in [`.env.example`](.env.example).
+
+## Admin system
+
+ResumeBuildz ships a two-tier internal admin system (`admin` < `superadmin`), accessible at `/admin`. It is not a public plan tier.
+
+| Role | What they can do |
+|---|---|
+| **admin** | View and search their assigned users, change plans, impersonate users |
+| **superadmin** | Everything an admin can do, plus: promote/demote roles, assign users to admins, act on any user |
+
+Admins and superadmins get unlimited AI rewrites and PDF exports regardless of plan.
+
+**Bootstrap the first superadmin:** set `SUPERADMIN_EMAIL` to your email and create a new account, or run the SQL above for an existing account. Subsequent superadmins/admins are promoted from the dashboard.
 
 ## Database setup
 

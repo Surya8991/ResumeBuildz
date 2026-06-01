@@ -159,6 +159,40 @@ export function contactNotifyEmail(m: {
   };
 }
 
+// ── Admin-triggered transactional ───────────────────────────────────────────
+
+export function rolePromotedEmail(opts: { name: string }): RenderedEmail {
+  return {
+    subject: 'Your ResumeBuildz account has been upgraded',
+    html: renderEmail({
+      heading: 'Your account has been upgraded',
+      preheader: 'You now have admin access on ResumeBuildz.',
+      bodyHtml: `<p style="margin:0 0 12px;">${greeting(opts.name)}</p>
+        <p style="margin:0 0 20px;">Your account has been granted admin access on ResumeBuildz.
+        You can now manage user accounts and access the admin dashboard.</p>`,
+      cta: { label: 'Go to admin dashboard', url: `${SITE_URL}/admin` },
+      footerNote: "If you think this was a mistake, contact support right away.",
+    }),
+  };
+}
+
+export function planChangedEmail(opts: { name: string; plan: string }): RenderedEmail {
+  const planLabel = escapeHtml(opts.plan.charAt(0).toUpperCase() + opts.plan.slice(1));
+  return {
+    subject: 'Your ResumeBuildz plan has been updated',
+    html: renderEmail({
+      heading: 'Your plan has been updated',
+      preheader: `You are now on the ${planLabel} plan.`,
+      bodyHtml: `<p style="margin:0 0 12px;">${greeting(opts.name)}</p>
+        <p style="margin:0 0 20px;">Your ResumeBuildz plan has been changed to
+        <strong>${planLabel}</strong> by your account administrator.
+        Your new features are active immediately.</p>`,
+      cta: { label: 'Open the builder', url: `${SITE_URL}/builder` },
+      footerNote: "Questions? Contact support and we'll sort it out.",
+    }),
+  };
+}
+
 // ── Marketing / lifecycle (require unsubscribeUrl) ───────────────────────────
 
 export function productUpdateEmail(opts: {

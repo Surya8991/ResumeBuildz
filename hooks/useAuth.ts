@@ -10,6 +10,7 @@ export type Profile = {
   full_name: string;
   avatar_url: string;
   plan: 'free' | 'starter' | 'pro' | 'team' | 'lifetime';
+  role: 'user' | 'admin' | 'superadmin';
   ai_rewrites_used: number;
   ai_rewrites_reset_date: string;
   headline?: string | null;
@@ -74,6 +75,8 @@ export function useAuth() {
   );
 
   const isPro = useCallback(() => {
+    // Admin and superadmin always have full Pro access regardless of plan.
+    if (profile?.role === 'admin' || profile?.role === 'superadmin') return true;
     if (!isEmailVerified()) return false;
     return (
       profile?.plan === 'starter' ||

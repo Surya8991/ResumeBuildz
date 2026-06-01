@@ -66,6 +66,7 @@ export async function GET() {
     notify_product: row.notifyProduct,
     invoice_email: row.invoiceEmail,
     stripe_customer_id: row.stripeCustomerId,
+    role: (row.role ?? 'user') as 'user' | 'admin' | 'superadmin',
   });
 }
 

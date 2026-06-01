@@ -14,6 +14,28 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: 'v1.33.0',
+    date: 'June 1, 2026',
+    isoDate: '2026-06-01',
+    title: 'Admin Role System, Impersonation & Email Notifications',
+    added: [
+      'Admin role system with two internal tiers (admin / superadmin). Admins are scoped to their assigned users; superadmins act on all users. Access at /admin — full server-side role gate, no public exposure.',
+      'Admin dashboard at /admin/users — paginated, debounce-searched user table. User detail page supports plan override (admin+) and role change (superadmin only) with instant toast feedback.',
+      'User impersonation via signed HMAC-SHA256 cookies. Amber sticky banner on every page while impersonating; Exit button clears cookies and returns to /admin/users. Export My Data hidden during impersonation to prevent data extraction.',
+      'Admin email notifications: role promotion email sent when a user is upgraded to admin; plan change email sent on any admin-triggered plan override. Both are best-effort and never block the API response.',
+      'Superadmin bootstrap via SUPERADMIN_EMAIL env var — set it to auto-promote on first signup; existing accounts use a one-line SQL UPDATE. Documented in .env.example and README.',
+      'Unlimited AI rewrites and PDF exports for admin/superadmin — daily counters bypassed server-side in /api/usage.',
+      'Indigo ADMIN badge in the profile dropdown for admin/superadmin accounts; avatar ring changes to indigo; Admin dashboard link added below Account settings.',
+      'Pricing FAQ entry clarifying managed admin access for organizations.',
+    ],
+    improved: [
+      'useAuth.ts — role added to Profile type; isPro() returns true for admin/superadmin regardless of billing plan.',
+      'profile API — role field exposed in GET response.',
+      'proxy.ts replaces deprecated middleware.ts (Next.js 16 naming convention).',
+      'DB migration 0003 adds role and managed_by columns with managed_by index.',
+    ],
+  },
+  {
     version: 'v1.32.0',
     date: 'May 29, 2026',
     isoDate: '2026-05-29',

@@ -1,4 +1,5 @@
 {
+  "buildCommand": "npm run db:migrate && next build",
   "crons": [
     { "path": "/api/cron/resume-reminders", "schedule": "0 9 * * *" },
     { "path": "/api/cron/inactive-cleanup", "schedule": "30 9 * * *" }

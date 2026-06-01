@@ -2,9 +2,14 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { FileText, Menu, X, ArrowRight, LogOut, User, ChevronDown, Settings, KeyRound, Crown, Download, Trash2 } from 'lucide-react';
+import { FileText, Menu, X, ArrowRight, LogOut, User, ChevronDown, Settings, KeyRound, Crown, Download, Trash2, Shield, LayoutDashboard } from 'lucide-react';
 import { useAuthContext as useAuth } from '@/components/Providers';
 import { useLoginGateway } from '@/components/LoginGateway';
+
+function readImpersonating(): boolean {
+  if (typeof document === 'undefined') return false;
+  return /(?:^|;\s*)x-imp-email=/.test(document.cookie);
+}
 
 const NAV_LINKS = [
   { href: '/templates', label: 'Templates' },
@@ -23,6 +28,7 @@ export default function SiteNavbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [blogOpen, setBlogOpen] = useState(false);
+  const [impersonating] = useState<boolean>(readImpersonating);
   const profileRef = useRef<HTMLDivElement>(null);
   const blogRef = useRef<HTMLDivElement>(null);
   const { user, profile, signOut, loading, isPro, exportUserData, deleteAccount } = useAuth();
@@ -132,7 +138,7 @@ export default function SiteNavbar() {
                       onClick={() => setProfileOpen(!profileOpen)}
                       className="flex items-center gap-1.5 px-2 py-1.5 text-gray-700 hover:text-gray-900 text-sm rounded-lg hover:bg-gray-50 transition-colors"
                     >
-                      <div className="h-7 w-7 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold">
+                      <div className={`h-7 w-7 rounded-full flex items-center justify-center text-white text-xs font-bold ${(profile?.role === 'admin' || profile?.role === 'superadmin') ? 'bg-indigo-600' : 'bg-blue-500'}`}>
                         {(profile?.full_name?.[0] || user.email?.[0] || 'U').toUpperCase()}
                       </div>
                       <ChevronDown className={`h-3 w-3 transition-transform hidden sm:block ${profileOpen ? 'rotate-180' : ''}`} />
@@ -147,6 +153,11 @@ export default function SiteNavbar() {
                             {isPro() && (
                               <span className="inline-flex items-center gap-1 mt-1 text-[10px] font-bold text-amber-600">
                                 <Crown className="h-3 w-3" /> PRO
+                              </span>
+                            )}
+                            {(profile?.role === 'admin' || profile?.role === 'superadmin') && (
+                              <span className="inline-flex items-center gap-1 mt-1 text-[10px] font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">
+                                <Shield className="h-3 w-3" /> ADMIN
                               </span>
                             )}
                           </div>
@@ -164,6 +175,15 @@ export default function SiteNavbar() {
                             >
                               <Settings className="h-3.5 w-3.5" /> Account settings
                             </Link>
+                            {profile?.role && profile.role !== 'user' && (
+                              <Link
+                                href="/admin"
+                                onClick={() => setProfileOpen(false)}
+                                className="flex items-center gap-2.5 px-4 py-2 text-sm text-indigo-700 hover:text-indigo-900 hover:bg-indigo-50 transition-colors"
+                              >
+                                <LayoutDashboard className="h-3.5 w-3.5" /> Admin dashboard
+                              </Link>
+                            )}
                             <Link
                               href="/forgot-password"
                               onClick={() => setProfileOpen(false)}
@@ -182,12 +202,14 @@ export default function SiteNavbar() {
                             )}
                           </div>
                           <div className="border-t border-gray-100 pt-1">
-                            <button
-                              onClick={() => { exportUserData(); setProfileOpen(false); }}
-                              className="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition-colors w-full"
-                            >
-                              <Download className="h-3.5 w-3.5" /> Export My Data
-                            </button>
+                            {!impersonating && (
+                              <button
+                                onClick={() => { exportUserData(); setProfileOpen(false); }}
+                                className="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition-colors w-full"
+                              >
+                                <Download className="h-3.5 w-3.5" /> Export My Data
+                              </button>
+                            )}
                             <button
                               onClick={() => { signOut(); setProfileOpen(false); }}
                               className="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition-colors w-full"

@@ -3,6 +3,7 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { createAuthMiddleware } from 'better-auth/api';
 import { db } from '@/lib/db';
 import { user, session, account, verification, profiles } from '@/lib/db/schema';
+import { eq } from 'drizzle-orm';
 import { sendEmail } from '@/lib/email';
 import {
   welcomeEmail,
@@ -135,6 +136,13 @@ function createAuth() {
         create: {
           after: async (newUser) => {
             await db.insert(profiles).values({ id: newUser.id, lastSeenAt: new Date() }).onConflictDoNothing();
+            // Bootstrap superadmin: comma-separated list of emails that are
+            // auto-promoted on first signup. e.g. SUPERADMIN_EMAIL=a@x.com,b@x.com
+            const superadminEmails = (process.env.SUPERADMIN_EMAIL ?? '')
+              .split(',').map((e) => e.trim().toLowerCase()).filter(Boolean);
+            if (superadminEmails.includes(newUser.email.toLowerCase())) {
+              await db.update(profiles).set({ role: 'superadmin' }).where(eq(profiles.id, newUser.id)).catch(() => {});
+            }
             // Welcome every new user immediately, regardless of signup method or
             // verification state. (Email/password users may also receive a
             // separate verification email — an acceptable duplicate, far better

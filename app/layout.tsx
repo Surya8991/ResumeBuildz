@@ -4,6 +4,7 @@ import "./globals.css";
 import Providers from "@/components/Providers";
 import PageLoader from "@/components/PageLoader";
 import StickyMobileCTA from "@/components/StickyMobileCTA";
+import { ImpersonationBanner } from "@/components/admin/ImpersonationBanner";
 import { Analytics } from "@vercel/analytics/react";
 import { SITE_URL } from "@/lib/siteConfig";
 import { jsonLd } from "@/lib/articleSchema";
@@ -157,6 +158,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <Providers>
+          <ImpersonationBanner />
           <PageLoader />
           {children}
           <StickyMobileCTA />

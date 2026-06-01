@@ -382,6 +382,10 @@ export default function PricingPage() {
                 q: 'Do coaches own their clients data?',
                 a: 'Coaches have view and comment access. Clients own their resumes and can leave the workspace at any time, taking their data with them.',
               },
+              {
+                q: 'Do you offer admin accounts for organizations?',
+                a: 'Yes. Organizations and teams can request managed admin accounts to oversee user activity, adjust plans, and keep everyone on track — all from a central dashboard. Contact us to set up an admin account for your team.',
+              },
             ].map((item) => (
               <details key={item.q} className="group bg-gray-50 rounded-lg border border-gray-200 p-5">
                 <summary className="cursor-pointer font-semibold text-gray-900 flex items-center justify-between">

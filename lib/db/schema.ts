@@ -102,6 +102,13 @@ export const profiles = pgTable('profiles', {
   // cleared when the user returns. Drives /api/cron/inactive-cleanup.
   lastSeenAt: timestamp('last_seen_at'),
   inactiveWarnedAt: timestamp('inactive_warned_at'),
+  // Role-based access control. 'user' is the default for all sign-ups.
+  // 'superadmin' is bootstrapped via SUPERADMIN_EMAIL env var on first signup,
+  // then additional superadmins/admins are promoted via /admin/users.
+  role: text('role').notNull().default('user'),
+  // Admin scoping: when set, this user falls under that admin's management scope.
+  // Superadmin can assign/unassign; admin can only see users where managedBy = their id.
+  managedBy: text('managed_by').references(() => user.id, { onDelete: 'set null' }),
 }, (t) => ({
   // /api/cron/inactive-cleanup filters profiles by these timestamps.
   lastSeenAtIdx: index('profiles_last_seen_at_idx').on(t.lastSeenAt),
@@ -110,6 +117,8 @@ export const profiles = pgTable('profiles', {
   notifyProductIdx: index('profiles_notify_product_idx').on(t.notifyProduct),
   // Stripe webhook looks up the profile by stripeCustomerId for subscription events.
   stripeCustomerIdIdx: index('profiles_stripe_customer_id_idx').on(t.stripeCustomerId),
+  // Admin user list queries filter by managedBy to scope results.
+  managedByIdx: index('profiles_managed_by_idx').on(t.managedBy),
 }));
 
 // Dormant: the table is kept (so it stays in the DB and can be re-enabled
