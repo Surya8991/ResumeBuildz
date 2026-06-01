@@ -1,5 +1,6 @@
 export const GROQ_MODEL = 'llama-3.3-70b-versatile';
 const GROQ_ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
+const SERVER_AI_ENDPOINT = '/api/ai/groq';
 
 export function getGroqApiKey(): string | null {
   if (typeof window === 'undefined') return null;
@@ -149,6 +150,91 @@ export async function streamGroqAI(
     if (err instanceof Error && err.name === 'AbortError') {
       return { success: false, error: 'Request cancelled' };
     }
+    return { success: false, error: 'Failed to connect to AI service' };
+  }
+}
+
+// ─── Server-side proxy variants (paid plan users — no personal key needed) ───
+
+export async function callGroqViaServer(
+  systemPrompt: string,
+  userPrompt: string,
+  maxTokens = 300,
+  temperature = 0.7,
+): Promise<{ success: boolean; content?: string; error?: string; status?: number }> {
+  try {
+    const res = await fetch(SERVER_AI_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ systemPrompt, userPrompt, maxTokens, temperature }),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      return {
+        success: false,
+        error: (data as { error?: string }).error || `AI request failed (${res.status})`,
+        status: res.status,
+      };
+    }
+    const data = await res.json() as { content?: string };
+    if (data.content) return { success: true, content: data.content };
+    return { success: false, error: 'No response generated' };
+  } catch {
+    return { success: false, error: 'Failed to connect to AI service' };
+  }
+}
+
+export async function streamGroqViaServer(
+  systemPrompt: string,
+  userPrompt: string,
+  onChunk: (delta: string, full: string) => void,
+  maxTokens = 300,
+  temperature = 0.7,
+  signal?: AbortSignal,
+): Promise<{ success: boolean; content?: string; error?: string; status?: number }> {
+  try {
+    const res = await fetch(SERVER_AI_ENDPOINT, {
+      method: 'POST',
+      signal,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ systemPrompt, userPrompt, maxTokens, temperature, stream: true }),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      return {
+        success: false,
+        error: (data as { error?: string }).error || `AI request failed (${res.status})`,
+        status: res.status,
+      };
+    }
+    if (!res.body) return { success: false, error: 'No response body' };
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    let full = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || '';
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed.startsWith('data:')) continue;
+        const payload = trimmed.slice(5).trim();
+        if (payload === '[DONE]') continue;
+        try {
+          const json = JSON.parse(payload);
+          const delta: string = json.choices?.[0]?.delta?.content || '';
+          if (delta) { full += delta; onChunk(delta, full); }
+        } catch { /* skip corrupted SSE chunks */ }
+      }
+    }
+    return { success: true, content: full.trim() };
+  } catch (err) {
+    if (err instanceof Error && err.name === 'AbortError') return { success: false, error: 'Request cancelled' };
     return { success: false, error: 'Failed to connect to AI service' };
   }
 }

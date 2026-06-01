@@ -14,7 +14,7 @@ import { track } from '@/lib/analytics';
 import UpgradeModal from '@/components/UpgradeModal';
 import { useToast } from '@/components/Toast';
 import { useAuthContext } from '@/components/Providers';
-import { callGroqAI } from '@/components/ats/utils/groqAI';
+import { callGroqAI, callGroqViaServer } from '@/components/ats/utils/groqAI';
 
 function getResumeContext(resumeData: ReturnType<typeof useResumeStore.getState>['resumeData']): string {
   const parts: string[] = [];
@@ -50,7 +50,7 @@ const PROMPTS: Record<SuggestionType, string> = {
 export default function AISuggestions() {
   const { resumeData } = useResumeStore();
   const { showToast } = useToast();
-  const { isPro, user, refreshProfile } = useAuthContext();
+  const { isPro, profile, user, refreshProfile } = useAuthContext();
   const [apiKey, setApiKey] = useSessionStorage('groq-api-key', '');
   const [showKeyInput, setShowKeyInput] = useState(!apiKey);
   const [loading, setLoading] = useState(false);
@@ -80,7 +80,10 @@ export default function AISuggestions() {
       setShowUpgrade(true);
       return;
     }
-    if (!apiKey) {
+    // Paid users use the server proxy; free users need their own key.
+    const hasPaidPlan = isPro() || ['pro', 'team', 'lifetime'].includes(profile?.plan ?? '');
+    const useServer = hasPaidPlan && !apiKey;
+    if (!apiKey && !useServer) {
       setShowKeyInput(true);
       return;
     }
@@ -98,14 +101,14 @@ export default function AISuggestions() {
     setError('');
     setResult('');
 
+    const system = 'You are a professional resume writer and ATS optimization expert. Give concise, actionable suggestions. Do not include any preamble or explanation - just the requested content.';
+    const userMsg = `Here is the resume:\n\n${resumeContext}\n\n${prompt}`;
+
     let res: Awaited<ReturnType<typeof callGroqAI>>;
     try {
-      res = await callGroqAI(
-        'You are a professional resume writer and ATS optimization expert. Give concise, actionable suggestions. Do not include any preamble or explanation - just the requested content.',
-        `Here is the resume:\n\n${resumeContext}\n\n${prompt}`,
-        500,
-        0.7,
-      );
+      res = useServer
+        ? await callGroqViaServer(system, userMsg, 500, 0.7)
+        : await callGroqAI(system, userMsg, 500, 0.7);
     } catch {
       setError('Failed to connect to AI service. Check your internet connection.');
       setLoading(false);
@@ -158,12 +161,19 @@ export default function AISuggestions() {
         <HelpTip text="Generate professional summaries, bullet points, and skills using AI. Requires a free Groq API key. Click Summary, Bullet Points, or Skills for quick suggestions, or write a custom prompt." />
       </h3>
 
-      {/* API Key setup */}
-      {showKeyInput ? (
+      {/* API Key setup — hidden for paid users who use the server proxy */}
+      {(isPro() || ['pro', 'team', 'lifetime'].includes(profile?.plan ?? '')) && !apiKey ? (
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-muted-foreground">AI included with your plan</span>
+          <button onClick={() => setShowKeyInput(true)} className="text-xs text-muted-foreground hover:text-foreground underline">
+            Use your own key
+          </button>
+        </div>
+      ) : showKeyInput ? (
         <Card className="p-3 space-y-2">
           <p className="text-sm font-medium text-foreground mb-1">Bring Your Own API Key (free)</p>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            AI features require your own Groq API key. No key is provided with this app.<br/><br/>
+            AI features require your own Groq API key.<br/><br/>
             1. Visit <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer" className="text-primary underline">console.groq.com/keys</a> and sign up (free)<br/>
             2. Click &quot;Create API Key&quot; and copy it<br/>
             3. Paste it below  -  stored only in your browser, never on any server
@@ -198,10 +208,12 @@ export default function AISuggestions() {
         </div>
       )}
 
-      {/* Usage counter */}
-      <p className="text-xs text-muted-foreground">
-        {aiRemaining} free rewrite{aiRemaining !== 1 ? 's' : ''} remaining today
-      </p>
+      {/* Usage counter — hide for paid (unlimited) */}
+      {!(isPro() || ['pro', 'team', 'lifetime'].includes(profile?.plan ?? '')) && (
+        <p className="text-xs text-muted-foreground">
+          {aiRemaining} free rewrite{aiRemaining !== 1 ? 's' : ''} remaining today
+        </p>
+      )}
 
       {/* Quick actions */}
       <div className="flex flex-wrap gap-1.5">

@@ -8,7 +8,7 @@
 import { useMemo, useState } from 'react';
 import { ChevronDown, ChevronRight, Info, AlertTriangle, AlertCircle, Wand2, Sparkles, Check, X, Loader2 } from 'lucide-react';
 import { evaluateBullet, gradeBg, gradeColor } from '@/lib/bulletEvaluator';
-import { callGroqAI, getGroqApiKey } from '@/components/ats/utils/groqAI';
+import { callGroqAI, callGroqViaServer, getGroqApiKey } from '@/components/ats/utils/groqAI';
 import { checkServerUsage, incrementServerUsage } from '@/lib/usage';
 import { useAuthContext } from '@/components/Providers';
 
@@ -105,7 +105,7 @@ function BulletRow({
   onApplyOpener: (opener: string) => void;
   onReplaceFull: (next: string) => void;
 }) {
-  const { user, refreshProfile } = useAuthContext();
+  const { user, refreshProfile, isPro, profile } = useAuthContext();
   const [open, setOpen] = useState(grade === 'red');
   const [aiBusy, setAiBusy] = useState(false);
   const [aiResult, setAiResult] = useState<string | null>(null);
@@ -116,22 +116,21 @@ function BulletRow({
   async function runAiRewrite() {
     setAiError(null);
     setAiResult(null);
-    if (!getGroqApiKey()) {
+    const useServer = (isPro() || ['pro', 'team', 'lifetime'].includes(profile?.plan ?? '')) && !getGroqApiKey();
+    if (!getGroqApiKey() && !useServer) {
       setAiError('Add a Groq API key in AI settings first.');
       return;
     }
-    const { allowed } = await checkServerUsage('ai');
+    const { allowed } = await checkServerUsage('ai', isPro());
     if (!allowed) {
       setAiError('Daily free AI limit reached. Upgrade for unlimited.');
       return;
     }
     setAiBusy(true);
-    const { success, content, error } = await callGroqAI(
-      'You are a resume coach. Rewrite a single resume bullet to be stronger: strong action verb start, one specific quantified metric, 14-22 words, no fluff. Return ONLY the rewritten bullet, no preamble, no quotes.',
-      `Original: ${bullet}`,
-      120,
-      0.5,
-    );
+    const system = 'You are a resume coach. Rewrite a single resume bullet to be stronger: strong action verb start, one specific quantified metric, 14-22 words, no fluff. Return ONLY the rewritten bullet, no preamble, no quotes.';
+    const { success, content, error } = useServer
+      ? await callGroqViaServer(system, `Original: ${bullet}`, 120, 0.5)
+      : await callGroqAI(system, `Original: ${bullet}`, 120, 0.5);
     setAiBusy(false);
     if (success && content) {
       setAiResult(content.replace(/^["']|["']$/g, '').trim());

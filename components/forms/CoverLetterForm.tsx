@@ -7,7 +7,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Sparkles, Copy, Check } from 'lucide-react';
-import { streamGroqAI, getGroqApiKey } from '@/components/ats/utils/groqAI';
+import { streamGroqAI, streamGroqViaServer, getGroqApiKey } from '@/components/ats/utils/groqAI';
+import { useAuthContext } from '@/components/Providers';
 
 type Tone = 'professional' | 'formal' | 'casual' | 'concise';
 
@@ -27,6 +28,7 @@ const TONE_LABELS: Record<Tone, string> = {
 
 export default function CoverLetterForm() {
   const { resumeData, updateCoverLetter } = useResumeStore();
+  const { isPro, profile } = useAuthContext();
   const [jobTitle, setJobTitle] = useState('');
   const [company, setCompany] = useState('');
   const [tone, setTone] = useState<Tone>('professional');
@@ -47,7 +49,8 @@ export default function CoverLetterForm() {
 
   const generateCoverLetter = async () => {
     const apiKey = getGroqApiKey();
-    if (!apiKey) {
+    const useServer = (isPro() || ['pro', 'team', 'lifetime'].includes(profile?.plan ?? '')) && !apiKey;
+    if (!apiKey && !useServer) {
       alert('Set up your Groq API key in the AI tab first.');
       return;
     }
@@ -64,18 +67,16 @@ export default function CoverLetterForm() {
       skills.length > 0 ? `Skills: ${skills.flatMap(s => s.items).slice(0, 15).join(', ')}` : '',
     ].filter(Boolean).join('\n');
 
+    const userMsg = `Write a cover letter for ${jobTitle || 'a role'} at ${company || 'a company'}.\n\nCandidate info:\n${context}`;
+    const temp = tone === 'casual' ? 0.85 : tone === 'formal' ? 0.5 : 0.7;
+
     setLoading(true);
     // Clear any existing letter so streamed output replaces it cleanly.
     updateCoverLetter('');
     try {
-      const res = await streamGroqAI(
-        TONE_PROMPTS[tone],
-        `Write a cover letter for ${jobTitle || 'a role'} at ${company || 'a company'}.\n\nCandidate info:\n${context}`,
-        (_delta, full) => updateCoverLetter(full),
-        900,
-        tone === 'casual' ? 0.85 : tone === 'formal' ? 0.5 : 0.7,
-        abortRef.current.signal,
-      );
+      const res = useServer
+        ? await streamGroqViaServer(TONE_PROMPTS[tone], userMsg, (_delta, full) => updateCoverLetter(full), 900, temp, abortRef.current.signal)
+        : await streamGroqAI(TONE_PROMPTS[tone], userMsg, (_delta, full) => updateCoverLetter(full), 900, temp, abortRef.current.signal);
       if (!res.success) alert(res.error || 'AI generation failed.');
     } catch {
       alert('Failed to connect to AI service.');

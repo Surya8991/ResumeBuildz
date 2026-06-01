@@ -53,4 +53,6 @@ export const serverEnv = {
   get STRIPE_WEBHOOK_SECRET(): string { assertServerSide('STRIPE_WEBHOOK_SECRET'); return requiredValue('STRIPE_WEBHOOK_SECRET', process.env.STRIPE_WEBHOOK_SECRET); },
   get DATABASE_URL(): string { assertServerSide('DATABASE_URL'); return requiredValue('DATABASE_URL', process.env.DATABASE_URL); },
   get BETTER_AUTH_SECRET(): string { assertServerSide('BETTER_AUTH_SECRET'); return requiredValue('BETTER_AUTH_SECRET', process.env.BETTER_AUTH_SECRET); },
+  // Optional — enables the /api/ai/groq server proxy so paid plan users don't need their own key.
+  get GROQ_API_KEY(): string | undefined { assertServerSide('GROQ_API_KEY'); return optionalValue(process.env.GROQ_API_KEY); },
 };
