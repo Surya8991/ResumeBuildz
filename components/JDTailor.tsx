@@ -7,10 +7,11 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Sparkles, Wand2, AlertCircle, Loader2 } from 'lucide-react';
-import { streamGroqAI, getGroqApiKey } from '@/components/ats/utils/groqAI';
+import { streamGroqAI, streamGroqViaServer, getGroqApiKey } from '@/components/ats/utils/groqAI';
 import { saveVersion } from '@/lib/versionHistory';
 import { useToast } from '@/components/Toast';
 import ResumeDiff from '@/components/ResumeDiff';
+import { useAuthContext } from '@/components/Providers';
 
 /**
  * JD-tailored rewrite: user pastes a job description, AI rewrites the
@@ -22,6 +23,7 @@ import ResumeDiff from '@/components/ResumeDiff';
 export default function JDTailor() {
   const { resumeData, updateSummary, updateExperience } = useResumeStore();
   const { showToast } = useToast();
+  const { isPro } = useAuthContext();
   const [jd, setJd] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -38,7 +40,8 @@ export default function JDTailor() {
   const run = async () => {
     if (!canRun) return;
     const apiKey = getGroqApiKey();
-    if (!apiKey) {
+    const useServer = isPro() && !apiKey;
+    if (!apiKey && !useServer) {
       setError('Set your Groq API key in the AI tab first.');
       return;
     }
@@ -61,7 +64,9 @@ Rules: 3 sentences max for summary; up to 5 bullets each starting with a strong 
     const user = `JOB DESCRIPTION:\n${jd.trim()}\n\nCURRENT SUMMARY:\n${currentSummary}\n\nCURRENT BULLETS (for role "${topExp.position}" at "${topExp.company}"):\n${currentBullets}\n\nRewrite for better JD match.`;
 
     try {
-      const res = await streamGroqAI(system, user, (_delta, full) => setStreamed(full), 1000, 0.5, abortRef.current.signal);
+      const res = useServer
+        ? await streamGroqViaServer(system, user, (_delta, full) => setStreamed(full), 1000, 0.5, abortRef.current.signal)
+        : await streamGroqAI(system, user, (_delta, full) => setStreamed(full), 1000, 0.5, abortRef.current.signal);
       if (!res.success || !res.content) {
         setError(res.error || 'AI rewrite failed.');
         setLoading(false);

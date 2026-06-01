@@ -31,12 +31,14 @@ import KeywordAutoInsert from './sections/KeywordAutoInsert';
 
 // Utils
 import { getResumeText } from './utils/textAnalysis';
-import { callGroqAI, getGroqApiKey } from './utils/groqAI';
+import { callGroqAI, callGroqViaServer, getGroqApiKey } from './utils/groqAI';
+import { useAuthContext } from '@/components/Providers';
 import { overusedKeywords } from '@/lib/keywordDensity';
 
 export default function ATSScoreChecker() {
   const { resumeData } = useResumeStore();
   const { score, maxScore, checks, sectionScores } = useATSScore();
+  const { isPro } = useAuthContext();
   const [jobDescription, setJobDescription] = useState('');
   const keywordResult = useKeywordMatch(jobDescription);
 
@@ -96,13 +98,13 @@ export default function ATSScoreChecker() {
       setAiGapLoading(false);
       return;
     }
+    const system = 'You are an ATS optimization expert. Give concise, actionable advice in 3-5 bullet points. No preamble.';
+    const user = `Resume summary: ${resumeData.summary}\n\nJob description keywords missing from resume: ${missing.join(', ')}\n\nSuggest how to naturally incorporate these missing keywords into the resume. Be specific about which section to add them to.`;
+    const useServer = isPro() && !getGroqApiKey();
     try {
-      const result = await callGroqAI(
-        'You are an ATS optimization expert. Give concise, actionable advice in 3-5 bullet points. No preamble.',
-        `Resume summary: ${resumeData.summary}\n\nJob description keywords missing from resume: ${missing.join(', ')}\n\nSuggest how to naturally incorporate these missing keywords into the resume. Be specific about which section to add them to.`,
-        400,
-        0.7
-      );
+      const result = useServer
+        ? await callGroqViaServer(system, user, 400, 0.7)
+        : await callGroqAI(system, user, 400, 0.7);
       if (result.success && result.content) setAiGapAnalysis(result.content);
       else setAiGapAnalysis(result.error || 'Failed to generate analysis');
     } catch {
@@ -325,7 +327,7 @@ export default function ATSScoreChecker() {
             )}
 
             {/* AI Gap Analysis */}
-            {getGroqApiKey() && keywordResult.matches.filter(m => !m.found).length > 0 && (
+            {(getGroqApiKey() || isPro()) && keywordResult.matches.filter(m => !m.found).length > 0 && (
               <div className="mt-3">
                 <Button
                   variant="outline"
