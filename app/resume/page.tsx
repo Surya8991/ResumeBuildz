@@ -8,8 +8,8 @@ import { breadcrumbSchema, jsonLd } from '@/lib/articleSchema';
 import { ArrowUpRight, Briefcase } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Resume Guides by Role | 10+ ATS-Friendly Role Guides | ResumeBuildz',
-  description: 'Role-specific resume guides for software engineers, data scientists, product managers, designers, marketers and more. Real bullet examples, ATS keywords, and salary benchmarks.',
+  title: 'Resume Guides by Role | 40+ ATS-Friendly Role Guides | ResumeBuildz',
+  description: 'Role-specific resume guides for engineers, data professionals, designers, marketers, finance, HR, sales, healthcare, legal, and more. Real bullet examples, ATS keywords, and salary benchmarks.',
   alternates: { canonical: absoluteUrl('/resume') },
 };
 
@@ -21,6 +21,14 @@ const CATEGORY_LABELS: Record<string, string> = {
   marketing: 'Marketing',
   business: 'Business + Analyst',
   security: 'Security',
+  finance: 'Finance',
+  hr: 'HR + People',
+  sales: 'Sales + CX',
+  operations: 'Operations',
+  healthcare: 'Healthcare',
+  legal: 'Legal',
+  education: 'Education + L&D',
+  creative: 'Creative',
 };
 
 export default function ResumeByRoleHub() {
