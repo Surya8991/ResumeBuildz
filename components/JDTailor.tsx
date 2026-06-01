@@ -23,7 +23,7 @@ import { useAuthContext } from '@/components/Providers';
 export default function JDTailor() {
   const { resumeData, updateSummary, updateExperience } = useResumeStore();
   const { showToast } = useToast();
-  const { isPro } = useAuthContext();
+  const { isPro, profile } = useAuthContext();
   const [jd, setJd] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -40,7 +40,7 @@ export default function JDTailor() {
   const run = async () => {
     if (!canRun) return;
     const apiKey = getGroqApiKey();
-    const useServer = isPro() && !apiKey;
+    const useServer = (isPro() || ['pro', 'team', 'lifetime'].includes(profile?.plan ?? '')) && !apiKey;
     if (!apiKey && !useServer) {
       setError('Set your Groq API key in the AI tab first.');
       return;

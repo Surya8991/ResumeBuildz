@@ -105,7 +105,7 @@ function BulletRow({
   onApplyOpener: (opener: string) => void;
   onReplaceFull: (next: string) => void;
 }) {
-  const { user, refreshProfile, isPro } = useAuthContext();
+  const { user, refreshProfile, isPro, profile } = useAuthContext();
   const [open, setOpen] = useState(grade === 'red');
   const [aiBusy, setAiBusy] = useState(false);
   const [aiResult, setAiResult] = useState<string | null>(null);
@@ -116,7 +116,7 @@ function BulletRow({
   async function runAiRewrite() {
     setAiError(null);
     setAiResult(null);
-    const useServer = isPro() && !getGroqApiKey();
+    const useServer = (isPro() || ['pro', 'team', 'lifetime'].includes(profile?.plan ?? '')) && !getGroqApiKey();
     if (!getGroqApiKey() && !useServer) {
       setAiError('Add a Groq API key in AI settings first.');
       return;

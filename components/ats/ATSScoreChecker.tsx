@@ -38,7 +38,7 @@ import { overusedKeywords } from '@/lib/keywordDensity';
 export default function ATSScoreChecker() {
   const { resumeData } = useResumeStore();
   const { score, maxScore, checks, sectionScores } = useATSScore();
-  const { isPro } = useAuthContext();
+  const { isPro, profile } = useAuthContext();
   const [jobDescription, setJobDescription] = useState('');
   const keywordResult = useKeywordMatch(jobDescription);
 
@@ -100,7 +100,7 @@ export default function ATSScoreChecker() {
     }
     const system = 'You are an ATS optimization expert. Give concise, actionable advice in 3-5 bullet points. No preamble.';
     const user = `Resume summary: ${resumeData.summary}\n\nJob description keywords missing from resume: ${missing.join(', ')}\n\nSuggest how to naturally incorporate these missing keywords into the resume. Be specific about which section to add them to.`;
-    const useServer = isPro() && !getGroqApiKey();
+    const useServer = (isPro() || ['pro', 'team', 'lifetime'].includes(profile?.plan ?? '')) && !getGroqApiKey();
     try {
       const result = useServer
         ? await callGroqViaServer(system, user, 400, 0.7)
@@ -327,7 +327,7 @@ export default function ATSScoreChecker() {
             )}
 
             {/* AI Gap Analysis */}
-            {(getGroqApiKey() || isPro()) && keywordResult.matches.filter(m => !m.found).length > 0 && (
+            {(getGroqApiKey() || isPro() || ['pro', 'team', 'lifetime'].includes(profile?.plan ?? '')) && keywordResult.matches.filter(m => !m.found).length > 0 && (
               <div className="mt-3">
                 <Button
                   variant="outline"

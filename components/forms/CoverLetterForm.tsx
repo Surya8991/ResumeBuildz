@@ -28,7 +28,7 @@ const TONE_LABELS: Record<Tone, string> = {
 
 export default function CoverLetterForm() {
   const { resumeData, updateCoverLetter } = useResumeStore();
-  const { isPro } = useAuthContext();
+  const { isPro, profile } = useAuthContext();
   const [jobTitle, setJobTitle] = useState('');
   const [company, setCompany] = useState('');
   const [tone, setTone] = useState<Tone>('professional');
@@ -49,7 +49,7 @@ export default function CoverLetterForm() {
 
   const generateCoverLetter = async () => {
     const apiKey = getGroqApiKey();
-    const useServer = isPro() && !apiKey;
+    const useServer = (isPro() || ['pro', 'team', 'lifetime'].includes(profile?.plan ?? '')) && !apiKey;
     if (!apiKey && !useServer) {
       alert('Set up your Groq API key in the AI tab first.');
       return;

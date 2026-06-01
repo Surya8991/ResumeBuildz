@@ -50,7 +50,7 @@ const PROMPTS: Record<SuggestionType, string> = {
 export default function AISuggestions() {
   const { resumeData } = useResumeStore();
   const { showToast } = useToast();
-  const { isPro, user, refreshProfile } = useAuthContext();
+  const { isPro, profile, user, refreshProfile } = useAuthContext();
   const [apiKey, setApiKey] = useSessionStorage('groq-api-key', '');
   const [showKeyInput, setShowKeyInput] = useState(!apiKey);
   const [loading, setLoading] = useState(false);
@@ -81,7 +81,8 @@ export default function AISuggestions() {
       return;
     }
     // Paid users use the server proxy; free users need their own key.
-    const useServer = isPro() && !apiKey;
+    const hasPaidPlan = isPro() || ['pro', 'team', 'lifetime'].includes(profile?.plan ?? '');
+    const useServer = hasPaidPlan && !apiKey;
     if (!apiKey && !useServer) {
       setShowKeyInput(true);
       return;
@@ -161,7 +162,7 @@ export default function AISuggestions() {
       </h3>
 
       {/* API Key setup — hidden for paid users who use the server proxy */}
-      {isPro() && !apiKey ? (
+      {(isPro() || ['pro', 'team', 'lifetime'].includes(profile?.plan ?? '')) && !apiKey ? (
         <div className="flex items-center justify-between">
           <span className="text-xs text-muted-foreground">AI included with your plan</span>
           <button onClick={() => setShowKeyInput(true)} className="text-xs text-muted-foreground hover:text-foreground underline">
@@ -208,7 +209,7 @@ export default function AISuggestions() {
       )}
 
       {/* Usage counter — hide for paid (unlimited) */}
-      {!isPro() && (
+      {!(isPro() || ['pro', 'team', 'lifetime'].includes(profile?.plan ?? '')) && (
         <p className="text-xs text-muted-foreground">
           {aiRemaining} free rewrite{aiRemaining !== 1 ? 's' : ''} remaining today
         </p>
