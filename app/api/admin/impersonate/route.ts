@@ -8,6 +8,7 @@ import {
   buildImpEmailCookie,
   clearImpersonationCookies,
 } from '@/lib/impersonation';
+import { logAdminAction } from '@/lib/adminAudit';
 
 // POST { userId } — start impersonating a user
 export async function POST(req: NextRequest) {
@@ -50,6 +51,8 @@ export async function POST(req: NextRequest) {
   if (row.role === 'admin' || row.role === 'superadmin') {
     return NextResponse.json({ error: 'Cannot impersonate admin accounts' }, { status: 403 });
   }
+
+  logAdminAction(adminSession.userId, 'user.impersonate', targetUserId, { targetEmail: row.email });
 
   const res = NextResponse.json({ ok: true, redirectTo: '/' });
   res.headers.append('Set-Cookie', buildImpersonateCookie(adminSession.userId, targetUserId));

@@ -176,14 +176,18 @@ function SortableExperienceEntry({ exp, onUpdate, onRemove }: {
               <RichTextarea
                 placeholder="Led a team of 5 engineers to deliver a new feature&#10;Increased system performance by 40%&#10;Mentored 3 junior developers"
                 value={exp.highlights.join('\n')}
-                onChange={(v) => onUpdate({ highlights: v.split('\n').filter((h) => h.trim()) })}
+                onChange={(v) => onUpdate({ highlights: v.split('\n') })}
                 rows={4}
               />
               <BulletScoreList
-                bullets={exp.highlights}
+                bullets={exp.highlights.filter((h) => h.trim())}
                 onReplace={(idx, next) => {
+                  const nonEmpty = exp.highlights.filter((h) => h.trim());
+                  const target = nonEmpty[idx];
+                  const realIdx = exp.highlights.indexOf(target);
+                  if (realIdx < 0) return;
                   const copy = [...exp.highlights];
-                  copy[idx] = next;
+                  copy[realIdx] = next;
                   onUpdate({ highlights: copy });
                 }}
               />
@@ -255,6 +259,12 @@ export default function ExperienceForm() {
           </div>
         </SortableContext>
       </DndContext>
+
+      {resumeData.experience.length > 0 && (
+        <Button onClick={handleAdd} size="sm" variant="outline" className="w-full gap-1.5 border-dashed">
+          <Plus className="h-4 w-4" /> Blank line
+        </Button>
+      )}
     </div>
   );
 }

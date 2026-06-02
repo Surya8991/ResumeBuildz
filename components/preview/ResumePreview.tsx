@@ -51,9 +51,20 @@ interface ResumePreviewProps {
   data?: ResumeData;
 }
 
+// Strip blank/whitespace-only highlight strings so the editor can preserve
+// in-progress blank lines without them rendering as phantom empty bullets.
+function stripEmptyHighlights(d: ResumeData): ResumeData {
+  return {
+    ...d,
+    experience: d.experience.map((e) => ({ ...e, highlights: e.highlights.filter((h) => h.trim()) })),
+    education: d.education.map((e) => ({ ...e, highlights: e.highlights.filter((h) => h.trim()) })),
+    projects: d.projects.map((p) => ({ ...p, highlights: p.highlights.filter((h) => h.trim()) })),
+  };
+}
+
 const ResumePreview = forwardRef<HTMLDivElement, ResumePreviewProps>(({ data }, ref) => {
   const { resumeData: storeResumeData, selectedTemplate, primaryColor, styleOptions } = useResumeStore();
-  const resumeData = data || storeResumeData;
+  const resumeData = stripEmptyHighlights(data || storeResumeData);
   const TemplateComponent = getTemplateComponent(selectedTemplate);
   const scopeId = useId().replace(/:/g, '');
 

@@ -112,7 +112,11 @@ export default function HomePage() {
   const [showMobileSheet, setShowMobileSheet] = useState(false);
   const { importData, resetData, addCustomSection, resumeData, undo, redo, pushHistory, canUndo, canRedo, setSelectedTemplate } = useResumeStore();
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
-  const [pdfRemaining, setPdfRemaining] = useState(() => getUsage('pdf').remaining);
+  // Start with the anonymous limit (tighter); recomputed once auth state resolves below.
+  const [pdfRemaining, setPdfRemaining] = useState(() => getUsage('pdf', false).remaining);
+  // Recompute remaining whenever auth state changes (user loads or signs out).
+  // Logged-in users get a higher free quota; anonymous users get 1/day.
+  // Defined after `user` is destructured below.
   const [lastEdited, setLastEdited] = useState<number | null>(null);
   const [lastEditedLabel, setLastEditedLabel] = useState('');
   // Transient "dirty" flag flipped true when resumeData changes, then flipped
@@ -277,6 +281,11 @@ export default function HomePage() {
   // Auth-aware toasts. Guarded by a ref so the effect only greets the user
   // once per mount even if `profile` re-references during auth hydration.
   const greetedRef = useRef(false);
+  useEffect(() => {
+    if (!mounted) return;
+    setPdfRemaining(getUsage('pdf', !!user).remaining);
+  }, [user, mounted]);
+
   useEffect(() => {
     if (!mounted) return;
     if (user && profile) {
@@ -450,7 +459,7 @@ export default function HomePage() {
   };
 
   const handleExportPdf = async () => {
-    if (!canUse('pdf', isPro())) {
+    if (!canUse('pdf', isPro(), !!user)) {
       track('upgrade_modal_opened', { feature: 'pdf', source: 'pdf_export' });
       setShowUpgradeModal(true);
       return;
@@ -463,10 +472,12 @@ export default function HomePage() {
     handlePrint();
     track('resume_exported', { format: 'pdf' });
     // Increment server-side after triggering print (auth users) or localStorage (anon).
-    const { remaining } = await incrementServerUsage('pdf');
+    const { remaining } = await incrementServerUsage('pdf', !!user);
     setPdfRemaining(remaining);
     if (remaining > 0) {
       showToast(`PDF exported! ${remaining} free export${remaining !== 1 ? 's' : ''} left today.`, 'success');
+    } else if (!user) {
+      showToast('Free anonymous export used. Sign up free for more daily exports.', 'warning', 5000);
     } else {
       showToast('Last free PDF export used today. Upgrade for unlimited.', 'warning', 5000);
     }

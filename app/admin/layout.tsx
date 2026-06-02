@@ -5,6 +5,7 @@ import { db } from '@/lib/db';
 import { profiles } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import Link from 'next/link';
+import { Home } from 'lucide-react';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -33,8 +34,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             Users
           </Link>
           <div className="ml-auto">
-            <Link href="/" className="text-xs text-gray-400 hover:text-gray-600 transition-colors">
-              ← Back to app
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors"
+              aria-label="Return to home page"
+            >
+              <Home className="h-4 w-4" /> Home
             </Link>
           </div>
         </div>

@@ -5,6 +5,7 @@ import { eq } from 'drizzle-orm';
 import { requireAdminSession, isAdminResponse } from '@/lib/adminAuth';
 import { sendEmail } from '@/lib/email';
 import { rolePromotedEmail, planChangedEmail } from '@/lib/emails/templates';
+import { logAdminAction } from '@/lib/adminAudit';
 
 type Params = { params: Promise<{ userId: string }> };
 
@@ -107,6 +108,16 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
   await db.update(profiles).set(patch).where(eq(profiles.id, userId));
 
+  if ('role' in patch) {
+    logAdminAction(adminSession.userId, 'role.change', userId, { from: target.role, to: patch.role });
+  }
+  if ('plan' in patch) {
+    logAdminAction(adminSession.userId, 'plan.change', userId, { to: patch.plan });
+  }
+  if ('managedBy' in patch) {
+    logAdminAction(adminSession.userId, 'managedBy.change', userId, { to: patch.managedBy });
+  }
+
   // Transactional notifications — best-effort, never block the response.
   const notifyEmail = target.email;
   const notifyName = target.name ?? '';
@@ -144,6 +155,8 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
   }
 
   await db.delete(user).where(eq(user.id, userId));
+
+  logAdminAction(adminSession.userId, 'user.delete', userId, { role: target.role });
 
   return NextResponse.json({ deleted: true });
 }

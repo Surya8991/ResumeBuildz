@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { toMonthInput, fromMonthInput, isValidDateRange } from '@/lib/dateUtils';
 import { Card } from '@/components/ui/card';
-import { Plus, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, Trash2, ChevronDown, ChevronUp, Award } from 'lucide-react';
 import { generateId } from '@/lib/ids';
 
 const certDateSchema = z.object({
@@ -125,9 +125,13 @@ export default function CertificationsForm() {
       </div>
 
       {resumeData.certifications.length === 0 && (
-        <p className="text-sm text-muted-foreground text-center py-8">
-          No certifications added yet. Click &quot;Add&quot; to get started.
-        </p>
+        <Card className="p-8 text-center border-dashed">
+          <Award className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
+          <p className="text-sm text-muted-foreground">No certifications added yet.</p>
+          <Button onClick={handleAdd} size="sm" variant="outline" className="mt-3 gap-1.5">
+            <Plus className="h-4 w-4" /> Add Your First Certification
+          </Button>
+        </Card>
       )}
 
       <div className="space-y-3">
@@ -140,6 +144,12 @@ export default function CertificationsForm() {
           />
         ))}
       </div>
+
+      {resumeData.certifications.length > 0 && (
+        <Button onClick={handleAdd} size="sm" variant="outline" className="w-full gap-1.5 border-dashed">
+          <Plus className="h-4 w-4" /> Blank line
+        </Button>
+      )}
     </div>
   );
 }
