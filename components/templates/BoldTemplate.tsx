@@ -1,16 +1,17 @@
 ﻿'use client';
 
-import { TemplateProps, formatBullet, renderCustomSection, ensureUrl, safePhotoSrc } from './TemplateWrapper';
+import { TemplateProps, formatBullet, renderCustomSection, ensureUrl, safePhotoSrc, readableOn } from './TemplateWrapper';
 
 export default function BoldTemplate({ data, primaryColor }: TemplateProps) {
   const { personalInfo, summary, experience, education, skills, projects, certifications, languages, sectionOrder } = data;
+  const fg = readableOn(primaryColor);
 
   const renderSection = (key: string) => {
     switch (key) {
       case 'summary':
         return summary ? (
           <div key={key} className="mb-5">
-            <div className="py-1.5 px-3 mb-2" style={{ backgroundColor: primaryColor }}>
+            <div className="py-1.5 px-3 mb-2" data-auto-contrast style={{ backgroundColor: primaryColor, ['--auto-fg' as string]: fg } as React.CSSProperties}>
               <h2 className="text-[14px] font-black uppercase tracking-widest text-white">
                 Summary
               </h2>
@@ -22,7 +23,7 @@ export default function BoldTemplate({ data, primaryColor }: TemplateProps) {
       case 'experience':
         return experience.length > 0 ? (
           <div key={key} className="mb-5">
-            <div className="py-1.5 px-3 mb-2" style={{ backgroundColor: primaryColor }}>
+            <div className="py-1.5 px-3 mb-2" data-auto-contrast style={{ backgroundColor: primaryColor, ['--auto-fg' as string]: fg } as React.CSSProperties}>
               <h2 className="text-[14px] font-black uppercase tracking-widest text-white">
                 Experience
               </h2>
@@ -51,7 +52,7 @@ export default function BoldTemplate({ data, primaryColor }: TemplateProps) {
       case 'education':
         return education.length > 0 ? (
           <div key={key} className="mb-5">
-            <div className="py-1.5 px-3 mb-2" style={{ backgroundColor: primaryColor }}>
+            <div className="py-1.5 px-3 mb-2" data-auto-contrast style={{ backgroundColor: primaryColor, ['--auto-fg' as string]: fg } as React.CSSProperties}>
               <h2 className="text-[14px] font-black uppercase tracking-widest text-white">
                 Education
               </h2>
@@ -81,7 +82,7 @@ export default function BoldTemplate({ data, primaryColor }: TemplateProps) {
       case 'skills':
         return skills.length > 0 ? (
           <div key={key} className="mb-5">
-            <div className="py-1.5 px-3 mb-2" style={{ backgroundColor: primaryColor }}>
+            <div className="py-1.5 px-3 mb-2" data-auto-contrast style={{ backgroundColor: primaryColor, ['--auto-fg' as string]: fg } as React.CSSProperties}>
               <h2 className="text-[14px] font-black uppercase tracking-widest text-white">
                 Skills
               </h2>
@@ -100,7 +101,7 @@ export default function BoldTemplate({ data, primaryColor }: TemplateProps) {
       case 'projects':
         return projects.length > 0 ? (
           <div key={key} className="mb-5">
-            <div className="py-1.5 px-3 mb-2" style={{ backgroundColor: primaryColor }}>
+            <div className="py-1.5 px-3 mb-2" data-auto-contrast style={{ backgroundColor: primaryColor, ['--auto-fg' as string]: fg } as React.CSSProperties}>
               <h2 className="text-[14px] font-black uppercase tracking-widest text-white">
                 Projects
               </h2>
@@ -131,7 +132,7 @@ export default function BoldTemplate({ data, primaryColor }: TemplateProps) {
       case 'certifications':
         return certifications.length > 0 ? (
           <div key={key} className="mb-5">
-            <div className="py-1.5 px-3 mb-2" style={{ backgroundColor: primaryColor }}>
+            <div className="py-1.5 px-3 mb-2" data-auto-contrast style={{ backgroundColor: primaryColor, ['--auto-fg' as string]: fg } as React.CSSProperties}>
               <h2 className="text-[14px] font-black uppercase tracking-widest text-white">
                 Certifications
               </h2>
@@ -153,7 +154,7 @@ export default function BoldTemplate({ data, primaryColor }: TemplateProps) {
       case 'languages':
         return languages.length > 0 ? (
           <div key={key} className="mb-5">
-            <div className="py-1.5 px-3 mb-2" style={{ backgroundColor: primaryColor }}>
+            <div className="py-1.5 px-3 mb-2" data-auto-contrast style={{ backgroundColor: primaryColor, ['--auto-fg' as string]: fg } as React.CSSProperties}>
               <h2 className="text-[14px] font-black uppercase tracking-widest text-white">
                 Languages
               </h2>
@@ -176,7 +177,7 @@ export default function BoldTemplate({ data, primaryColor }: TemplateProps) {
   return (
     <div className="bg-white text-black" style={{ width: '210mm', minHeight: '297mm' }}>
       {/* Header with dark background */}
-      <div className="px-8 py-6" style={{ backgroundColor: primaryColor }}>
+      <div className="px-8 py-6" data-auto-contrast style={{ backgroundColor: primaryColor, ['--auto-fg' as string]: fg } as React.CSSProperties}>
         <div className="flex items-center gap-4">
           {personalInfo.photo && <img src={safePhotoSrc(personalInfo.photo)} onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} alt="" className="w-14 h-14 rounded-full object-cover border-2 border-white/30" />}
           <div>

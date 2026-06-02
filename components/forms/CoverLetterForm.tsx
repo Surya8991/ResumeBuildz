@@ -51,7 +51,7 @@ export default function CoverLetterForm() {
     const apiKey = getGroqApiKey();
     const useServer = (isPro() || ['pro', 'team', 'lifetime'].includes(profile?.plan ?? '')) && !apiKey;
     if (!apiKey && !useServer) {
-      alert('Set up your Groq API key in the AI tab first.');
+      alert('AI is not configured.\n\nOpen the "ATS Score" / AI panel and paste a free Groq API key (https://console.groq.com/keys) — or upgrade to a paid plan to use the built-in server proxy without a personal key.');
       return;
     }
 

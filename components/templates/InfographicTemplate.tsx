@@ -1,9 +1,11 @@
 ﻿'use client';
 
-import { TemplateProps, formatBullet, renderCustomSection, ensureUrl, safePhotoSrc } from './TemplateWrapper';
+import { TemplateProps, formatBullet, renderCustomSection, ensureUrl, safePhotoSrc, readableOn } from './TemplateWrapper';
 
 export default function InfographicTemplate({ data, primaryColor }: TemplateProps) {
   const { personalInfo, summary, experience, education, skills, projects, certifications, languages, sectionOrder } = data;
+  const fg = readableOn(primaryColor);
+  const ac = { ['--auto-fg' as string]: fg } as React.CSSProperties;
 
   // Helper to lighten a hex color
   const lighten = (hex: string, amount: number) => {
@@ -33,25 +35,25 @@ export default function InfographicTemplate({ data, primaryColor }: TemplateProp
             {/* Metric highlights row */}
             <div className="flex gap-3 mb-4">
               {experience.length > 0 && (
-                <div className="flex-1 rounded-lg p-3 text-center text-white" style={{ backgroundColor: primaryColor }}>
+                <div className="flex-1 rounded-lg p-3 text-center text-white" data-auto-contrast style={{ backgroundColor: primaryColor, ...ac }}>
                   <div className="text-[18px] font-black">{experience.length}+</div>
                   <div className="text-[9px] uppercase tracking-wider opacity-80">Roles</div>
                 </div>
               )}
               {projects.length > 0 && (
-                <div className="flex-1 rounded-lg p-3 text-center text-white" style={{ backgroundColor: lighten(primaryColor, 0.1) }}>
+                <div className="flex-1 rounded-lg p-3 text-center text-white" data-auto-contrast style={{ ...ac, backgroundColor: lighten(primaryColor, 0.1) }}>
                   <div className="text-[18px] font-black">{projects.length}</div>
                   <div className="text-[9px] uppercase tracking-wider opacity-80">Projects</div>
                 </div>
               )}
               {skills.length > 0 && (
-                <div className="flex-1 rounded-lg p-3 text-center text-white" style={{ backgroundColor: lighten(primaryColor, 0.2) }}>
+                <div className="flex-1 rounded-lg p-3 text-center text-white" data-auto-contrast style={{ ...ac, backgroundColor: lighten(primaryColor, 0.2) }}>
                   <div className="text-[18px] font-black">{skills.reduce((sum, s) => sum + s.items.length, 0)}</div>
                   <div className="text-[9px] uppercase tracking-wider opacity-80">Skills</div>
                 </div>
               )}
               {certifications.length > 0 && (
-                <div className="flex-1 rounded-lg p-3 text-center text-white" style={{ backgroundColor: lighten(primaryColor, 0.15) }}>
+                <div className="flex-1 rounded-lg p-3 text-center text-white" data-auto-contrast style={{ ...ac, backgroundColor: lighten(primaryColor, 0.15) }}>
                   <div className="text-[18px] font-black">{certifications.length}</div>
                   <div className="text-[9px] uppercase tracking-wider opacity-80">Certs</div>
                 </div>
@@ -74,7 +76,7 @@ export default function InfographicTemplate({ data, primaryColor }: TemplateProp
               <div key={exp.id} className="mb-4 pl-4 border-l-3" style={{ borderLeftWidth: '3px', borderLeftColor: primaryColor }}>
                 <div className="flex justify-between items-baseline">
                   <h3 className="text-[12px] font-bold text-gray-900">{exp.position}</h3>
-                  <span className="text-[9px] px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: primaryColor }}>
+                  <span className="text-[9px] px-2 py-0.5 rounded-full text-white" data-auto-contrast style={{ backgroundColor: primaryColor, ...ac }}>
                     {exp.startDate} - {exp.current ? 'Present' : exp.endDate}
                   </span>
                 </div>
@@ -173,7 +175,7 @@ export default function InfographicTemplate({ data, primaryColor }: TemplateProp
                   {proj.technologies.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-1">
                       {proj.technologies.map((tech, i) => (
-                        <span key={i} className="text-[8px] px-1.5 py-0.5 rounded-full text-white" style={{ backgroundColor: primaryColor }}>
+                        <span key={i} className="text-[8px] px-1.5 py-0.5 rounded-full text-white" data-auto-contrast style={{ backgroundColor: primaryColor, ...ac }}>
                           {tech}
                         </span>
                       ))}
@@ -201,7 +203,7 @@ export default function InfographicTemplate({ data, primaryColor }: TemplateProp
             <div className="flex flex-wrap gap-2">
               {certifications.map((cert) => (
                 <div key={cert.id} className="flex items-center gap-2 px-3 py-2 rounded-lg border" style={{ borderColor: `${primaryColor}40` }}>
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-[10px] font-bold" style={{ backgroundColor: primaryColor }}>
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-[10px] font-bold" data-auto-contrast style={{ backgroundColor: primaryColor, ...ac }}>
                     {cert.name.charAt(0)}
                   </div>
                   <div>
@@ -255,7 +257,7 @@ export default function InfographicTemplate({ data, primaryColor }: TemplateProp
   return (
     <div className="bg-white text-black" style={{ width: '210mm', minHeight: '297mm' }}>
       {/* Header - full width colored banner */}
-      <div className="p-8 text-white relative overflow-hidden" style={{ backgroundColor: primaryColor }}>
+      <div className="p-8 text-white relative overflow-hidden" data-auto-contrast style={{ backgroundColor: primaryColor, ...ac }}>
         <div className="absolute inset-0 opacity-10" style={{
           backgroundImage: 'radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 20%, white 1px, transparent 1px)',
           backgroundSize: '40px 40px, 60px 60px',

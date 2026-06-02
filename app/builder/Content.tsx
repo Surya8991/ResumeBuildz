@@ -10,6 +10,7 @@ import { downloadMarkdown, downloadAtsText } from '@/lib/exportMarkdown';
 import { toJsonResume } from '@/lib/jsonResume';
 import { importResumeFromFile, confirmImport, SUPPORTED_IMPORT_FORMATS } from '@/lib/importResume';
 import PrintableResume from '@/components/preview/PrintableResume';
+import PrintableCoverLetter from '@/components/preview/PrintableCoverLetter';
 import HelpDialog from '@/components/HelpDialog';
 import ResumeProfileManager from '@/components/ResumeProfileManager';
 import PersonalInfoForm from '@/components/forms/PersonalInfoForm';
@@ -92,6 +93,7 @@ const BASE_SECTIONS = [
 
 export default function HomePage() {
   const resumeRef = useRef<HTMLDivElement>(null);
+  const coverLetterRef = useRef<HTMLDivElement>(null);
   const [activeTab, setActiveTab] = useState<'edit' | 'preview' | 'templates' | 'ats' | 'ai'>('edit');
   const [activeSection, setActiveSection] = useState('personalInfo');
   const [isDark, setIsDark] = useState(() => {
@@ -301,6 +303,11 @@ export default function HomePage() {
     documentTitle: resumeFilename(resumeData, '').replace(/\.$/, ''),
   });
 
+  const handlePrintCoverLetter = useReactToPrint({
+    contentRef: coverLetterRef,
+    documentTitle: resumeFilename(resumeData, '').replace(/\.$/, '') + '-cover-letter',
+  });
+
   const toggleDarkMode = () => {
     const next = !isDark;
     setIsDark(next);
@@ -431,6 +438,17 @@ export default function HomePage() {
     }
   };
 
+  const handleExportCoverLetterPdf = () => {
+    if (!resumeData.coverLetter?.trim()) {
+      showToast('Add cover letter text first.', 'warning');
+      return;
+    }
+    setShowExportMenu(false);
+    showToast('Opening print dialog — choose "Save as PDF" as the destination to download.', 'info', 4000);
+    handlePrintCoverLetter();
+    track('resume_exported', { format: 'pdf' });
+  };
+
   const handleExportPdf = async () => {
     if (!canUse('pdf', isPro())) {
       track('upgrade_modal_opened', { feature: 'pdf', source: 'pdf_export' });
@@ -439,6 +457,8 @@ export default function HomePage() {
     }
     setIsExporting(true);
     setExportingType('pdf');
+    // Hint up front so users know the print dialog is the PDF export — pick "Save as PDF" as the destination.
+    showToast('Opening print dialog — choose "Save as PDF" as the destination to download.', 'info', 4000);
     // handlePrint() must stay synchronous — browser gesture context expires on await.
     handlePrint();
     track('resume_exported', { format: 'pdf' });
@@ -717,7 +737,7 @@ export default function HomePage() {
                     <div className="fixed inset-0 z-40" onClick={() => setShowExportMenu(false)} />
                     <div className="absolute right-0 top-full mt-1.5 z-50 bg-background border rounded-xl shadow-xl py-1.5 w-48 animate-in fade-in slide-in-from-top-1 duration-150">
                       <button onClick={() => { handleExportPdf(); setShowExportMenu(false); }} disabled={isExporting} className="w-full px-3 py-2 text-sm flex items-center gap-2.5 hover:bg-muted text-left rounded-lg mx-0.5 transition-colors" style={{ width: 'calc(100% - 4px)' }}>
-                        <Download className="h-4 w-4 text-muted-foreground" /> {exportingType === 'pdf' ? 'Exporting...' : 'PDF'} <span className="text-[11px] text-muted-foreground ml-auto">{pdfRemaining} left today</span>
+                        <Download className="h-4 w-4 text-muted-foreground" /> {exportingType === 'pdf' ? 'Exporting...' : 'PDF (Save as PDF)'} <span className="text-[11px] text-muted-foreground ml-auto">{pdfRemaining} left today</span>
                       </button>
                       {resumeData.coverLetter?.trim() && (
                         <label
@@ -733,6 +753,11 @@ export default function HomePage() {
                           />
                           Include cover letter as cover page
                         </label>
+                      )}
+                      {resumeData.coverLetter?.trim() && (
+                        <button onClick={handleExportCoverLetterPdf} disabled={isExporting} className="w-full px-3 py-2 text-sm flex items-center gap-2.5 hover:bg-muted text-left rounded-lg mx-0.5 transition-colors" style={{ width: 'calc(100% - 4px)' }}>
+                          <FileText className="h-4 w-4 text-muted-foreground" /> Cover Letter (PDF) <span className="text-[11px] text-muted-foreground ml-auto">.pdf</span>
+                        </button>
                       )}
                       <button onClick={handleExportDocx} disabled={isExporting} className="w-full px-3 py-2 text-sm flex items-center gap-2.5 hover:bg-muted text-left rounded-lg mx-0.5 transition-colors" style={{ width: 'calc(100% - 4px)' }}>
                         <FileType className="h-4 w-4 text-muted-foreground" /> {exportingType === 'docx' ? 'Exporting...' : 'DOCX'} <span className="text-[11px] text-muted-foreground ml-auto">Word</span>
@@ -1285,6 +1310,11 @@ export default function HomePage() {
           </a>
         </div>
       </footer>
+
+      {/* Off-screen mount of the standalone cover-letter for react-to-print to clone. */}
+      <div style={{ position: 'fixed', left: '-99999px', top: 0, pointerEvents: 'none' }} aria-hidden>
+        <PrintableCoverLetter ref={coverLetterRef} />
+      </div>
 
       <UpgradeModal feature="pdf" open={showUpgradeModal} onOpenChange={setShowUpgradeModal} />
       <ShortcutsDialog open={showShortcuts} onOpenChange={setShowShortcuts} />

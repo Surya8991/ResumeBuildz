@@ -1,9 +1,10 @@
 ﻿'use client';
 
-import { TemplateProps, formatBullet, renderCustomSection, ensureUrl, safePhotoSrc } from './TemplateWrapper';
+import { TemplateProps, formatBullet, renderCustomSection, ensureUrl, safePhotoSrc, readableOn } from './TemplateWrapper';
 
 export default function ModernTemplate({ data, primaryColor }: TemplateProps) {
   const { personalInfo, summary, experience, education, skills, projects, certifications, languages, sectionOrder } = data;
+  const fg = readableOn(primaryColor);
 
   const leftSections = ['summary', 'experience', 'projects'];
   const rightSections = ['skills', 'education', 'certifications', 'languages'];
@@ -136,7 +137,7 @@ export default function ModernTemplate({ data, primaryColor }: TemplateProps) {
   return (
     <div className="bg-white text-black flex" style={{ width: '210mm', minHeight: '297mm' }}>
       {/* Sidebar */}
-      <div className="w-[72mm] p-6" style={{ backgroundColor: primaryColor }}>
+      <div className="w-[72mm] p-6" data-auto-contrast style={{ backgroundColor: primaryColor, ['--auto-fg' as string]: fg } as React.CSSProperties}>
         {/* Name in sidebar */}
         <div className="mb-6">
           {personalInfo.photo && <img src={safePhotoSrc(personalInfo.photo)} onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} alt="" className="w-16 h-16 rounded-full object-cover border-2 border-white/20 mb-2" />}

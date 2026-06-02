@@ -172,13 +172,22 @@
     visibility: hidden;
   }
   .resume-print,
-  .resume-print * {
+  .resume-print *,
+  .print-cover-letter,
+  .print-cover-letter *,
+  .printable-doc,
+  .printable-doc > * {
     visibility: visible;
   }
-  .resume-print {
+  .printable-doc {
     position: absolute;
     left: 0;
     top: 0;
+    width: 210mm;
+    margin: 0;
+    padding: 0;
+  }
+  .resume-print {
     width: 210mm;
     margin: 0;
     padding: 0;
@@ -257,6 +266,15 @@
   break-inside: avoid;
 }
 
+/* Auto-contrast: any element marked [data-auto-contrast] with a CSS var
+ * --auto-fg gets its white-text descendants recolored. Used by templates
+ * with a primaryColor-filled header/sidebar so a pale primary doesn't
+ * leave white text invisible. */
+[data-auto-contrast] .text-white,
+[data-auto-contrast] [class*="text-white/"] {
+  color: var(--auto-fg, #ffffff) !important;
+}
+
 /* Cover letter cover page: hidden on screen (the live preview should not
  * be cluttered with it), visible only in @media print. */
 .print-cover-letter {
@@ -268,13 +286,26 @@
   }
 }
 
+/* Headings stay glued to the next block so a section title is never
+ * marooned at the bottom of a page. */
+.resume-print h1,
 .resume-print h2,
-.resume-print h3 {
+.resume-print h3,
+.resume-print h4 {
   page-break-after: avoid;
   break-after: avoid;
+  page-break-inside: avoid;
+  break-inside: avoid;
 }
 
-.resume-print section {
+/* A section as a *whole* can break (a long Experience can span pages) — but
+ * the entry-level units inside cannot split. The previous rule forbade
+ * any internal break which left huge empty gaps when a section was taller
+ * than a page. */
+.resume-print section > div,
+.resume-print section > article,
+.resume-print .entry,
+.resume-print [data-keep-together] {
   page-break-inside: avoid;
   break-inside: avoid;
 }
@@ -285,10 +316,13 @@
   break-inside: avoid;
 }
 
-/* Paragraph orphans/widows: prevent a single trailing/leading line getting marooned on a page. */
-.resume-print p {
-  orphans: 2;
-  widows: 2;
+/* Orphans/widows: never strand fewer than 3 lines of a paragraph at a
+ * page edge — addresses "section heading or one line on a different page". */
+.resume-print p,
+.resume-print li,
+.resume-print div {
+  orphans: 3;
+  widows: 3;
 }
 
 /* Hide scrollbar for nav pills */

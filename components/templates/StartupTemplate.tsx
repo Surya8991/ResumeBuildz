@@ -1,9 +1,11 @@
 ﻿'use client';
 
-import { TemplateProps, formatBullet, renderCustomSection, ensureUrl, safePhotoSrc } from './TemplateWrapper';
+import { TemplateProps, formatBullet, renderCustomSection, ensureUrl, safePhotoSrc, readableOn } from './TemplateWrapper';
 
 export default function StartupTemplate({ data, primaryColor }: TemplateProps) {
   const { personalInfo, summary, experience, education, skills, projects, certifications, languages, sectionOrder } = data;
+  const fg = readableOn(primaryColor);
+  const ac = { ['--auto-fg' as string]: fg } as React.CSSProperties;
 
   const renderSection = (key: string) => {
     switch (key) {
@@ -36,7 +38,7 @@ export default function StartupTemplate({ data, primaryColor }: TemplateProps) {
                         {exp.location ? ` | ${exp.location}` : ''}
                       </p>
                     </div>
-                    <span className="text-[9px] px-2.5 py-1 rounded-full text-white shrink-0" style={{ backgroundColor: primaryColor }}>
+                    <span className="text-[9px] px-2.5 py-1 rounded-full text-white shrink-0" data-auto-contrast style={{ backgroundColor: primaryColor, ...ac }}>
                       {exp.startDate} - {exp.current ? 'Present' : exp.endDate}
                     </span>
                   </div>
@@ -172,7 +174,7 @@ export default function StartupTemplate({ data, primaryColor }: TemplateProps) {
             <div className="flex flex-wrap gap-2">
               {certifications.map((cert) => (
                 <div key={cert.id} className="px-3 py-2 rounded-xl bg-white border border-gray-100 flex items-center gap-2" style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
-                  <div className="w-6 h-6 rounded-lg flex items-center justify-center text-white text-[9px] font-bold" style={{ backgroundColor: primaryColor }}>
+                  <div className="w-6 h-6 rounded-lg flex items-center justify-center text-white text-[9px] font-bold" data-auto-contrast style={{ backgroundColor: primaryColor, ...ac }}>
                     {cert.name.charAt(0)}
                   </div>
                   <div>

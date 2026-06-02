@@ -1,9 +1,11 @@
 ﻿'use client';
 
-import { TemplateProps, formatBullet, renderCustomSection, ensureUrl, safePhotoSrc } from './TemplateWrapper';
+import { TemplateProps, formatBullet, renderCustomSection, ensureUrl, safePhotoSrc, readableOn } from './TemplateWrapper';
 
 export default function CreativeTemplate({ data, primaryColor }: TemplateProps) {
   const { personalInfo, summary, experience, education, skills, projects, certifications, languages, sectionOrder } = data;
+  const fg = readableOn(primaryColor);
+  const ac = { ['--auto-fg' as string]: fg } as React.CSSProperties;
 
   const lightenColor = (hex: string, amount: number) => {
     const num = parseInt(hex.replace('#', ''), 16);
@@ -26,7 +28,7 @@ export default function CreativeTemplate({ data, primaryColor }: TemplateProps) 
         return experience.length > 0 ? (
           <div key={key} className="mb-5">
             <h2 className="text-[13px] font-bold mb-3 flex items-center gap-2">
-              <span className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px]" style={{ backgroundColor: primaryColor }}>W</span>
+              <span className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px]" data-auto-contrast style={{ backgroundColor: primaryColor, ...ac }}>W</span>
               Work Experience
             </h2>
             {experience.map((exp) => (
@@ -36,7 +38,7 @@ export default function CreativeTemplate({ data, primaryColor }: TemplateProps) 
                     <h3 className="text-[12px] font-bold">{exp.position}</h3>
                     <p className="text-[11px] font-medium" style={{ color: primaryColor }}>{exp.company}</p>
                   </div>
-                  <span className="text-[9px] px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: primaryColor }}>
+                  <span className="text-[9px] px-2 py-0.5 rounded-full text-white" data-auto-contrast style={{ backgroundColor: primaryColor, ...ac }}>
                     {exp.startDate} - {exp.current ? 'Present' : exp.endDate}
                   </span>
                 </div>
@@ -60,7 +62,7 @@ export default function CreativeTemplate({ data, primaryColor }: TemplateProps) 
         return education.length > 0 ? (
           <div key={key} className="mb-5">
             <h2 className="text-[13px] font-bold mb-3 flex items-center gap-2">
-              <span className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px]" style={{ backgroundColor: primaryColor }}>E</span>
+              <span className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px]" data-auto-contrast style={{ backgroundColor: primaryColor, ...ac }}>E</span>
               Education
             </h2>
             {education.map((edu) => (
@@ -77,7 +79,7 @@ export default function CreativeTemplate({ data, primaryColor }: TemplateProps) 
         return skills.length > 0 ? (
           <div key={key} className="mb-5">
             <h2 className="text-[13px] font-bold mb-3 flex items-center gap-2">
-              <span className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px]" style={{ backgroundColor: primaryColor }}>S</span>
+              <span className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px]" data-auto-contrast style={{ backgroundColor: primaryColor, ...ac }}>S</span>
               Skills
             </h2>
             {skills.map((skill) => (
@@ -99,7 +101,7 @@ export default function CreativeTemplate({ data, primaryColor }: TemplateProps) 
         return projects.length > 0 ? (
           <div key={key} className="mb-5">
             <h2 className="text-[13px] font-bold mb-3 flex items-center gap-2">
-              <span className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px]" style={{ backgroundColor: primaryColor }}>P</span>
+              <span className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px]" data-auto-contrast style={{ backgroundColor: primaryColor, ...ac }}>P</span>
               Projects
             </h2>
             {projects.map((proj) => (
@@ -108,7 +110,7 @@ export default function CreativeTemplate({ data, primaryColor }: TemplateProps) 
                 {proj.technologies.length > 0 && (
                   <div className="flex flex-wrap gap-1 mt-0.5">
                     {proj.technologies.map((t, i) => (
-                      <span key={i} className="text-[8px] px-1.5 py-0.5 rounded text-white" style={{ backgroundColor: primaryColor }}>
+                      <span key={i} className="text-[8px] px-1.5 py-0.5 rounded text-white" data-auto-contrast style={{ backgroundColor: primaryColor, ...ac }}>
                         {t}
                       </span>
                     ))}
@@ -133,7 +135,7 @@ export default function CreativeTemplate({ data, primaryColor }: TemplateProps) 
         return certifications.length > 0 ? (
           <div key={key} className="mb-5">
             <h2 className="text-[13px] font-bold mb-3 flex items-center gap-2">
-              <span className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px]" style={{ backgroundColor: primaryColor }}>C</span>
+              <span className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px]" data-auto-contrast style={{ backgroundColor: primaryColor, ...ac }}>C</span>
               Certifications
             </h2>
             <div className="space-y-1">
@@ -151,12 +153,12 @@ export default function CreativeTemplate({ data, primaryColor }: TemplateProps) 
         return languages.length > 0 ? (
           <div key={key} className="mb-5">
             <h2 className="text-[13px] font-bold mb-3 flex items-center gap-2">
-              <span className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px]" style={{ backgroundColor: primaryColor }}>L</span>
+              <span className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px]" data-auto-contrast style={{ backgroundColor: primaryColor, ...ac }}>L</span>
               Languages
             </h2>
             <div className="flex flex-wrap gap-2 pl-4">
               {languages.map((lang) => (
-                <span key={lang.id} className="text-[10px] px-3 py-1 rounded-full text-white" style={{ backgroundColor: primaryColor }}>
+                <span key={lang.id} className="text-[10px] px-3 py-1 rounded-full text-white" data-auto-contrast style={{ backgroundColor: primaryColor, ...ac }}>
                   {lang.name}{lang.proficiency ? `  -  ${lang.proficiency}` : ''}
                 </span>
               ))}

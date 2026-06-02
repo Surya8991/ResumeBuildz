@@ -1,9 +1,10 @@
 ﻿'use client';
 
-import { TemplateProps, formatBullet, renderCustomSection, ensureUrl, safePhotoSrc } from './TemplateWrapper';
+import { TemplateProps, formatBullet, renderCustomSection, ensureUrl, safePhotoSrc, readableOn } from './TemplateWrapper';
 
 export default function GradientTemplate({ data, primaryColor }: TemplateProps) {
   const { personalInfo, summary, experience, education, skills, projects, certifications, languages, sectionOrder } = data;
+  const fg = readableOn(primaryColor);
 
   const renderSection = (key: string) => {
     switch (key) {
@@ -27,7 +28,7 @@ export default function GradientTemplate({ data, primaryColor }: TemplateProps) 
               <div key={exp.id} className="mb-4 rounded-lg border border-gray-100 p-3 bg-white">
                 <div className="flex justify-between items-baseline">
                   <h3 className="text-[12px] font-bold text-gray-900">{exp.position}</h3>
-                  <span className="text-[9px] px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: primaryColor }}>
+                  <span className="text-[9px] px-2 py-0.5 rounded-full text-white" data-auto-contrast style={{ backgroundColor: primaryColor, ['--auto-fg' as string]: fg } as React.CSSProperties}>
                     {exp.startDate} - {exp.current ? 'Present' : exp.endDate}
                   </span>
                 </div>
@@ -56,7 +57,7 @@ export default function GradientTemplate({ data, primaryColor }: TemplateProps) 
               <div key={edu.id} className="mb-3 rounded-lg border border-gray-100 p-3 bg-white">
                 <div className="flex justify-between items-baseline">
                   <h3 className="text-[12px] font-bold text-gray-900">{edu.degree}{edu.field ? ` in ${edu.field}` : ''}</h3>
-                  <span className="text-[9px] px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: primaryColor }}>
+                  <span className="text-[9px] px-2 py-0.5 rounded-full text-white" data-auto-contrast style={{ backgroundColor: primaryColor, ['--auto-fg' as string]: fg } as React.CSSProperties}>
                     {edu.startDate} - {edu.endDate}
                   </span>
                 </div>
@@ -110,7 +111,7 @@ export default function GradientTemplate({ data, primaryColor }: TemplateProps) 
                 <div className="flex justify-between items-baseline">
                   <h3 className="text-[12px] font-bold text-gray-900">{proj.name}</h3>
                   {proj.startDate && (
-                    <span className="text-[9px] px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: primaryColor }}>
+                    <span className="text-[9px] px-2 py-0.5 rounded-full text-white" data-auto-contrast style={{ backgroundColor: primaryColor, ['--auto-fg' as string]: fg } as React.CSSProperties}>
                       {proj.startDate}{proj.endDate ? ` - ${proj.endDate}` : ''}
                     </span>
                   )}
@@ -183,9 +184,11 @@ export default function GradientTemplate({ data, primaryColor }: TemplateProps) 
       {/* Gradient Header */}
       <div
         className="px-8 py-7"
+        data-auto-contrast
         style={{
           background: `linear-gradient(135deg, ${primaryColor}, ${primaryColor}cc, ${primaryColor}88)`,
-        }}
+          ['--auto-fg' as string]: fg,
+        } as React.CSSProperties}
       >
         <div className="flex items-center gap-4">
           {personalInfo.photo && <img src={safePhotoSrc(personalInfo.photo)} onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} alt="" className="w-14 h-14 rounded-full object-cover border-2 border-white/40 shadow-lg" />}

@@ -23,7 +23,7 @@ function hexToRgb(hex: string): string {
 }
 
 export async function downloadDocx(data: ResumeData, primaryColor: string) {
-  const { personalInfo, summary, experience, education, skills, projects, certifications, languages } = data;
+  const { personalInfo, summary, experience, education, skills, projects, certifications, languages, customSections, sectionOrder } = data;
   const color = hexToRgb(primaryColor);
 
   const children: Paragraph[] = [];
@@ -106,20 +106,21 @@ export async function downloadDocx(data: ResumeData, primaryColor: string) {
     );
   };
 
-  // Summary
-  if (summary) {
-    addSectionHeading('Professional Summary');
-    children.push(
-      new Paragraph({
-        spacing: { after: 100 },
-        children: [
-          new TextRun({ text: summary, size: 22, color: '444444' }),
-        ],
-      })
-    );
-  }
+  const renderSummary = () => {
+    if (summary) {
+      addSectionHeading('Professional Summary');
+      children.push(
+        new Paragraph({
+          spacing: { after: 100 },
+          children: [
+            new TextRun({ text: summary, size: 22, color: '444444' }),
+          ],
+        })
+      );
+    }
+  };
 
-  // Experience
+  const renderExperience = () => {
   if (experience.length > 0) {
     addSectionHeading('Professional Experience');
     for (const exp of experience) {
@@ -156,8 +157,9 @@ export async function downloadDocx(data: ResumeData, primaryColor: string) {
       }
     }
   }
+  };
 
-  // Education
+  const renderEducation = () => {
   if (education.length > 0) {
     addSectionHeading('Education');
     for (const edu of education) {
@@ -193,8 +195,9 @@ export async function downloadDocx(data: ResumeData, primaryColor: string) {
       }
     }
   }
+  };
 
-  // Skills
+  const renderSkills = () => {
   if (skills.length > 0) {
     addSectionHeading('Skills');
     for (const skill of skills) {
@@ -209,8 +212,9 @@ export async function downloadDocx(data: ResumeData, primaryColor: string) {
       );
     }
   }
+  };
 
-  // Projects
+  const renderProjects = () => {
   if (projects.length > 0) {
     addSectionHeading('Projects');
     for (const proj of projects) {
@@ -250,8 +254,9 @@ export async function downloadDocx(data: ResumeData, primaryColor: string) {
       }
     }
   }
+  };
 
-  // Certifications
+  const renderCertifications = () => {
   if (certifications.length > 0) {
     addSectionHeading('Certifications');
     for (const cert of certifications) {
@@ -269,20 +274,73 @@ export async function downloadDocx(data: ResumeData, primaryColor: string) {
       );
     }
   }
+  };
 
-  // Languages
-  if (languages.length > 0) {
-    addSectionHeading('Languages');
-    children.push(
-      new Paragraph({
-        spacing: { after: 60 },
-        children: languages.flatMap((lang, i) => [
-          new TextRun({ text: lang.name, bold: true, size: 20 }),
-          new TextRun({ text: lang.proficiency ? ` (${lang.proficiency})` : '', size: 20, color: '666666' }),
-          ...(i < languages.length - 1 ? [new TextRun({ text: '    ', size: 20 })] : []),
-        ]),
-      })
-    );
+  const renderLanguages = () => {
+    if (languages.length > 0) {
+      addSectionHeading('Languages');
+      children.push(
+        new Paragraph({
+          spacing: { after: 60 },
+          children: languages.flatMap((lang, i) => [
+            new TextRun({ text: lang.name, bold: true, size: 20 }),
+            new TextRun({ text: lang.proficiency ? ` (${lang.proficiency})` : '', size: 20, color: '666666' }),
+            ...(i < languages.length - 1 ? [new TextRun({ text: '    ', size: 20 })] : []),
+          ]),
+        })
+      );
+    }
+  };
+
+  const renderCustom = (id: string) => {
+    const section = customSections?.find(s => s.id === id);
+    if (!section || !section.items || section.items.length === 0) return;
+    addSectionHeading(section.title || 'Section');
+    for (const item of section.items) {
+      children.push(
+        new Paragraph({
+          spacing: { before: 120 },
+          tabStops: [{ type: TabStopType.RIGHT, position: TabStopPosition.MAX }],
+          children: [
+            new TextRun({ text: item.title || '', bold: true, size: 22 }),
+            ...(item.date ? [
+              new TextRun({ text: '\t', size: 22 }),
+              new TextRun({ text: item.date, size: 18, color: '666666' }),
+            ] : []),
+          ],
+        })
+      );
+      if (item.subtitle) {
+        children.push(
+          new Paragraph({
+            spacing: { after: 40 },
+            children: [new TextRun({ text: item.subtitle, italics: true, size: 20, color: '666666' })],
+          })
+        );
+      }
+      if (item.description) {
+        children.push(
+          new Paragraph({
+            spacing: { after: 60 },
+            children: [new TextRun({ text: item.description, size: 20, color: '444444' })],
+          })
+        );
+      }
+    }
+  };
+
+  const order = (sectionOrder && sectionOrder.length > 0)
+    ? sectionOrder
+    : ['summary', 'experience', 'education', 'skills', 'projects', 'certifications', 'languages'];
+  for (const key of order) {
+    if (key === 'summary') renderSummary();
+    else if (key === 'experience') renderExperience();
+    else if (key === 'education') renderEducation();
+    else if (key === 'skills') renderSkills();
+    else if (key === 'projects') renderProjects();
+    else if (key === 'certifications') renderCertifications();
+    else if (key === 'languages') renderLanguages();
+    else if (key.startsWith('custom-')) renderCustom(key.slice('custom-'.length));
   }
 
   const doc = new Document({

@@ -1,9 +1,10 @@
 ﻿'use client';
 
-import { TemplateProps, formatBullet, renderCustomSection, ensureUrl, safePhotoSrc } from './TemplateWrapper';
+import { TemplateProps, formatBullet, renderCustomSection, ensureUrl, safePhotoSrc, readableOn } from './TemplateWrapper';
 
 export default function ProfessionalTemplate({ data, primaryColor }: TemplateProps) {
   const { personalInfo, summary, experience, education, skills, projects, certifications, languages, sectionOrder } = data;
+  const fg = readableOn(primaryColor);
 
   const renderSection = (key: string) => {
     switch (key) {
@@ -157,7 +158,7 @@ export default function ProfessionalTemplate({ data, primaryColor }: TemplatePro
   return (
     <div className="bg-white text-black" style={{ width: '210mm', minHeight: '297mm', fontFamily: 'system-ui, sans-serif' }}>
       {/* Header */}
-      <div className="px-8 py-6" style={{ backgroundColor: primaryColor }}>
+      <div className="px-8 py-6" data-auto-contrast style={{ backgroundColor: primaryColor, ['--auto-fg' as string]: fg } as React.CSSProperties}>
         <div className="flex items-center gap-4">
           {personalInfo.photo && <img src={safePhotoSrc(personalInfo.photo)} onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} alt="" className="w-16 h-16 rounded-full object-cover border-2 border-white/20" />}
           <div>

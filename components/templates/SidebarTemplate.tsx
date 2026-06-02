@@ -1,9 +1,10 @@
 ﻿'use client';
 
-import { TemplateProps, formatBullet, renderCustomSection, ensureUrl, safePhotoSrc } from './TemplateWrapper';
+import { TemplateProps, formatBullet, renderCustomSection, ensureUrl, safePhotoSrc, readableOn } from './TemplateWrapper';
 
 export default function SidebarTemplate({ data, primaryColor }: TemplateProps) {
   const { personalInfo, summary, experience, education, skills, projects, certifications, languages, sectionOrder } = data;
+  const fg = readableOn(primaryColor);
 
   const mainSections = ['summary', 'experience', 'projects'];
   const sidebarSections = ['skills', 'education', 'certifications', 'languages'];
@@ -189,7 +190,7 @@ export default function SidebarTemplate({ data, primaryColor }: TemplateProps) {
       </div>
 
       {/* Sidebar - Right 30% */}
-      <div className="w-[30%] p-5 min-h-full" style={{ backgroundColor: primaryColor }}>
+      <div className="w-[30%] p-5 min-h-full" data-auto-contrast style={{ backgroundColor: primaryColor, ['--auto-fg' as string]: fg } as React.CSSProperties}>
         {/* Contact links in sidebar */}
         <div className="mb-5">
           <h2 className="text-[12px] font-bold uppercase tracking-wider mb-2 text-white/90">Links</h2>

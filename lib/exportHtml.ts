@@ -17,7 +17,7 @@ function sanitizeColor(color: string): string {
 
 function generateResumeHtml(data: ResumeData, primaryColor: string): string {
   primaryColor = sanitizeColor(primaryColor);
-  const { personalInfo, summary, experience, education, skills, projects, certifications, languages } = data;
+  const { personalInfo, summary, experience, education, skills, projects, certifications, languages, customSections, sectionOrder } = data;
 
   const contactParts: string[] = [];
   if (personalInfo.email) contactParts.push(personalInfo.email);
@@ -63,14 +63,15 @@ ${personalInfo.jobTitle ? `<div class="job-title">${escapeHtml(personalInfo.jobT
 <div class="contact">${contactParts.map(c => `<span>${escapeHtml(c)}</span>`).join(' | ')}</div>
 `;
 
-  if (summary) {
-    html += `<h2>Professional Summary</h2>\n<p style="font-size:13px;color:#444;">${escapeHtml(summary)}</p>\n`;
-  }
-
-  if (experience.length > 0) {
-    html += `<h2>Professional Experience</h2>\n`;
-    for (const exp of experience) {
-      html += `<div class="entry">
+  const renderSection = (key: string) => {
+    if (key === 'summary' && summary) {
+      html += `<h2>Professional Summary</h2>\n<p style="font-size:13px;color:#444;">${escapeHtml(summary)}</p>\n`;
+      return;
+    }
+    if (key === 'experience' && experience.length > 0) {
+      html += `<h2>Professional Experience</h2>\n`;
+      for (const exp of experience) {
+        html += `<div class="entry">
   <div class="entry-header">
     <h3>${escapeHtml(exp.position)}</h3>
     <span class="meta">${escapeHtml(exp.startDate)} - ${exp.current ? 'Present' : escapeHtml(exp.endDate || 'Present')}</span>
@@ -78,13 +79,13 @@ ${personalInfo.jobTitle ? `<div class="job-title">${escapeHtml(personalInfo.jobT
   <div class="meta">${escapeHtml(exp.company)}${exp.location ? `, ${escapeHtml(exp.location)}` : ''}</div>
   ${exp.highlights.length > 0 ? `<ul>${exp.highlights.map(h => `<li>${formatBullet(h)}</li>`).join('\n')}</ul>` : ''}
 </div>\n`;
+      }
+      return;
     }
-  }
-
-  if (education.length > 0) {
-    html += `<h2>Education</h2>\n`;
-    for (const edu of education) {
-      html += `<div class="entry">
+    if (key === 'education' && education.length > 0) {
+      html += `<h2>Education</h2>\n`;
+      for (const edu of education) {
+        html += `<div class="entry">
   <div class="entry-header">
     <h3>${escapeHtml(edu.degree)}${edu.field ? ` in ${escapeHtml(edu.field)}` : ''}</h3>
     <span class="meta">${(edu.startDate || edu.endDate) ? `${escapeHtml(edu.startDate)} - ${escapeHtml(edu.endDate)}` : ''}</span>
@@ -92,20 +93,20 @@ ${personalInfo.jobTitle ? `<div class="job-title">${escapeHtml(personalInfo.jobT
   <div class="meta">${escapeHtml(edu.institution)}${edu.location ? `, ${escapeHtml(edu.location)}` : ''}${edu.gpa ? ` | GPA: ${escapeHtml(edu.gpa)}` : ''}</div>
   ${edu.highlights.length > 0 ? `<ul>${edu.highlights.map(h => `<li>${formatBullet(h)}</li>`).join('\n')}</ul>` : ''}
 </div>\n`;
+      }
+      return;
     }
-  }
-
-  if (skills.length > 0) {
-    html += `<h2>Skills</h2>\n`;
-    for (const skill of skills) {
-      html += `<div class="skills-category"><strong>${escapeHtml(skill.category)}:</strong> <span>${skill.items.map(i => escapeHtml(i)).join(', ')}</span></div>\n`;
+    if (key === 'skills' && skills.length > 0) {
+      html += `<h2>Skills</h2>\n`;
+      for (const skill of skills) {
+        html += `<div class="skills-category"><strong>${escapeHtml(skill.category)}:</strong> <span>${skill.items.map(i => escapeHtml(i)).join(', ')}</span></div>\n`;
+      }
+      return;
     }
-  }
-
-  if (projects.length > 0) {
-    html += `<h2>Projects</h2>\n`;
-    for (const proj of projects) {
-      html += `<div class="entry">
+    if (key === 'projects' && projects.length > 0) {
+      html += `<h2>Projects</h2>\n`;
+      for (const proj of projects) {
+        html += `<div class="entry">
   <div class="entry-header">
     <h3>${escapeHtml(proj.name)}</h3>
     ${proj.startDate ? `<span class="meta">${escapeHtml(proj.startDate)}${proj.endDate ? ` - ${escapeHtml(proj.endDate)}` : ''}</span>` : ''}
@@ -113,20 +114,44 @@ ${personalInfo.jobTitle ? `<div class="job-title">${escapeHtml(personalInfo.jobT
   ${proj.technologies.length > 0 ? `<div class="tech">${proj.technologies.map(t => escapeHtml(t)).join(' | ')}</div>` : ''}
   ${proj.highlights.length > 0 ? `<ul>${proj.highlights.map(h => `<li>${formatBullet(h)}</li>`).join('\n')}</ul>` : ''}
 </div>\n`;
+      }
+      return;
     }
-  }
-
-  if (certifications.length > 0) {
-    html += `<h2>Certifications</h2>\n`;
-    for (const cert of certifications) {
-      html += `<div class="cert-row"><span><strong>${escapeHtml(cert.name)}</strong> — ${escapeHtml(cert.issuer)}</span><span class="meta">${escapeHtml(cert.date)}</span></div>\n`;
+    if (key === 'certifications' && certifications.length > 0) {
+      html += `<h2>Certifications</h2>\n`;
+      for (const cert of certifications) {
+        html += `<div class="cert-row"><span><strong>${escapeHtml(cert.name)}</strong> — ${escapeHtml(cert.issuer)}</span><span class="meta">${escapeHtml(cert.date)}</span></div>\n`;
+      }
+      return;
     }
-  }
+    if (key === 'languages' && languages.length > 0) {
+      html += `<h2>Languages</h2>\n`;
+      html += `<div>${languages.map(l => `<span style="margin-right:16px;font-size:13px;"><strong>${escapeHtml(l.name)}</strong>${l.proficiency ? ` — ${escapeHtml(l.proficiency)}` : ''}</span>`).join('')}</div>\n`;
+      return;
+    }
+    if (key.startsWith('custom-')) {
+      const id = key.slice('custom-'.length);
+      const section = customSections?.find(s => s.id === id);
+      if (!section || !section.items || section.items.length === 0) return;
+      html += `<h2>${escapeHtml(section.title)}</h2>\n`;
+      for (const item of section.items) {
+        html += `<div class="entry">
+  <div class="entry-header">
+    <h3>${escapeHtml(item.title || '')}</h3>
+    ${item.date ? `<span class="meta">${escapeHtml(item.date)}</span>` : ''}
+  </div>
+  ${item.subtitle ? `<div class="meta">${escapeHtml(item.subtitle)}</div>` : ''}
+  ${item.description ? `<p style="font-size:13px;color:#444;margin-top:4px;">${escapeHtml(item.description)}</p>` : ''}
+</div>\n`;
+      }
+      return;
+    }
+  };
 
-  if (languages.length > 0) {
-    html += `<h2>Languages</h2>\n`;
-    html += `<div>${languages.map(l => `<span style="margin-right:16px;font-size:13px;"><strong>${escapeHtml(l.name)}</strong>${l.proficiency ? ` — ${escapeHtml(l.proficiency)}` : ''}</span>`).join('')}</div>\n`;
-  }
+  const order = (sectionOrder && sectionOrder.length > 0)
+    ? sectionOrder
+    : ['summary', 'experience', 'education', 'skills', 'projects', 'certifications', 'languages'];
+  for (const key of order) renderSection(key);
 
   html += `</body>\n</html>`;
   return html;

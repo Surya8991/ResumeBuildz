@@ -42,7 +42,7 @@ export default function JDTailor() {
     const apiKey = getGroqApiKey();
     const useServer = (isPro() || ['pro', 'team', 'lifetime'].includes(profile?.plan ?? '')) && !apiKey;
     if (!apiKey && !useServer) {
-      setError('Set your Groq API key in the AI tab first.');
+      setError('AI not configured. Paste a free Groq API key in the AI panel (console.groq.com/keys) or upgrade to a paid plan.');
       return;
     }
 

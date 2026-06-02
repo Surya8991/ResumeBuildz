@@ -66,6 +66,22 @@ export function safePrimaryColor(color: string): string {
   return /^#[0-9a-fA-F]{6}$/.test(color) ? color : '#2563eb';
 }
 
+/** Pick #fff or #111 for legible text on a given background using WCAG relative luminance.
+ *  Used in templates where header/sidebar text sits on top of primaryColor — a pale primary
+ *  would otherwise hide white text. */
+export function readableOn(hex: string): '#ffffff' | '#111111' {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex.trim());
+  if (!m) return '#ffffff';
+  const n = parseInt(m[1], 16);
+  const r = (n >> 16) & 0xff, g = (n >> 8) & 0xff, b = n & 0xff;
+  const srgb = [r, g, b].map(v => {
+    const x = v / 255;
+    return x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4);
+  });
+  const L = 0.2126 * srgb[0] + 0.7152 * srgb[1] + 0.0722 * srgb[2];
+  return L > 0.55 ? '#111111' : '#ffffff';
+}
+
 export function ContactSeparator({ color }: { color: string }) {
   return <span style={{ color, opacity: 0.5 }} className="mx-1.5">|</span>;
 }
