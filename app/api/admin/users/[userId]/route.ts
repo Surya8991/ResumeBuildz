@@ -9,7 +9,7 @@ import { rolePromotedEmail, planChangedEmail } from '@/lib/emails/templates';
 type Params = { params: Promise<{ userId: string }> };
 
 export async function GET(_req: NextRequest, { params }: Params) {
-  const adminSession = await requireAdminSession('admin');
+  const adminSession = await requireAdminSession('superadmin');
   if (isAdminResponse(adminSession)) return adminSession;
 
   const { userId } = await params;
@@ -48,7 +48,7 @@ const VALID_PLANS = ['free', 'starter', 'pro', 'team', 'lifetime'] as const;
 const VALID_ROLES = ['user', 'admin', 'superadmin'] as const;
 
 export async function PATCH(req: NextRequest, { params }: Params) {
-  const adminSession = await requireAdminSession('admin');
+  const adminSession = await requireAdminSession('superadmin');
   if (isAdminResponse(adminSession)) return adminSession;
 
   const { userId } = await params;
@@ -120,4 +120,30 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   }
 
   return NextResponse.json({ updated: true });
+}
+
+export async function DELETE(_req: NextRequest, { params }: Params) {
+  const adminSession = await requireAdminSession('superadmin');
+  if (isAdminResponse(adminSession)) return adminSession;
+
+  const { userId } = await params;
+
+  if (userId === adminSession.userId) {
+    return NextResponse.json({ error: 'Cannot delete your own account' }, { status: 400 });
+  }
+
+  const [target] = await db
+    .select({ role: profiles.role })
+    .from(profiles)
+    .where(eq(profiles.id, userId))
+    .limit(1);
+
+  if (!target) return NextResponse.json({ error: 'User not found' }, { status: 404 });
+  if (target.role === 'superadmin') {
+    return NextResponse.json({ error: 'Cannot delete a superadmin account' }, { status: 403 });
+  }
+
+  await db.delete(user).where(eq(user.id, userId));
+
+  return NextResponse.json({ deleted: true });
 }

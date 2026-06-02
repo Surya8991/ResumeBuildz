@@ -77,7 +77,7 @@ export default function CoverLetterForm() {
       const res = useServer
         ? await streamGroqViaServer(TONE_PROMPTS[tone], userMsg, (_delta, full) => updateCoverLetter(full), 900, temp, abortRef.current.signal)
         : await streamGroqAI(TONE_PROMPTS[tone], userMsg, (_delta, full) => updateCoverLetter(full), 900, temp, abortRef.current.signal);
-      if (!res.success) alert(res.error || 'AI generation failed.');
+      if (!res.success) alert(res.status === 503 ? 'AI is temporarily unavailable. Please try again later.' : res.error || 'AI generation failed.');
     } catch {
       alert('Failed to connect to AI service.');
     } finally {

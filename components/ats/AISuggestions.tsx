@@ -61,9 +61,12 @@ export default function AISuggestions() {
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [aiRemaining, setAiRemaining] = useState(() => getUsage('ai').remaining);
 
+  const [forceShowKeyInput, setForceShowKeyInput] = useState(false);
+
   const saveKey = (key: string) => {
     setApiKey(key);
     setShowKeyInput(false);
+    setForceShowKeyInput(false);
   };
 
   const generate = async (type: SuggestionType) => {
@@ -125,7 +128,7 @@ export default function AISuggestions() {
       } else if (res.status === 402 || res.status === 403) {
         setError('Quota exceeded. Check your Groq account at console.groq.com.');
       } else {
-        setError(res.error || 'AI request failed. Try again.');
+        setError(res.status === 503 ? 'AI is temporarily unavailable. Please try again later.' : res.error || 'AI request failed. Try again.');
       }
       showToast('AI request failed. See error details below.', 'warning');
       return;
@@ -162,10 +165,10 @@ export default function AISuggestions() {
       </h3>
 
       {/* API Key setup — hidden for paid users who use the server proxy */}
-      {(isPro() || ['pro', 'team', 'lifetime'].includes(profile?.plan ?? '')) && !apiKey ? (
+      {(isPro() || ['pro', 'team', 'lifetime'].includes(profile?.plan ?? '')) && !apiKey && !forceShowKeyInput ? (
         <div className="flex items-center justify-between">
           <span className="text-xs text-muted-foreground">AI included with your plan</span>
-          <button onClick={() => setShowKeyInput(true)} className="text-xs text-muted-foreground hover:text-foreground underline">
+          <button onClick={() => { setForceShowKeyInput(true); setShowKeyInput(true); }} className="text-xs text-muted-foreground hover:text-foreground underline">
             Use your own key
           </button>
         </div>

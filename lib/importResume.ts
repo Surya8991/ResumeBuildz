@@ -608,37 +608,48 @@ function parseEntries(lines: string[]): { title: string; subtitle: string; locat
 
 // ---- AI Parsing via Groq ----
 
-import { callGroqAI, getGroqApiKey } from '@/components/ats/utils/groqAI';
+import { callGroqAI, callGroqViaServer, getGroqApiKey } from '@/components/ats/utils/groqAI';
 
-async function parseWithAI(rawText: string, apiKey: string): Promise<ResumeData | null> {
-  const systemPrompt = `You are a resume parser. Return ONLY valid JSON matching this schema (no markdown):
+const AI_PARSE_SYSTEM = `You are a resume parser. Return ONLY valid JSON matching this schema (no markdown):
 {"personalInfo":{"fullName":"","jobTitle":"","email":"","phone":"","location":"","linkedin":"","website":"","github":"","photo":""},"summary":"","coverLetter":"","experience":[{"id":"exp-1","company":"","position":"","location":"","startDate":"","endDate":"","current":false,"description":"","highlights":[]}],"education":[{"id":"edu-1","institution":"","degree":"","field":"","location":"","startDate":"","endDate":"","gpa":"","highlights":[]}],"skills":[{"id":"skill-1","category":"","items":[]}],"projects":[{"id":"proj-1","name":"","description":"","technologies":[],"link":"","startDate":"","endDate":"","highlights":[]}],"certifications":[{"id":"cert-1","name":"","issuer":"","date":"","expiryDate":"","credentialId":"","url":""}],"languages":[{"id":"lang-1","name":"","proficiency":"Native|Fluent|Advanced|Intermediate|Basic"}],"customSections":[],"sectionOrder":["summary","experience","education","skills","projects","certifications","languages"]}
 Extract ALL bullet points completely. Keep exact text. Use unique IDs. Set current:true for "Present". Return ONLY JSON.`;
 
-  const res = await callGroqAI(systemPrompt, rawText, 4000, 0.1, apiKey);
-  if (!res.success || !res.content) return null;
+function normalizeAIParsed(parsed: Record<string, unknown>): ResumeData | null {
+  if (!parsed?.personalInfo || typeof parsed.personalInfo !== 'object') return null;
+  if (!Array.isArray(parsed.experience)) parsed.experience = [];
+  if (!Array.isArray(parsed.education)) parsed.education = [];
+  if (!Array.isArray(parsed.skills)) parsed.skills = [];
+  if (!Array.isArray(parsed.projects)) parsed.projects = [];
+  if (!Array.isArray(parsed.certifications)) parsed.certifications = [];
+  if (!Array.isArray(parsed.languages)) parsed.languages = [];
+  if (!parsed.sectionOrder || !Array.isArray(parsed.sectionOrder)) parsed.sectionOrder = ['summary', 'experience', 'education', 'skills', 'projects', 'certifications', 'languages'];
+  if (!parsed.customSections || !Array.isArray(parsed.customSections)) parsed.customSections = [];
+  if (!parsed.coverLetter) parsed.coverLetter = '';
+  if (!(parsed.personalInfo as Record<string, unknown>).photo) (parsed.personalInfo as Record<string, unknown>).photo = '';
+  return parsed as unknown as ResumeData;
+}
 
+function extractJson(content: string): Record<string, unknown> | null {
   try {
-    let jsonStr = res.content;
-    const jsonMatch = res.content.match(/```(?:json)?\s*([\s\S]*?)```/);
+    let jsonStr = content;
+    const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/);
     if (jsonMatch) jsonStr = jsonMatch[1].trim();
-    const parsed = JSON.parse(jsonStr);
-    if (!parsed?.personalInfo || typeof parsed.personalInfo !== 'object') return null;
-    // Validate arrays to prevent downstream crashes from malformed AI output.
-    // Use !Array.isArray (no truthy guard) so explicit null / undefined are
-    // normalized to [] too — the previous `x && !Array.isArray(x)` left null intact.
-    if (!Array.isArray(parsed.experience)) parsed.experience = [];
-    if (!Array.isArray(parsed.education)) parsed.education = [];
-    if (!Array.isArray(parsed.skills)) parsed.skills = [];
-    if (!Array.isArray(parsed.projects)) parsed.projects = [];
-    if (!Array.isArray(parsed.certifications)) parsed.certifications = [];
-    if (!Array.isArray(parsed.languages)) parsed.languages = [];
-    if (!parsed.sectionOrder || !Array.isArray(parsed.sectionOrder)) parsed.sectionOrder = ['summary', 'experience', 'education', 'skills', 'projects', 'certifications', 'languages'];
-    if (!parsed.customSections || !Array.isArray(parsed.customSections)) parsed.customSections = [];
-    if (!parsed.coverLetter) parsed.coverLetter = '';
-    if (!parsed.personalInfo.photo) parsed.personalInfo.photo = '';
-    return parsed as ResumeData;
+    return JSON.parse(jsonStr) as Record<string, unknown>;
   } catch { return null; }
+}
+
+async function parseWithAI(rawText: string, apiKey: string): Promise<ResumeData | null> {
+  const res = await callGroqAI(AI_PARSE_SYSTEM, rawText, 4000, 0.1, apiKey);
+  if (!res.success || !res.content) return null;
+  const parsed = extractJson(res.content);
+  return parsed ? normalizeAIParsed(parsed) : null;
+}
+
+async function parseWithAIViaServer(rawText: string): Promise<ResumeData | null> {
+  const res = await callGroqViaServer(AI_PARSE_SYSTEM, rawText, 4000, 0.1);
+  if (!res.success || !res.content) return null;
+  const parsed = extractJson(res.content);
+  return parsed ? normalizeAIParsed(parsed) : null;
 }
 
 // ---- Main Import ----
@@ -685,6 +696,10 @@ export async function importResumeFromFile(file: File): Promise<ImportResult> {
     if (groqKey) {
       const aiData = await parseWithAI(rawText, groqKey);
       if (aiData) return { success: true, data: aiData, rawText };
+    } else {
+      // No personal key — try server proxy (works for paid/admin users automatically).
+      const aiData = await parseWithAIViaServer(rawText);
+      if (aiData) return { success: true, data: aiData, rawText };
     }
 
     return { success: true, data: parseResumeText(rawText), rawText };
@@ -708,6 +723,9 @@ export async function importResumeFromText(text: string): Promise<ImportResult> 
     const groqKey = getGroqApiKey();
     if (groqKey) {
       const aiData = await parseWithAI(trimmed, groqKey);
+      if (aiData) return { success: true, data: aiData, rawText: trimmed };
+    } else {
+      const aiData = await parseWithAIViaServer(trimmed);
       if (aiData) return { success: true, data: aiData, rawText: trimmed };
     }
     return { success: true, data: parseResumeText(trimmed), rawText: trimmed };

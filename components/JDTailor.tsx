@@ -68,7 +68,7 @@ Rules: 3 sentences max for summary; up to 5 bullets each starting with a strong 
         ? await streamGroqViaServer(system, user, (_delta, full) => setStreamed(full), 1000, 0.5, abortRef.current.signal)
         : await streamGroqAI(system, user, (_delta, full) => setStreamed(full), 1000, 0.5, abortRef.current.signal);
       if (!res.success || !res.content) {
-        setError(res.error || 'AI rewrite failed.');
+        setError(res.status === 503 ? 'AI is temporarily unavailable. Please try again later.' : res.error || 'AI rewrite failed.');
         setLoading(false);
         return;
       }

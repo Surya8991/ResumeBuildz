@@ -106,7 +106,7 @@ export default function ATSScoreChecker() {
         ? await callGroqViaServer(system, user, 400, 0.7)
         : await callGroqAI(system, user, 400, 0.7);
       if (result.success && result.content) setAiGapAnalysis(result.content);
-      else setAiGapAnalysis(result.error || 'Failed to generate analysis');
+      else setAiGapAnalysis(result.status === 503 ? 'AI is temporarily unavailable. Please try again later.' : result.error || 'Failed to generate analysis');
     } catch {
       setAiGapAnalysis('Failed to connect to AI service.');
     } finally {

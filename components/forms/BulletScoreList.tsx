@@ -128,16 +128,16 @@ function BulletRow({
     }
     setAiBusy(true);
     const system = 'You are a resume coach. Rewrite a single resume bullet to be stronger: strong action verb start, one specific quantified metric, 14-22 words, no fluff. Return ONLY the rewritten bullet, no preamble, no quotes.';
-    const { success, content, error } = useServer
+    const res = useServer
       ? await callGroqViaServer(system, `Original: ${bullet}`, 120, 0.5)
       : await callGroqAI(system, `Original: ${bullet}`, 120, 0.5);
     setAiBusy(false);
-    if (success && content) {
-      setAiResult(content.replace(/^["']|["']$/g, '').trim());
+    if (res.success && res.content) {
+      setAiResult(res.content.replace(/^["']|["']$/g, '').trim());
       await incrementServerUsage('ai');
       if (user) refreshProfile();
     } else {
-      setAiError(error || 'AI rewrite failed.');
+      setAiError(res.status === 503 ? 'AI is temporarily unavailable.' : res.error || 'AI rewrite failed.');
     }
   }
 

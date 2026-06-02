@@ -1,32 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { profiles, user } from '@/lib/db/schema';
-import { eq, ilike, or, sql } from 'drizzle-orm';
+import { and, eq, ilike, or, sql, desc, asc } from 'drizzle-orm';
 import { requireAdminSession, isAdminResponse } from '@/lib/adminAuth';
 
 export async function GET(req: NextRequest) {
-  const adminSession = await requireAdminSession('admin');
+  const adminSession = await requireAdminSession('superadmin');
   if (isAdminResponse(adminSession)) return adminSession;
 
-  const q = req.nextUrl.searchParams.get('q')?.trim() ?? '';
-  const page = Math.max(1, parseInt(req.nextUrl.searchParams.get('page') ?? '1', 10));
+  const sp = req.nextUrl.searchParams;
+  const q = sp.get('q')?.trim() ?? '';
+  const page = Math.max(1, parseInt(sp.get('page') ?? '1', 10));
+  const planFilter = sp.get('plan')?.trim() ?? '';
+  const roleFilter = sp.get('role')?.trim() ?? '';
+  const sort = sp.get('sort') ?? 'createdAt';
+  const order = sp.get('order') ?? 'desc';
   const limit = 50;
   const offset = (page - 1) * limit;
 
-  const baseWhere = adminSession.role === 'superadmin'
-    ? undefined
-    : eq(profiles.managedBy, adminSession.userId);
+  const where = and(
+    q ? or(ilike(user.email, `%${q}%`), ilike(user.name, `%${q}%`)) : undefined,
+    planFilter ? eq(profiles.plan, planFilter) : undefined,
+    roleFilter ? eq(profiles.role, roleFilter) : undefined,
+  );
 
-  const searchWhere = q
-    ? or(ilike(user.email, `%${q}%`), ilike(user.name, `%${q}%`))
-    : undefined;
-
-  const conditions = [baseWhere, searchWhere].filter(Boolean);
-  const where = conditions.length === 0
-    ? undefined
-    : conditions.length === 1
-      ? conditions[0]
-      : sql`(${conditions[0]}) AND (${conditions[1]})`;
+  const orderBy =
+    sort === 'lastSeen'
+      ? order === 'asc' ? asc(profiles.lastSeenAt) : desc(profiles.lastSeenAt)
+      : order === 'asc' ? asc(user.createdAt) : desc(user.createdAt);
 
   const rows = await db
     .select({
@@ -42,7 +43,7 @@ export async function GET(req: NextRequest) {
     .from(user)
     .innerJoin(profiles, eq(profiles.id, user.id))
     .where(where)
-    .orderBy(user.createdAt)
+    .orderBy(orderBy)
     .limit(limit)
     .offset(offset);
 

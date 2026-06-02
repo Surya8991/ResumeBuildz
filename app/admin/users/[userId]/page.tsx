@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, User, X } from 'lucide-react';
+import { ArrowLeft, User, X, Trash2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -30,6 +31,7 @@ const today = () => new Date().toISOString().slice(0, 10);
 export default function AdminUserDetailPage() {
   const { userId } = useParams<{ userId: string }>();
   const { profile: myProfile } = useAuth();
+  const router = useRouter();
   const [user, setUser] = useState<UserDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -86,6 +88,24 @@ export default function AdminUserDetailPage() {
   async function handleUnassignAdmin() {
     await patch({ managedBy: null });
     setManagedByEmail(null);
+  }
+
+  async function handleDelete() {
+    if (!user) return;
+    const confirmed = window.confirm(
+      `Permanently delete ${user.email}?\n\nThis cannot be undone. All their data will be erased.`,
+    );
+    if (!confirmed) return;
+    setSaving(true);
+    try {
+      const res = await fetch(`/api/admin/users/${userId}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (!res.ok) { toast.error(data.error ?? 'Delete failed'); return; }
+      toast.success('User deleted');
+      router.push('/admin/users');
+    } finally {
+      setSaving(false);
+    }
   }
 
   async function handleImpersonate() {
@@ -222,13 +242,23 @@ export default function AdminUserDetailPage() {
         </div>
 
         {/* Actions */}
-        <div className="px-6 py-5 border-t border-gray-100">
+        <div className="px-6 py-5 border-t border-gray-100 flex items-center gap-3 flex-wrap">
           {user.role === 'user' && (
             <button
               onClick={handleImpersonate}
               className="flex items-center gap-2 rounded-lg border border-amber-300 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-700 hover:bg-amber-100 transition-colors"
             >
               🎭 Impersonate User
+            </button>
+          )}
+          {user.role !== 'superadmin' && (
+            <button
+              onClick={handleDelete}
+              disabled={saving}
+              className="ml-auto flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-100 transition-colors disabled:opacity-40"
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete User
             </button>
           )}
         </div>
