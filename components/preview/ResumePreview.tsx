@@ -51,20 +51,35 @@ interface ResumePreviewProps {
   data?: ResumeData;
 }
 
-// Strip blank/whitespace-only highlight strings so the editor can preserve
-// in-progress blank lines without them rendering as phantom empty bullets.
-function stripEmptyHighlights(d: ResumeData): ResumeData {
+// Strip blank/whitespace-only entries so the editor can hold unfilled "+ Blank
+// line" placeholders without rendering them as phantom rows / empty bullets /
+// stray ": " labels in the preview and PDF.
+function stripEmptyEntries(d: ResumeData): ResumeData {
   return {
     ...d,
-    experience: d.experience.map((e) => ({ ...e, highlights: e.highlights.filter((h) => h.trim()) })),
-    education: d.education.map((e) => ({ ...e, highlights: e.highlights.filter((h) => h.trim()) })),
-    projects: d.projects.map((p) => ({ ...p, highlights: p.highlights.filter((h) => h.trim()) })),
+    experience: d.experience
+      .filter((e) => e.company.trim() || e.position.trim() || e.description.trim() || e.highlights.some((h) => h.trim()))
+      .map((e) => ({ ...e, highlights: e.highlights.filter((h) => h.trim()) })),
+    education: d.education
+      .filter((e) => e.institution.trim() || e.degree.trim() || e.field.trim() || e.highlights.some((h) => h.trim()))
+      .map((e) => ({ ...e, highlights: e.highlights.filter((h) => h.trim()) })),
+    projects: d.projects
+      .filter((p) => p.name.trim() || p.description.trim() || p.highlights.some((h) => h.trim()) || p.technologies.length > 0)
+      .map((p) => ({ ...p, highlights: p.highlights.filter((h) => h.trim()) })),
+    skills: d.skills
+      .map((s) => ({ ...s, items: s.items.filter((i) => i.trim()) }))
+      .filter((s) => s.category.trim() && s.items.length > 0),
+    certifications: d.certifications.filter((c) => c.name.trim() || c.issuer.trim()),
+    languages: d.languages.filter((l) => l.name.trim()),
+    customSections: d.customSections
+      .map((cs) => ({ ...cs, items: cs.items.filter((it) => it.title.trim() || it.subtitle.trim() || it.description.trim()) }))
+      .filter((cs) => cs.title.trim() && cs.items.length > 0),
   };
 }
 
 const ResumePreview = forwardRef<HTMLDivElement, ResumePreviewProps>(({ data }, ref) => {
   const { resumeData: storeResumeData, selectedTemplate, primaryColor, styleOptions } = useResumeStore();
-  const resumeData = stripEmptyHighlights(data || storeResumeData);
+  const resumeData = stripEmptyEntries(data || storeResumeData);
   const TemplateComponent = getTemplateComponent(selectedTemplate);
   const scopeId = useId().replace(/:/g, '');
 
