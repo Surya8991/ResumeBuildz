@@ -122,14 +122,18 @@ function SortableProjectEntry({ project, onUpdate, onRemove }: {
             <RichTextarea
               placeholder="Built a full-stack e-commerce platform&#10;Implemented payment processing with Stripe"
               value={project.highlights.join('\n')}
-              onChange={(v) => onUpdate({ highlights: v.split('\n').filter((h) => h.trim()) })}
+              onChange={(v) => onUpdate({ highlights: v.split('\n') })}
               rows={4}
             />
             <BulletScoreList
-              bullets={project.highlights}
+              bullets={project.highlights.filter((h) => h.trim())}
               onReplace={(idx, next) => {
+                const nonEmpty = project.highlights.filter((h) => h.trim());
+                const target = nonEmpty[idx];
+                const realIdx = project.highlights.indexOf(target);
+                if (realIdx < 0) return;
                 const copy = [...project.highlights];
-                copy[idx] = next;
+                copy[realIdx] = next;
                 onUpdate({ highlights: copy });
               }}
             />
@@ -199,6 +203,12 @@ export default function ProjectsForm() {
           </div>
         </SortableContext>
       </DndContext>
+
+      {resumeData.projects.length > 0 && (
+        <Button onClick={handleAdd} size="sm" variant="outline" className="w-full gap-1.5 border-dashed">
+          <Plus className="h-4 w-4" /> Blank line
+        </Button>
+      )}
     </div>
   );
 }

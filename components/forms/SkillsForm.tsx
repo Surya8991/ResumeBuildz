@@ -135,7 +135,7 @@ export default function SkillsForm() {
         </div>
       )}
 
-      <div className="space-y-3">
+      <div className="space-y-3 mb-4">
         {resumeData.skills.map((skill) => (
           <Card key={skill.id} className="p-4">
             <div className="flex items-center gap-2 mb-3">
@@ -188,6 +188,12 @@ export default function SkillsForm() {
           </Card>
         ))}
       </div>
+
+      {resumeData.skills.length > 0 && (
+        <Button onClick={handleAdd} size="sm" variant="outline" className="w-full gap-1.5 border-dashed">
+          <Plus className="h-4 w-4" /> Blank line
+        </Button>
+      )}
     </div>
   );
 }

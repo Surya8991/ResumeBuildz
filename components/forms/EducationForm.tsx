@@ -198,6 +198,12 @@ export default function EducationForm() {
           </div>
         </SortableContext>
       </DndContext>
+
+      {resumeData.education.length > 0 && (
+        <Button onClick={handleAdd} size="sm" variant="outline" className="w-full gap-1.5 border-dashed">
+          <Plus className="h-4 w-4" /> Blank line
+        </Button>
+      )}
     </div>
   );
 }

@@ -158,3 +158,19 @@ export const webhookEvents = pgTable('webhook_events', {
   eventType: text('event_type').notNull(),
   processedAt: timestamp('processed_at').notNull().defaultNow(),
 });
+
+// Audit log for admin/superadmin actions taken against other users
+// (role/plan changes, deletions, impersonation, broadcasts).
+export const auditLog = pgTable('audit_log', {
+  id: text('id').primaryKey(),
+  actorUserId: text('actor_user_id')
+    .notNull()
+    .references(() => user.id, { onDelete: 'cascade' }),
+  action: text('action').notNull(),
+  targetUserId: text('target_user_id').references(() => user.id, { onDelete: 'set null' }),
+  metadata: jsonb('metadata'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+}, (t) => ({
+  createdAtIdx: index('audit_log_created_at_idx').on(t.createdAt),
+  actorIdx: index('audit_log_actor_idx').on(t.actorUserId),
+}));
